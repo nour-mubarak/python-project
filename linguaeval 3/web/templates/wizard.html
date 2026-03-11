@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">New Evaluation</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-wand-magic-sparkles me-2"></i>
+                        Create New Evaluation
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form action="/evaluations/create" method="POST" id="evalForm">
+                        <!-- Step 1: Client Info -->
+                        <div class="mb-4 pb-4 border-bottom">
+                            <h5 class="text-primary mb-3">
+                                <span class="badge bg-primary rounded-pill me-2">1</span>
+                                Project Details
+                            </h5>
+                            <div class="mb-3">
+                                <label for="client_name" class="form-label fw-semibold">Client / Project Name</label>
+                                <input type="text" class="form-control form-control-lg" id="client_name"
+                                    name="client_name" placeholder="e.g., Durham University" required>
+                                <div class="form-text">This will appear in reports and dashboards.</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Prompt Pack -->
+                        <div class="mb-4 pb-4 border-bottom">
+                            <h5 class="text-primary mb-3">
+                                <span class="badge bg-primary rounded-pill me-2">2</span>
+                                Select Prompt Pack
+                            </h5>
+                            <div class="row">
+                                {% for pack in prompt_packs %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 prompt-card" data-pack="{{ pack.id }}">
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="prompt_pack"
+                                                    id="pack_{{ pack.id }}" value="{{ pack.id }}" {% if loop.first
+                                                    %}checked{% endif %}>
+                                                <label class="form-check-label w-100" for="pack_{{ pack.id }}">
+                                                    <h6 class="mb-1">{{ pack.name }}</h6>
+                                                    <p class="text-muted small mb-2">{{ pack.description }}</p>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span class="badge bg-info">v{{ pack.version }}</span>
+                                                        <span class="badge bg-secondary">{{ pack.count }} prompts</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Select Models -->
+                        <div class="mb-4 pb-4 border-bottom">
+                            <h5 class="text-primary mb-3">
+                                <span class="badge bg-primary rounded-pill me-2">3</span>
+                                Select Models to Evaluate
+                            </h5>
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Select at least one model. Ollama models run locally (free), others require API keys.
+                            </div>
+                            <div class="row">
+                                {% for model in available_models %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 model-card" data-model="{{ model.id }}">
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="models"
+                                                    id="model_{{ loop.index }}" value="{{ model.id }}" {% if
+                                                    model.provider=='ollama' %}checked{% endif %}>
+                                                <label class="form-check-label w-100" for="model_{{ loop.index }}">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <h6 class="mb-1">{{ model.name }}</h6>
+                                                            <span
+                                                                class="badge 
+                                                                {% if model.provider == 'ollama' %}bg-success{% else %}bg-warning{% endif %}">
+                                                                {{ model.provider }}
+                                                            </span>
+                                                        </div>
+                                                        {% if model.provider == 'ollama' %}
+                                                        <span class="badge bg-success-subtle text-success">FREE</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Options -->
+                        <div class="mb-4 pb-4 border-bottom">
+                            <h5 class="text-primary mb-3">
+                                <span class="badge bg-primary rounded-pill me-2">4</span>
+                                Evaluation Options
+                            </h5>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="use_judge" name="use_judge" checked>
+                                <label class="form-check-label" for="use_judge">
+                                    <strong>Use LLM-as-Judge</strong>
+                                    <br>
+                                    <small class="text-muted">More accurate scoring using an LLM to evaluate responses
+                                        (recommended)</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-play me-2"></i>
+                                Start Evaluation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .prompt-card,
+    .model-card {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .prompt-card:hover,
+    .model-card:hover {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+    }
+
+    .prompt-card:has(input:checked),
+    .model-card:has(input:checked) {
+        border-color: var(--bs-primary);
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.prompt-card, .model-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (e.target.type !== 'radio' && e.target.type !== 'checkbox') {
+                const input = card.querySelector('input');
+                input.checked = !input.checked || input.type === 'radio';
+            }
+        });
+    });
+</script>
+{% endblock %}

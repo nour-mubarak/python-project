@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/dashboard/{{ project_id }}">{{ metadata.client_name }}</a></li>
+            <li class="breadcrumb-item active">Reliability</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4">
+        <i class="fas fa-shield-alt text-primary me-2"></i>
+        Reliability Analysis
+    </h2>
+
+    <div class="alert alert-info mb-4">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Reliability Metrics:</strong>
+        Accuracy measures factual correctness, Hallucination detects fabricated information,
+        and Fluency ensures natural language quality.
+    </div>
+
+    <!-- Reliability Overview -->
+    <div class="row mb-4">
+        {% for model_id, data in reliability_data.items() %}
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-robot text-primary me-2"></i>
+                        {{ model_id }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Accuracy -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="fw-semibold">Accuracy</span>
+                            <span>EN: {{ data.accuracy_en|round(1) if data.accuracy_en else '-' }}% | AR: {{
+                                data.accuracy_ar|round(1) if data.accuracy_ar else '-' }}%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 10px;">
+                            <div class="progress-bar bg-primary" style="width: {{ data.accuracy_en or 0 }}%"></div>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" style="width: {{ data.accuracy_ar or 0 }}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Hallucination (inverse - lower is better) -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="fw-semibold">Hallucination Score</span>
+                            <span>EN: {{ data.hallucination_en|round(1) if data.hallucination_en else '-' }}% | AR: {{
+                                data.hallucination_ar|round(1) if data.hallucination_ar else '-' }}%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 10px;">
+                            <div class="progress-bar {% if (data.hallucination_en or 0) >= 80 %}bg-success{% elif (data.hallucination_en or 0) >= 60 %}bg-warning{% else %}bg-danger{% endif %}"
+                                style="width: {{ data.hallucination_en or 0 }}%"></div>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar {% if (data.hallucination_ar or 0) >= 80 %}bg-success{% elif (data.hallucination_ar or 0) >= 60 %}bg-warning{% else %}bg-danger{% endif %}"
+                                style="width: {{ data.hallucination_ar or 0 }}%"></div>
+                        </div>
+                        <small class="text-muted">Higher score = fewer hallucinations</small>
+                    </div>
+
+                    <!-- Fluency -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="fw-semibold">Fluency</span>
+                            <span>EN: {{ data.fluency_en|round(1) if data.fluency_en else '-' }}% | AR: {{
+                                data.fluency_ar|round(1) if data.fluency_ar else '-' }}%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 10px;">
+                            <div class="progress-bar bg-primary" style="width: {{ data.fluency_en or 0 }}%"></div>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" style="width: {{ data.fluency_ar or 0 }}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Overall Assessment -->
+                    <hr>
+                    <div class="text-center">
+                        {% set avg_score = ((data.accuracy_en or 0) + (data.accuracy_ar or 0) +
+                        (data.hallucination_en or 0) + (data.hallucination_ar or 0) +
+                        (data.fluency_en or 0) + (data.fluency_ar or 0)) / 6 %}
+                        {% if avg_score >= 80 %}
+                        <span class="badge bg-success px-3 py-2 fs-6">High Reliability</span>
+                        {% elif avg_score >= 60 %}
+                        <span class="badge bg-warning px-3 py-2 fs-6">Moderate Reliability</span>
+                        {% else %}
+                        <span class="badge bg-danger px-3 py-2 fs-6">Low Reliability</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Comparison Chart -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="fas fa-chart-bar text-info me-2"></i>
+                Reliability Comparison
+            </h5>
+        </div>
+        <div class="card-body">
+            <canvas id="reliabilityChart" height="300"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const reliabilityData = {{ reliability_data| tojson }};
+    const models = Object.keys(reliabilityData);
+
+    const metrics = ['accuracy', 'hallucination', 'fluency'];
+    const datasets = [];
+    const colors = {
+        accuracy: { en: '#0d6efd', ar: '#6ea8fe' },
+        hallucination: { en: '#198754', ar: '#75b798' },
+        fluency: { en: '#dc3545', ar: '#ea868f' }
+    };
+
+    metrics.forEach(metric => {
+        datasets.push({
+            label: `${metric} (EN)`,
+            data: models.map(m => reliabilityData[m]?.[`${metric}_en`] || 0),
+            backgroundColor: colors[metric].en,
+        });
+        datasets.push({
+            label: `${metric} (AR)`,
+            data: models.map(m => reliabilityData[m]?.[`${metric}_ar`] || 0),
+            backgroundColor: colors[metric].ar,
+        });
+    });
+
+    new Chart(document.getElementById('reliabilityChart'), {
+        type: 'bar',
+        data: {
+            labels: models,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: { display: true, text: 'Score (%)' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

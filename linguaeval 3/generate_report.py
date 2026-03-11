@@ -31,6 +31,12 @@ from docx.oxml import parse_xml
 # PDF generation
 from fpdf import FPDF
 
+# Slide deck generation
+from pptx import Presentation
+from pptx.util import Inches as PptxInches, Pt as PptxPt
+from pptx.dml.color import RGBColor as PptxRGB
+from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+
 
 # ═══════════════════════════════════════════════════════════════
 # DESIGN CONSTANTS
@@ -1620,6 +1626,457 @@ class ReportGenerator:
         print(f"    Models: {', '.join(self.models)}")
         print(f"    Prompts: {self.metadata.get('total_prompts', 'N/A')}")
 
+    def generate_slides(self, output_path: str):
+        """Generate executive summary slide deck (PPTX)."""
+        overall = self._calculate_overall_scores()
+        code_switching = self._get_code_switching_findings()
+        recommended_model, reason = self._get_recommended_model(overall)
+
+        prs = Presentation()
+        prs.slide_width = PptxInches(13.333)  # 16:9 widescreen
+        prs.slide_height = PptxInches(7.5)
+
+        # Color constants for slides
+        PPTX_NAVY = PptxRGB(0x0C, 0x2D, 0x48)
+        PPTX_ACCENT = PptxRGB(0x02, 0x84, 0xC7)
+        PPTX_GREEN = PptxRGB(0x16, 0x65, 0x34)
+        PPTX_RED = PptxRGB(0xB9, 0x1C, 0x1C)
+        PPTX_ORANGE = PptxRGB(0xC2, 0x41, 0x0C)
+        PPTX_GRAY = PptxRGB(0x64, 0x74, 0x8B)
+        PPTX_WHITE = PptxRGB(0xFF, 0xFF, 0xFF)
+
+        # ══════════════════════════════════════════
+        # SLIDE 1: Title Slide
+        # ══════════════════════════════════════════
+        slide_layout = prs.slide_layouts[6]  # Blank
+        slide = prs.slides.add_slide(slide_layout)
+
+        # Title
+        title_box = slide.shapes.add_textbox(
+            PptxInches(0.5), PptxInches(2.5), PptxInches(12.333), PptxInches(1)
+        )
+        tf = title_box.text_frame
+        p = tf.paragraphs[0]
+        p.text = "MULTILINGUAL AI READINESS REPORT"
+        p.font.size = PptxPt(44)
+        p.font.bold = True
+        p.font.color.rgb = PPTX_NAVY
+        p.alignment = PP_ALIGN.CENTER
+
+        # Subtitle
+        use_case = self.metadata.get("use_case", "General")
+        sub_box = slide.shapes.add_textbox(
+            PptxInches(0.5), PptxInches(3.6), PptxInches(12.333), PptxInches(0.5)
+        )
+        tf = sub_box.text_frame
+        p = tf.paragraphs[0]
+        p.text = f"Arabic-English Model Evaluation for {use_case}"
+        p.font.size = PptxPt(20)
+        p.font.color.rgb = PPTX_GRAY
+        p.alignment = PP_ALIGN.CENTER
+
+        # Client name
+        client_box = slide.shapes.add_textbox(
+            PptxInches(0.5), PptxInches(4.3), PptxInches(12.333), PptxInches(0.5)
+        )
+        tf = client_box.text_frame
+        p = tf.paragraphs[0]
+        p.text = f"Prepared for {self.client_name}"
+        p.font.size = PptxPt(18)
+        p.font.bold = True
+        p.font.color.rgb = PPTX_ACCENT
+        p.alignment = PP_ALIGN.CENTER
+
+        # Date
+        date_str = datetime.fromisoformat(self.timestamp).strftime("%B %Y")
+        date_box = slide.shapes.add_textbox(
+            PptxInches(0.5), PptxInches(5.5), PptxInches(12.333), PptxInches(0.4)
+        )
+        tf = date_box.text_frame
+        p = tf.paragraphs[0]
+        p.text = f"{date_str} | LinguaEval"
+        p.font.size = PptxPt(14)
+        p.font.color.rgb = PPTX_GRAY
+        p.alignment = PP_ALIGN.CENTER
+
+        # ══════════════════════════════════════════
+        # SLIDE 2: Executive Summary
+        # ══════════════════════════════════════════
+        slide = prs.slides.add_slide(slide_layout)
+
+        # Header
+        header_box = slide.shapes.add_textbox(
+            PptxInches(0.5), PptxInches(0.4), PptxInches(12.333), PptxInches(0.6)
+        )
+        tf = header_box.text_frame
+        p = tf.paragraphs[0]
+        p.text = "Executive Summary"
+        p.font.size = PptxPt(32)
+        p.font.bold = True
+        p.font.color.rgb = PPTX_NAVY
+
+        # Summary table - create a table for model status
+        table = slide.shapes.add_table(
+            rows=1 + len(overall),
+            cols=3,
+            left=PptxInches(1),
+            top=PptxInches(1.4),
+            width=PptxInches(11),
+            height=PptxInches(0.5 + 0.5 * len(overall)),
+        ).table
+
+        # Header row
+        for i, header in enumerate(["Model", "Readiness Status", "Overall Score"]):
+            cell = table.cell(0, i)
+            cell.text = header
+            cell.fill.solid()
+            cell.fill.fore_color.rgb = PPTX_NAVY
+            p = cell.text_frame.paragraphs[0]
+            p.font.bold = True
+            p.font.size = PptxPt(14)
+            p.font.color.rgb = PPTX_WHITE
+            p.alignment = PP_ALIGN.CENTER
+
+        # Data rows
+        for row_idx, (model_id, scores) in enumerate(overall.items(), start=1):
+            short_name = (
+                model_id.split("-")[0].upper() if "-" in model_id else model_id.upper()
+            )
+            status = scores["status"]
+            avg_score = scores["combined_average"]
+
+            # Model name
+            cell = table.cell(row_idx, 0)
+            cell.text = short_name
+            p = cell.text_frame.paragraphs[0]
+            p.font.size = PptxPt(12)
+            p.alignment = PP_ALIGN.CENTER
+
+            # Status
+            cell = table.cell(row_idx, 1)
+            cell.text = status
+            p = cell.text_frame.paragraphs[0]
+            p.font.size = PptxPt(12)
+            p.font.bold = True
+            p.alignment = PP_ALIGN.CENTER
+            if status == "Ready for Pilot":
+                p.font.color.rgb = PPTX_GREEN
+            elif status == "Restricted Pilot Only":
+                p.font.color.rgb = PPTX_ORANGE
+            else:
+                p.font.color.rgb = PPTX_RED
+
+            # Score
+            cell = table.cell(row_idx, 2)
+            cell.text = f"{avg_score:.1f}%"
+            p = cell.text_frame.paragraphs[0]
+            p.font.size = PptxPt(12)
+            p.alignment = PP_ALIGN.CENTER
+
+        # Recommended model callout
+        if recommended_model and len(overall) > 1:
+            rec_short = (
+                recommended_model.split("-")[0].upper()
+                if "-" in recommended_model
+                else recommended_model.upper()
+            )
+            rec_box = slide.shapes.add_textbox(
+                PptxInches(1),
+                PptxInches(3.2 + 0.5 * len(overall)),
+                PptxInches(11),
+                PptxInches(0.5),
+            )
+            tf = rec_box.text_frame
+            p = tf.paragraphs[0]
+            p.text = f"✓ Recommended: {rec_short}"
+            p.font.size = PptxPt(16)
+            p.font.bold = True
+            p.font.color.rgb = PPTX_GREEN
+
+        # Critical findings
+        findings_y = 4.0 + 0.5 * len(overall)
+        if code_switching or any(
+            scores.get("critical_gaps") for scores in overall.values()
+        ):
+            findings_box = slide.shapes.add_textbox(
+                PptxInches(1), PptxInches(findings_y), PptxInches(11), PptxInches(1.5)
+            )
+            tf = findings_box.text_frame
+            tf.word_wrap = True
+
+            p = tf.paragraphs[0]
+            p.text = "Critical Findings:"
+            p.font.size = PptxPt(14)
+            p.font.bold = True
+            p.font.color.rgb = PPTX_RED
+
+            if code_switching:
+                p = tf.add_paragraph()
+                models_with_cs = set(f["model"] for f in code_switching)
+                p.text = f"• Code-switching: {len(code_switching)} instance(s) in {', '.join(models_with_cs)}"
+                p.font.size = PptxPt(12)
+
+            for model_id, scores in overall.items():
+                for dim, gap in scores.get("critical_gaps", []):
+                    p = tf.add_paragraph()
+                    short = (
+                        model_id.split("-")[0].upper()
+                        if "-" in model_id
+                        else model_id.upper()
+                    )
+                    p.text = f"• {short}: {dim} cross-lingual gap of {gap:.1f}%"
+                    p.font.size = PptxPt(12)
+
+        # ══════════════════════════════════════════
+        # SLIDE 3: Model Comparison
+        # ══════════════════════════════════════════
+        slide = prs.slides.add_slide(slide_layout)
+
+        header_box = slide.shapes.add_textbox(
+            PptxInches(0.5), PptxInches(0.4), PptxInches(12.333), PptxInches(0.6)
+        )
+        tf = header_box.text_frame
+        p = tf.paragraphs[0]
+        p.text = "Model Performance Comparison"
+        p.font.size = PptxPt(32)
+        p.font.bold = True
+        p.font.color.rgb = PPTX_NAVY
+
+        # Get all dimensions
+        all_dims = set()
+        for model_data in self.aggregates.values():
+            all_dims.update(model_data.get("en", {}).keys())
+            all_dims.update(model_data.get("ar", {}).keys())
+        all_dims = sorted(all_dims)
+
+        # Create comparison table
+        models = list(self.aggregates.keys())
+        table = slide.shapes.add_table(
+            rows=1 + len(all_dims),
+            cols=1 + len(models) * 2,
+            left=PptxInches(0.5),
+            top=PptxInches(1.2),
+            width=PptxInches(12.333),
+            height=PptxInches(0.4 + 0.4 * len(all_dims)),
+        ).table
+
+        # Header row
+        cell = table.cell(0, 0)
+        cell.text = "Dimension"
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = PPTX_NAVY
+        p = cell.text_frame.paragraphs[0]
+        p.font.bold = True
+        p.font.size = PptxPt(11)
+        p.font.color.rgb = PPTX_WHITE
+
+        col_idx = 1
+        for model_id in models:
+            short = (
+                model_id.split("-")[0].upper() if "-" in model_id else model_id.upper()
+            )
+            for lang in ["EN", "AR"]:
+                cell = table.cell(0, col_idx)
+                cell.text = f"{short} {lang}"
+                cell.fill.solid()
+                cell.fill.fore_color.rgb = PPTX_NAVY
+                p = cell.text_frame.paragraphs[0]
+                p.font.bold = True
+                p.font.size = PptxPt(10)
+                p.font.color.rgb = PPTX_WHITE
+                p.alignment = PP_ALIGN.CENTER
+                col_idx += 1
+
+        # Data rows
+        for row_idx, dim in enumerate(all_dims, start=1):
+            cell = table.cell(row_idx, 0)
+            cell.text = dim.replace("_", " ").title()
+            p = cell.text_frame.paragraphs[0]
+            p.font.size = PptxPt(10)
+            p.font.bold = True
+
+            col_idx = 1
+            for model_id in models:
+                model_data = self.aggregates.get(model_id, {})
+                en_score = model_data.get("en", {}).get(dim, {}).get("average", None)
+                ar_score = model_data.get("ar", {}).get(dim, {}).get("average", None)
+
+                for score in [en_score, ar_score]:
+                    cell = table.cell(row_idx, col_idx)
+                    if score is not None:
+                        cell.text = f"{score:.0f}%"
+                        p = cell.text_frame.paragraphs[0]
+                        p.font.size = PptxPt(10)
+                        p.alignment = PP_ALIGN.CENTER
+                        if score >= 80:
+                            p.font.color.rgb = PPTX_GREEN
+                        elif score >= 65:
+                            p.font.color.rgb = PPTX_ORANGE
+                        else:
+                            p.font.color.rgb = PPTX_RED
+                    else:
+                        cell.text = "—"
+                        p = cell.text_frame.paragraphs[0]
+                        p.font.size = PptxPt(10)
+                        p.alignment = PP_ALIGN.CENTER
+                        p.font.color.rgb = PPTX_GRAY
+                    col_idx += 1
+
+        # ══════════════════════════════════════════
+        # SLIDE 4: Recommendations
+        # ══════════════════════════════════════════
+        slide = prs.slides.add_slide(slide_layout)
+
+        header_box = slide.shapes.add_textbox(
+            PptxInches(0.5), PptxInches(0.4), PptxInches(12.333), PptxInches(0.6)
+        )
+        tf = header_box.text_frame
+        p = tf.paragraphs[0]
+        p.text = "Deployment Recommendations"
+        p.font.size = PptxPt(32)
+        p.font.bold = True
+        p.font.color.rgb = PPTX_NAVY
+
+        y_pos = 1.3
+        for model_id, scores in overall.items():
+            short_name = (
+                model_id.split("-")[0].upper() if "-" in model_id else model_id.upper()
+            )
+            status = scores["status"]
+
+            # Model header
+            model_box = slide.shapes.add_textbox(
+                PptxInches(0.7), PptxInches(y_pos), PptxInches(11.5), PptxInches(0.4)
+            )
+            tf = model_box.text_frame
+            p = tf.paragraphs[0]
+            p.text = f"{short_name}: {status}"
+            p.font.size = PptxPt(18)
+            p.font.bold = True
+            if status == "Ready for Pilot":
+                p.font.color.rgb = PPTX_GREEN
+            elif status == "Restricted Pilot Only":
+                p.font.color.rgb = PPTX_ORANGE
+            else:
+                p.font.color.rgb = PPTX_RED
+
+            y_pos += 0.5
+
+            # Recommendation text
+            rec_box = slide.shapes.add_textbox(
+                PptxInches(0.9), PptxInches(y_pos), PptxInches(11.3), PptxInches(1)
+            )
+            tf = rec_box.text_frame
+            tf.word_wrap = True
+
+            if status == "Ready for Pilot":
+                p = tf.paragraphs[0]
+                p.text = "• Suitable for bounded pilot deployment"
+                p.font.size = PptxPt(12)
+                p = tf.add_paragraph()
+                p.text = "• Standard monitoring recommended (10-15% human review)"
+                p.font.size = PptxPt(12)
+                p = tf.add_paragraph()
+                p.text = "• Quarterly cross-lingual re-evaluation"
+                p.font.size = PptxPt(12)
+            elif status == "Restricted Pilot Only":
+                p = tf.paragraphs[0]
+                p.text = "• Enhanced human review required initially"
+                p.font.size = PptxPt(12)
+                p = tf.add_paragraph()
+                p.text = "• Restrict to single workflow before expanding"
+                p.font.size = PptxPt(12)
+                p = tf.add_paragraph()
+                p.text = "• Weekly monitoring during pilot phase"
+                p.font.size = PptxPt(12)
+            else:
+                p = tf.paragraphs[0]
+                p.text = "• Not recommended for deployment at this time"
+                p.font.size = PptxPt(12)
+                p = tf.add_paragraph()
+                p.text = "• Consider alternative models or fine-tuning"
+                p.font.size = PptxPt(12)
+                p = tf.add_paragraph()
+                p.text = "• Re-evaluate after mitigation steps"
+                p.font.size = PptxPt(12)
+
+            y_pos += 1.3
+
+        # ══════════════════════════════════════════
+        # SLIDE 5: Next Steps / Contact
+        # ══════════════════════════════════════════
+        slide = prs.slides.add_slide(slide_layout)
+
+        header_box = slide.shapes.add_textbox(
+            PptxInches(0.5), PptxInches(0.4), PptxInches(12.333), PptxInches(0.6)
+        )
+        tf = header_box.text_frame
+        p = tf.paragraphs[0]
+        p.text = "Next Steps"
+        p.font.size = PptxPt(32)
+        p.font.bold = True
+        p.font.color.rgb = PPTX_NAVY
+
+        steps_box = slide.shapes.add_textbox(
+            PptxInches(0.7), PptxInches(1.3), PptxInches(11.5), PptxInches(3)
+        )
+        tf = steps_box.text_frame
+        tf.word_wrap = True
+
+        steps = [
+            (
+                "Immediate (0-30 Days)",
+                [
+                    "Review critical findings with stakeholders",
+                    "Implement recommended controls for pilot",
+                    "Establish monitoring and feedback processes",
+                ],
+            ),
+            (
+                "Medium-Term (60-90 Days)",
+                [
+                    "Conduct follow-up evaluation",
+                    "Expand pilot scope if results positive",
+                    "Consider Cross-Lingual Bias & Reliability Audit",
+                ],
+            ),
+        ]
+
+        for period, actions in steps:
+            p = tf.add_paragraph()
+            p.text = period
+            p.font.size = PptxPt(14)
+            p.font.bold = True
+            p.font.color.rgb = PPTX_ACCENT
+
+            for action in actions:
+                p = tf.add_paragraph()
+                p.text = f"  • {action}"
+                p.font.size = PptxPt(12)
+
+        # Contact info
+        contact_box = slide.shapes.add_textbox(
+            PptxInches(0.7), PptxInches(5.5), PptxInches(11.5), PptxInches(1)
+        )
+        tf = contact_box.text_frame
+        p = tf.paragraphs[0]
+        p.text = "Contact: hello@linguaeval.com | www.linguaeval.com"
+        p.font.size = PptxPt(14)
+        p.font.bold = True
+        p.font.color.rgb = PPTX_ACCENT
+        p.alignment = PP_ALIGN.CENTER
+
+        # ── Save PPTX ──
+        os.makedirs(
+            os.path.dirname(output_path) if os.path.dirname(output_path) else ".",
+            exist_ok=True,
+        )
+        prs.save(output_path)
+        print(f"\n[+] Slide deck generated: {output_path}")
+        print(f"    Client: {self.client_name}")
+        print(f"    Models: {', '.join(self.models)}")
+        print(f"    Slides: 5")
+
 
 def main():
     parser = argparse.ArgumentParser(description="LinguaEval Report Generator")
@@ -1629,9 +2086,9 @@ def main():
     parser.add_argument("--output", default=None, help="Output path for report")
     parser.add_argument(
         "--format",
-        choices=["docx", "pdf", "both"],
+        choices=["docx", "pdf", "slides", "both", "all"],
         default="docx",
-        help="Output format: docx, pdf, or both (default: docx)",
+        help="Output format: docx, pdf, slides, both (docx+pdf), or all (default: docx)",
     )
 
     args = parser.parse_args()
@@ -1644,7 +2101,7 @@ def main():
 
     generator = ReportGenerator(args.results)
 
-    if args.format in ("docx", "both"):
+    if args.format in ("docx", "both", "all"):
         docx_output = (
             args.output
             if args.output and args.output.endswith(".docx")
@@ -1652,13 +2109,21 @@ def main():
         )
         generator.generate(docx_output)
 
-    if args.format in ("pdf", "both"):
+    if args.format in ("pdf", "both", "all"):
         pdf_output = (
             args.output
             if args.output and args.output.endswith(".pdf")
             else os.path.join("reports", f"{base}_report.pdf")
         )
         generator.generate_pdf(pdf_output)
+
+    if args.format in ("slides", "all"):
+        slides_output = (
+            args.output
+            if args.output and args.output.endswith(".pptx")
+            else os.path.join("reports", f"{base}_report.pptx")
+        )
+        generator.generate_slides(slides_output)
 
 
 if __name__ == "__main__":

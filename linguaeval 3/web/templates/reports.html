@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">Reports</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-file-alt text-primary me-2"></i>
+            Reports
+        </h2>
+    </div>
+
+    <div class="row">
+        <!-- Generate New Reports -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Generate Report
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if available_results %}
+                    <form action="/reports/generate" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Select Evaluation</label>
+                            <select name="results_id" class="form-select" required>
+                                {% for result in available_results %}
+                                <option value="{{ result.id }}">
+                                    {{ result.name }} ({{ result.timestamp }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Report Format</label>
+                            <select name="format" class="form-select">
+                                <option value="all" selected>All Formats (DOCX + PDF + PPTX)</option>
+                                <option value="docx">DOCX (Full Report)</option>
+                                <option value="pdf">PDF (Executive Summary)</option>
+                                <option value="slides">PPTX (Slide Deck)</option>
+                                <option value="both">DOCX + PDF</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-cog me-2"></i>
+                            Generate
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox text-muted display-4 mb-3"></i>
+                        <p class="text-muted">No evaluation results available.</p>
+                        <a href="/evaluations/new" class="btn btn-outline-primary">
+                            Run an Evaluation First
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Existing Reports -->
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-folder-open text-info me-2"></i>
+                        Generated Reports
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if reports %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Report</th>
+                                    <th class="text-center">Format</th>
+                                    <th class="text-center">Size</th>
+                                    <th class="text-center">Date</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in reports %}
+                                <tr>
+                                    <td>
+                                        <i class="fas 
+                                            {% if report.format == 'docx' %}fa-file-word text-primary
+                                            {% elif report.format == 'pdf' %}fa-file-pdf text-danger
+                                            {% else %}fa-file-powerpoint text-warning{% endif %} me-2"></i>
+                                        {{ report.name }}
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge 
+                                            {% if report.format == 'docx' %}bg-primary
+                                            {% elif report.format == 'pdf' %}bg-danger
+                                            {% else %}bg-warning{% endif %}">
+                                            {{ report.format|upper }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center text-muted">{{ report.size }} KB</td>
+                                    <td class="text-center text-muted">{{ report.date }}</td>
+                                    <td class="text-center">
+                                        <a href="/reports/download/{{ report.name }}.{{ report.format }}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-file-alt text-muted display-4 mb-3"></i>
+                        <p class="text-muted">No reports generated yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Types Info -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        Report Types
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex">
+                                <i class="fas fa-file-word text-primary display-6 me-3"></i>
+                                <div>
+                                    <h6>DOCX - Full Report</h6>
+                                    <p class="text-muted mb-0 small">
+                                        Comprehensive evaluation report with all metrics, detailed analysis,
+                                        and recommendations. Suitable for internal documentation.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex">
+                                <i class="fas fa-file-pdf text-danger display-6 me-3"></i>
+                                <div>
+                                    <h6>PDF - Executive Summary</h6>
+                                    <p class="text-muted mb-0 small">
+                                        Concise summary with key findings and recommendations.
+                                        Perfect for sharing with executives and stakeholders.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex">
+                                <i class="fas fa-file-powerpoint text-warning display-6 me-3"></i>
+                                <div>
+                                    <h6>PPTX - Slide Deck</h6>
+                                    <p class="text-muted mb-0 small">
+                                        5-slide presentation with visual summaries.
+                                        Ready for meetings and presentations.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

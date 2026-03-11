@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">Knowledge Agent</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Chat Interface -->
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm" style="height: 600px;">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-robot me-2"></i>
+                        Knowledge Agent
+                    </h5>
+                    <span class="badge bg-light text-primary">
+                        {{ indexed_chunks }} chunks indexed
+                    </span>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <!-- Chat Messages -->
+                    <div id="chat-messages" class="flex-grow-1 overflow-auto mb-3" style="max-height: 400px;">
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-comments display-4 mb-3"></i>
+                            <p>Ask questions about your documents in English or Arabic.</p>
+                            <p class="small">The agent uses RAG (Retrieval-Augmented Generation) to provide accurate
+                                answers.</p>
+                        </div>
+                    </div>
+
+                    <!-- Input Form -->
+                    <form id="chat-form" class="mt-auto">
+                        <div class="input-group">
+                            <select id="language" name="language" class="form-select" style="max-width: 120px;">
+                                <option value="auto">Auto</option>
+                                <option value="en">English</option>
+                                <option value="ar">العربية</option>
+                            </select>
+                            <input type="text" id="question" name="question" class="form-control"
+                                placeholder="Ask a question..." required>
+                            <button type="submit" class="btn btn-primary" id="send-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Panel -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-upload text-success me-2"></i>
+                        Upload Document
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="upload-form" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <input type="file" name="file" id="file-input" class="form-control"
+                                accept=".txt,.md,.json,.csv" required>
+                            <div class="form-text">Supported: TXT, MD, JSON, CSV</div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100" id="upload-btn">
+                            <i class="fas fa-upload me-2"></i>
+                            Upload & Index
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-folder text-info me-2"></i>
+                        Indexed Documents
+                    </h5>
+                    <button class="btn btn-sm btn-outline-secondary" id="reindex-btn" title="Reindex all">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    {% if documents %}
+                    <div class="list-group list-group-flush">
+                        {% for doc in documents %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-file-alt text-muted me-2"></i>
+                                <span class="fw-semibold">{{ doc.name }}</span>
+                                <br>
+                                <small class="text-muted">{{ doc.size }} KB · {{ doc.date }}</small>
+                            </div>
+                            <button class="btn btn-sm btn-outline-danger delete-doc" data-name="{{ doc.name }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox text-muted display-5 mb-3"></i>
+                        <p class="text-muted mb-0">No documents uploaded yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Selection -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs text-primary me-2"></i>
+                        Settings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Model</label>
+                            <select id="model-select" class="form-select">
+                                <option value="llama3.1:latest" selected>Llama 3.1 (Ollama)</option>
+                                <option value="gemma3:27b">Gemma 3 27B (Ollama)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <p class="text-muted mb-0 mt-md-4">
+                                <i class="fas fa-info-circle me-1"></i>
+                                The Knowledge Agent uses a multilingual embedding model
+                                (paraphrase-multilingual-MiniLM-L12-v2)
+                                for document retrieval and your selected LLM for answer generation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chatMessages = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const uploadForm = document.getElementById('upload-form');
+
+    // Add message to chat
+    function addMessage(content, isUser = false, sources = []) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `mb-3 ${isUser ? 'text-end' : ''}`;
+
+        const bubble = document.createElement('div');
+        bubble.className = `d-inline-block p-3 rounded-3 ${isUser ? 'bg-primary text-white' : 'bg-light'}`;
+        bubble.style.maxWidth = '80%';
+        bubble.textContent = content;
+
+        msgDiv.appendChild(bubble);
+
+        // Add sources if available
+        if (sources.length > 0 && !isUser) {
+            const sourcesDiv = document.createElement('div');
+            sourcesDiv.className = 'mt-1 small text-muted';
+            sourcesDiv.innerHTML = '<i class="fas fa-book me-1"></i>Sources: ' +
+                [...new Set(sources)].join(', ');
+            msgDiv.appendChild(sourcesDiv);
+        }
+
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Handle chat submit
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const question = document.getElementById('question').value;
+        const language = document.getElementById('language').value;
+        const model = document.getElementById('model-select').value;
+
+        if (!question.trim()) return;
+
+        // Add user message
+        addMessage(question, true);
+        document.getElementById('question').value = '';
+
+        // Show loading
+        const loadingId = 'loading-' + Date.now();
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = loadingId;
+        loadingDiv.className = 'mb-3';
+        loadingDiv.innerHTML = '<div class="d-inline-block p-3 bg-light rounded-3"><i class="fas fa-spinner fa-spin me-2"></i>Thinking...</div>';
+        chatMessages.appendChild(loadingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        try {
+            const formData = new FormData();
+            formData.append('question', question);
+            formData.append('language', language);
+            formData.append('model', model);
+
+            const response = await fetch('/agent/ask', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            // Remove loading
+            document.getElementById(loadingId).remove();
+
+            // Add response
+            addMessage(data.answer, false, data.sources || []);
+
+        } catch (error) {
+            document.getElementById(loadingId).remove();
+            addMessage('Error: ' + error.message, false);
+        }
+    });
+
+    // Handle file upload
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const fileInput = document.getElementById('file-input');
+        const uploadBtn = document.getElementById('upload-btn');
+
+        if (!fileInput.files[0]) return;
+
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+
+        try {
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const response = await fetch('/agent/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+
+        } catch (error) {
+            alert('Error: ' + error.message);
+        } finally {
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload & Index';
+        }
+    });
+
+    // Handle document deletion
+    document.querySelectorAll('.delete-doc').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const name = btn.dataset.name;
+            if (!confirm(`Delete ${name}?`)) return;
+
+            try {
+                const response = await fetch(`/agent/documents/${name}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    location.reload();
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+    });
+
+    // Handle reindex
+    document.getElementById('reindex-btn').addEventListener('click', async () => {
+        if (!confirm('Reindex all documents?')) return;
+
+        try {
+            const response = await fetch('/agent/reindex', { method: 'POST' });
+            const data = await response.json();
+            alert(`Reindexed ${data.reindexed} documents`);
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    });
+</script>
+{% endblock %}

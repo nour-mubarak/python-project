@@ -1,0 +1,282 @@
+/*
+ * LinguaEval Main Stylesheet
+ * ==========================
+ */
+
+/* Base styles */
+:root {
+    --linguaeval-primary: #0d6efd;
+    --linguaeval-secondary: #6c757d;
+    --linguaeval-success: #198754;
+    --linguaeval-warning: #ffc107;
+    --linguaeval-danger: #dc3545;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+/* Cards */
+.card {
+    border-radius: 0.75rem;
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Tables */
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--linguaeval-secondary);
+}
+
+/* Progress bars */
+.progress {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.progress-bar {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.btn-group-sm>.btn {
+    border-radius: 0.375rem;
+}
+
+/* Alerts */
+.alert {
+    border: none;
+    border-radius: 0.75rem;
+}
+
+/* Forms */
+.form-control,
+.form-select {
+    border-radius: 0.5rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--linguaeval-primary);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+/* List groups */
+.list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+    border-radius: 0;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+    border-radius: 0;
+}
+
+/* Accordion */
+.accordion-button:not(.collapsed) {
+    background-color: rgba(13, 110, 253, 0.05);
+    color: var(--linguaeval-primary);
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0, 0, 0, 0.125);
+}
+
+/* Charts */
+canvas {
+    max-width: 100%;
+}
+
+/* Arabic text support */
+[dir="rtl"],
+.rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Language badge colors */
+.lang-en {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.lang-ar {
+    background-color: #198754;
+    color: white;
+}
+
+/* Status colors */
+.status-ready {
+    background-color: #198754;
+}
+
+.status-restricted {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-not-ready {
+    background-color: #dc3545;
+}
+
+/* Chat bubbles */
+.chat-bubble {
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.chat-bubble-user {
+    background-color: var(--linguaeval-primary);
+    color: white;
+    border-radius: 1rem 1rem 0 1rem;
+}
+
+.chat-bubble-agent {
+    background-color: #e9ecef;
+    border-radius: 1rem 1rem 1rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+
+    .display-5 {
+        font-size: 1.75rem;
+    }
+
+    .display-6 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Score indicators */
+.score-excellent {
+    color: #198754;
+}
+
+.score-good {
+    color: #20c997;
+}
+
+.score-moderate {
+    color: #ffc107;
+}
+
+.score-poor {
+    color: #dc3545;
+}
+
+/* Gap severity indicators */
+.gap-low {
+    color: #198754;
+}
+
+.gap-moderate {
+    color: #ffc107;
+}
+
+.gap-high {
+    color: #fd7e14;
+}
+
+.gap-critical {
+    color: #dc3545;
+}
+
+/* Hover effects */
+.hover-lift {
+    transition: transform 0.2s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* Print styles */
+@media print {
+
+    .navbar,
+    .breadcrumb,
+    .btn {
+        display: none !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+    }
+}

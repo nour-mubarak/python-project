@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/evaluations/list">Evaluations</a></li>
+            <li class="breadcrumb-item active">{{ metadata.client_name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">{{ metadata.client_name }}</h2>
+            <p class="text-muted mb-0">
+                <i class="fas fa-calendar me-1"></i>
+                {{ metadata.timestamp[:10] if metadata.timestamp else 'N/A' }}
+                <span class="mx-2">|</span>
+                <i class="fas fa-robot me-1"></i>
+                {{ metadata.models|length }} models evaluated
+            </p>
+        </div>
+        <div class="btn-group">
+            <a href="/reports/" class="btn btn-outline-primary">
+                <i class="fas fa-file-download me-1"></i> Reports
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body py-2">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="/dashboard/{{ project_id }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-chart-pie me-1"></i> Overview
+                        </a>
+                        <a href="/comparison/{{ project_id }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-balance-scale me-1"></i> Model Comparison
+                        </a>
+                        <a href="/consistency/{{ project_id }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-exchange-alt me-1"></i> Cross-Lingual
+                        </a>
+                        <a href="/bias/{{ project_id }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-check-double me-1"></i> Bias & Fairness
+                        </a>
+                        <a href="/reliability/{{ project_id }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-shield-alt me-1"></i> Reliability
+                        </a>
+                        <a href="/recommendation/{{ project_id }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-rocket me-1"></i> Recommendation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overall Scores -->
+    <div class="row mb-4">
+        {% for model_id, scores in overall.items() %}
+        <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-robot text-primary me-2"></i>
+                        {{ model_id }}
+                    </h5>
+                    <span class="badge bg-{{ scores.status_class }} px-3 py-2">
+                        {{ scores.status }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="display-6 fw-bold text-primary">{{ scores.combined }}%</div>
+                            <small class="text-muted">Overall</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="h4 mb-0">{{ scores.en_avg }}%</div>
+                            <small class="text-muted">English</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="h4 mb-0">{{ scores.ar_avg }}%</div>
+                            <small class="text-muted">Arabic</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Cross-Lingual Gap</span>
+                        <span
+                            class="badge {% if scores.gap < 10 %}bg-success{% elif scores.gap < 20 %}bg-warning{% else %}bg-danger{% endif %}">
+                            {{ scores.gap }}%
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Recommended Model -->
+    {% if recommended %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="fas fa-trophy display-6 me-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">Recommended Model</h5>
+                    <p class="mb-0">
+                        <strong>{{ recommended }}</strong> shows the best balance of quality and cross-lingual
+                        consistency
+                        for {{ metadata.client_name }}'s use case.
+                    </p>
+                </div>
+                <a href="/recommendation/{{ project_id }}" class="btn btn-success ms-auto">
+                    View Full Recommendation <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Detailed Scores by Dimension -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar text-info me-2"></i>
+                        Scores by Dimension
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th class="text-center">Accuracy</th>
+                                    <th class="text-center">Fluency</th>
+                                    <th class="text-center">Bias</th>
+                                    <th class="text-center">Hallucination</th>
+                                    <th class="text-center">Policy</th>
+                                    <th class="text-center">Tone</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for model_id, model_data in aggregates.items() %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ model_id }}</strong>
+                                        <br>
+                                        <small class="text-muted">English</small>
+                                    </td>
+                                    {% for dim in ['accuracy', 'fluency', 'bias', 'hallucination', 'policy_compliance',
+                                    'tone'] %}
+                                    <td class="text-center">
+                                        {% set score = model_data.en.get(dim, {}).get('average', '-') %}
+                                        {% if score != '-' %}
+                                        <span
+                                            class="badge {% if score >= 80 %}bg-success{% elif score >= 60 %}bg-warning{% else %}bg-danger{% endif %} px-2">
+                                            {{ score|round(1) }}%
+                                        </span>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="table-light">
+                                    <td>
+                                        <small class="text-muted ms-3">Arabic</small>
+                                    </td>
+                                    {% for dim in ['accuracy', 'fluency', 'bias', 'hallucination', 'policy_compliance',
+                                    'tone'] %}
+                                    <td class="text-center">
+                                        {% set score = model_data.ar.get(dim, {}).get('average', '-') %}
+                                        {% if score != '-' %}
+                                        <span
+                                            class="badge {% if score >= 80 %}bg-success{% elif score >= 60 %}bg-warning{% else %}bg-danger{% endif %} px-2">
+                                            {{ score|round(1) }}%
+                                        </span>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cross-Lingual Gap Chart -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line text-warning me-2"></i>
+                        Cross-Lingual Gap Analysis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="gapChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Gap Chart
+    const gapCtx = document.getElementById('gapChart').getContext('2d');
+    const gapData = {{ aggregates| tojson }};
+
+    const models = Object.keys(gapData);
+    const dimensions = [];
+    const datasets = [];
+
+    // Find all dimensions
+    models.forEach(m => {
+        if (gapData[m].cross_lingual_gap) {
+            Object.keys(gapData[m].cross_lingual_gap).forEach(d => {
+                if (!dimensions.includes(d)) dimensions.push(d);
+            });
+        }
+    });
+
+    // Create datasets
+    const colors = ['#0d6efd', '#198754', '#dc3545', '#ffc107', '#6610f2'];
+    models.forEach((model, idx) => {
+        const data = dimensions.map(dim => {
+            return gapData[model]?.cross_lingual_gap?.[dim]?.gap || 0;
+        });
+        datasets.push({
+            label: model,
+            data: data,
+            backgroundColor: colors[idx % colors.length] + '40',
+            borderColor: colors[idx % colors.length],
+            borderWidth: 2,
+        });
+    });
+
+    new Chart(gapCtx, {
+        type: 'bar',
+        data: {
+            labels: dimensions.map(d => d.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())),
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Cross-Lingual Gap by Dimension (Lower is Better)'
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 50,
+                    title: {
+                        display: true,
+                        text: 'Gap (%)'
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
