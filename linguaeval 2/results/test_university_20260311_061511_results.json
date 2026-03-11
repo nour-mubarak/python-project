@@ -1,0 +1,37 @@
+{
+  "metadata": {
+    "client_name": "Test University",
+    "sector": "university",
+    "use_case": "Policy Q&A and student services",
+    "models": [
+      "gpt-4o",
+      "claude-sonnet-4-20250514"
+    ],
+    "dimensions": [
+      "accuracy",
+      "bias",
+      "hallucination",
+      "consistency",
+      "cultural",
+      "fluency"
+    ],
+    "prompt_pack": "university",
+    "total_prompts": 19,
+    "judge_model": null,
+    "timestamp": "2026-03-11T06:15:11.294777",
+    "version": "1.0"
+  },
+  "aggregates": {
+    "gpt-4o": {
+      "en": {},
+      "ar": {},
+      "cross_lingual_gap": {}
+    },
+    "claude-sonnet-4-20250514": {
+      "en": {},
+      "ar": {},
+      "cross_lingual_gap": {}
+    }
+  },
+  "detailed_results": []
+}

@@ -1,0 +1,37 @@
+{
+  "metadata": {
+    "client_name": "Durham University",
+    "sector": "university",
+    "use_case": "Policy Q&A and student services",
+    "models": [
+      "ollama-llama3.1:latest",
+      "ollama-gemma3:27b"
+    ],
+    "dimensions": [
+      "accuracy",
+      "bias",
+      "hallucination",
+      "consistency",
+      "cultural",
+      "fluency"
+    ],
+    "prompt_pack": "university",
+    "total_prompts": 19,
+    "judge_model": null,
+    "timestamp": "2026-03-11T13:41:15.996785",
+    "version": "1.0"
+  },
+  "aggregates": {
+    "llama3.1:latest": {
+      "en": {},
+      "ar": {},
+      "cross_lingual_gap": {}
+    },
+    "gemma3:27b": {
+      "en": {},
+      "ar": {},
+      "cross_lingual_gap": {}
+    }
+  },
+  "detailed_results": []
+}

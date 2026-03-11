@@ -1,0 +1,67 @@
+
+╔══════════════════════════════════════════════════════╗
+║           LINGUAEVAL EVALUATION CONFIG               ║
+╠══════════════════════════════════════════════════════╣
+║ Client:      Test University                        ║
+║ Sector:      general                                ║
+║ Use Case:    Local evaluation with Ollama           ║
+║ Models:      ollama-llama3.1:latest, ollama-gemma3: ║
+║ Languages:   en, ar                                 ║
+║ Dimensions:  6 of 6                                 ║
+║ Prompt Pack: university                             ║
+║ Privacy:     mode_a                                 ║
+║ Judge Model: ollama-llama3.1:latest                 ║
+╚══════════════════════════════════════════════════════╝
+
+[+] Loaded 19 prompts from university pack
+    Categories: gender_bias, factual_accuracy, cultural_sensitivity, hallucination_probe, cross_lingual_consistency
+
+[+] Models to evaluate:
+    • Ollama Llama3.1:Latest (ollama) @ temp=0.3
+    • Ollama Gemma3:27B (ollama) @ temp=0.3
+
+[+] Total API calls required: 76
+
+============================================================
+  PHASE 1: Querying models
+============================================================
+[+] Ollama client initialised at http://localhost:11434
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 1% [1/76] Ollama Llama3.1:Latest | EN | UNI-FA-001  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 3% [2/76] Ollama Llama3.1:Latest | AR | UNI-FA-001  █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 4% [3/76] Ollama Gemma3:27B | EN | UNI-FA-001  █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 5% [4/76] Ollama Gemma3:27B | AR | UNI-FA-001  █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 7% [5/76] Ollama Llama3.1:Latest | EN | UNI-FA-002  ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 8% [6/76] Ollama Llama3.1:Latest | AR | UNI-FA-002  ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 9% [7/76] Ollama Gemma3:27B | EN | UNI-FA-002  ███░░░░░░░░░░░░░░░░░░░░░░░░░░░ 11% [8/76] Ollama Gemma3:27B | AR | UNI-FA-002  ███░░░░░░░░░░░░░░░░░░░░░░░░░░░ 12% [9/76] Ollama Llama3.1:Latest | EN | UNI-FA-003  ███░░░░░░░░░░░░░░░░░░░░░░░░░░░ 13% [10/76] Ollama Llama3.1:Latest | AR | UNI-FA-003  ████░░░░░░░░░░░░░░░░░░░░░░░░░░ 14% [11/76] Ollama Gemma3:27B | EN | UNI-FA-003  ████░░░░░░░░░░░░░░░░░░░░░░░░░░ 16% [12/76] Ollama Gemma3:27B | AR | UNI-FA-003  █████░░░░░░░░░░░░░░░░░░░░░░░░░ 17% [13/76] Ollama Llama3.1:Latest | EN | UNI-FA-004  █████░░░░░░░░░░░░░░░░░░░░░░░░░ 18% [14/76] Ollama Llama3.1:Latest | AR | UNI-FA-004  █████░░░░░░░░░░░░░░░░░░░░░░░░░ 20% [15/76] Ollama Gemma3:27B | EN | UNI-FA-004  ██████░░░░░░░░░░░░░░░░░░░░░░░░ 21% [16/76] Ollama Gemma3:27B | AR | UNI-FA-004  ██████░░░░░░░░░░░░░░░░░░░░░░░░ 22% [17/76] Ollama Llama3.1:Latest | EN | UNI-GB-001  ███████░░░░░░░░░░░░░░░░░░░░░░░ 24% [18/76] Ollama Llama3.1:Latest | AR | UNI-GB-001  ███████░░░░░░░░░░░░░░░░░░░░░░░ 25% [19/76] Ollama Gemma3:27B | EN | UNI-GB-001  ███████░░░░░░░░░░░░░░░░░░░░░░░ 26% [20/76] Ollama Gemma3:27B | AR | UNI-GB-001  ████████░░░░░░░░░░░░░░░░░░░░░░ 28% [21/76] Ollama Llama3.1:Latest | EN | UNI-GB-002  ████████░░░░░░░░░░░░░░░░░░░░░░ 29% [22/76] Ollama Llama3.1:Latest | AR | UNI-GB-002  █████████░░░░░░░░░░░░░░░░░░░░░ 30% [23/76] Ollama Gemma3:27B | EN | UNI-GB-002  █████████░░░░░░░░░░░░░░░░░░░░░ 32% [24/76] Ollama Gemma3:27B | AR | UNI-GB-002  █████████░░░░░░░░░░░░░░░░░░░░░ 33% [25/76] Ollama Llama3.1:Latest | EN | UNI-GB-003  ██████████░░░░░░░░░░░░░░░░░░░░ 34% [26/76] Ollama Llama3.1:Latest | AR | UNI-GB-003  ██████████░░░░░░░░░░░░░░░░░░░░ 36% [27/76] Ollama Gemma3:27B | EN | UNI-GB-003  ███████████░░░░░░░░░░░░░░░░░░░ 37% [28/76] Ollama Gemma3:27B | AR | UNI-GB-003  ███████████░░░░░░░░░░░░░░░░░░░ 38% [29/76] Ollama Llama3.1:Latest | EN | UNI-GB-004  ███████████░░░░░░░░░░░░░░░░░░░ 39% [30/76] Ollama Llama3.1:Latest | AR | UNI-GB-004  ████████████░░░░░░░░░░░░░░░░░░ 41% [31/76] Ollama Gemma3:27B | EN | UNI-GB-004  ████████████░░░░░░░░░░░░░░░░░░ 42% [32/76] Ollama Gemma3:27B | AR | UNI-GB-004  █████████████░░░░░░░░░░░░░░░░░ 43% [33/76] Ollama Llama3.1:Latest | EN | UNI-GB-005  █████████████░░░░░░░░░░░░░░░░░ 45% [34/76] Ollama Llama3.1:Latest | AR | UNI-GB-005  █████████████░░░░░░░░░░░░░░░░░ 46% [35/76] Ollama Gemma3:27B | EN | UNI-GB-005  ██████████████░░░░░░░░░░░░░░░░ 47% [36/76] Ollama Gemma3:27B | AR | UNI-GB-005  ██████████████░░░░░░░░░░░░░░░░ 49% [37/76] Ollama Llama3.1:Latest | EN | UNI-CL-001  ███████████████░░░░░░░░░░░░░░░ 50% [38/76] Ollama Llama3.1:Latest | AR | UNI-CL-001  ███████████████░░░░░░░░░░░░░░░ 51% [39/76] Ollama Gemma3:27B | EN | UNI-CL-001  ███████████████░░░░░░░░░░░░░░░ 53% [40/76] Ollama Gemma3:27B | AR | UNI-CL-001  ████████████████░░░░░░░░░░░░░░ 54% [41/76] Ollama Llama3.1:Latest | EN | UNI-CL-002  ████████████████░░░░░░░░░░░░░░ 55% [42/76] Ollama Llama3.1:Latest | AR | UNI-CL-002  ████████████████░░░░░░░░░░░░░░ 57% [43/76] Ollama Gemma3:27B | EN | UNI-CL-002  █████████████████░░░░░░░░░░░░░ 58% [44/76] Ollama Gemma3:27B | AR | UNI-CL-002  █████████████████░░░░░░░░░░░░░ 59% [45/76] Ollama Llama3.1:Latest | EN | UNI-CL-003  ██████████████████░░░░░░░░░░░░ 61% [46/76] Ollama Llama3.1:Latest | AR | UNI-CL-003  ██████████████████░░░░░░░░░░░░ 62% [47/76] Ollama Gemma3:27B | EN | UNI-CL-003  ██████████████████░░░░░░░░░░░░ 63% [48/76] Ollama Gemma3:27B | AR | UNI-CL-003  ███████████████████░░░░░░░░░░░ 64% [49/76] Ollama Llama3.1:Latest | EN | UNI-CL-004  ███████████████████░░░░░░░░░░░ 66% [50/76] Ollama Llama3.1:Latest | AR | UNI-CL-004  ████████████████████░░░░░░░░░░ 67% [51/76] Ollama Gemma3:27B | EN | UNI-CL-004  ████████████████████░░░░░░░░░░ 68% [52/76] Ollama Gemma3:27B | AR | UNI-CL-004  ████████████████████░░░░░░░░░░ 70% [53/76] Ollama Llama3.1:Latest | EN | UNI-HP-001  █████████████████████░░░░░░░░░ 71% [54/76] Ollama Llama3.1:Latest | AR | UNI-HP-001  █████████████████████░░░░░░░░░ 72% [55/76] Ollama Gemma3:27B | EN | UNI-HP-001  ██████████████████████░░░░░░░░ 74% [56/76] Ollama Gemma3:27B | AR | UNI-HP-001  ██████████████████████░░░░░░░░ 75% [57/76] Ollama Llama3.1:Latest | EN | UNI-HP-002  ██████████████████████░░░░░░░░ 76% [58/76] Ollama Llama3.1:Latest | AR | UNI-HP-002  ███████████████████████░░░░░░░ 78% [59/76] Ollama Gemma3:27B | EN | UNI-HP-002  ███████████████████████░░░░░░░ 79% [60/76] Ollama Gemma3:27B | AR | UNI-HP-002  ████████████████████████░░░░░░ 80% [61/76] Ollama Llama3.1:Latest | EN | UNI-CS-001  ████████████████████████░░░░░░ 82% [62/76] Ollama Llama3.1:Latest | AR | UNI-CS-001  ████████████████████████░░░░░░ 83% [63/76] Ollama Gemma3:27B | EN | UNI-CS-001  █████████████████████████░░░░░ 84% [64/76] Ollama Gemma3:27B | AR | UNI-CS-001  █████████████████████████░░░░░ 86% [65/76] Ollama Llama3.1:Latest | EN | UNI-CS-002  ██████████████████████████░░░░ 87% [66/76] Ollama Llama3.1:Latest | AR | UNI-CS-002  ██████████████████████████░░░░ 88% [67/76] Ollama Gemma3:27B | EN | UNI-CS-002  ██████████████████████████░░░░ 89% [68/76] Ollama Gemma3:27B | AR | UNI-CS-002  ███████████████████████████░░░ 91% [69/76] Ollama Llama3.1:Latest | EN | UNI-CS-003  ███████████████████████████░░░ 92% [70/76] Ollama Llama3.1:Latest | AR | UNI-CS-003  ████████████████████████████░░ 93% [71/76] Ollama Gemma3:27B | EN | UNI-CS-003  ████████████████████████████░░ 95% [72/76] Ollama Gemma3:27B | AR | UNI-CS-003  ████████████████████████████░░ 96% [73/76] Ollama Llama3.1:Latest | EN | UNI-CS-004  █████████████████████████████░ 97% [74/76] Ollama Llama3.1:Latest | AR | UNI-CS-004  █████████████████████████████░ 99% [75/76] Ollama Gemma3:27B | EN | UNI-CS-004  ██████████████████████████████ 100% [76/76] Ollama Gemma3:27B | AR | UNI-CS-004
+
+[+] Query complete: 76 responses, 0 errors
+    Total tokens: 26,136
+    Avg latency: 19146ms
+[+] Saved 76 responses to results/test_university_20260311_065655_raw.json
+
+============================================================
+  PHASE 2: Scoring responses
+============================================================
+  Scoring 1/76: llama3.1:latest | EN | UNI-FA-001  Scoring 2/76: llama3.1:latest | AR | UNI-FA-001  Scoring 3/76: gemma3:27b | EN | UNI-FA-001  Scoring 4/76: gemma3:27b | AR | UNI-FA-001  Scoring 5/76: llama3.1:latest | EN | UNI-FA-002  Scoring 6/76: llama3.1:latest | AR | UNI-FA-002  Scoring 7/76: gemma3:27b | EN | UNI-FA-002  Scoring 8/76: gemma3:27b | AR | UNI-FA-002  Scoring 9/76: llama3.1:latest | EN | UNI-FA-003  Scoring 10/76: llama3.1:latest | AR | UNI-FA-003  Scoring 11/76: gemma3:27b | EN | UNI-FA-003  Scoring 12/76: gemma3:27b | AR | UNI-FA-003  Scoring 13/76: llama3.1:latest | EN | UNI-FA-004  Scoring 14/76: llama3.1:latest | AR | UNI-FA-004  Scoring 15/76: gemma3:27b | EN | UNI-FA-004  Scoring 16/76: gemma3:27b | AR | UNI-FA-004  Scoring 17/76: llama3.1:latest | EN | UNI-GB-001  Scoring 18/76: llama3.1:latest | AR | UNI-GB-001  Scoring 19/76: gemma3:27b | EN | UNI-GB-001  Scoring 20/76: gemma3:27b | AR | UNI-GB-001  Scoring 21/76: llama3.1:latest | EN | UNI-GB-002  Scoring 22/76: llama3.1:latest | AR | UNI-GB-002  Scoring 23/76: gemma3:27b | EN | UNI-GB-002  Scoring 24/76: gemma3:27b | AR | UNI-GB-002  Scoring 25/76: llama3.1:latest | EN | UNI-GB-003  Scoring 26/76: llama3.1:latest | AR | UNI-GB-003  Scoring 27/76: gemma3:27b | EN | UNI-GB-003  Scoring 28/76: gemma3:27b | AR | UNI-GB-003  Scoring 29/76: llama3.1:latest | EN | UNI-GB-004  Scoring 30/76: llama3.1:latest | AR | UNI-GB-004  Scoring 31/76: gemma3:27b | EN | UNI-GB-004  Scoring 32/76: gemma3:27b | AR | UNI-GB-004  Scoring 33/76: llama3.1:latest | EN | UNI-GB-005  Scoring 34/76: llama3.1:latest | AR | UNI-GB-005  Scoring 35/76: gemma3:27b | EN | UNI-GB-005  Scoring 36/76: gemma3:27b | AR | UNI-GB-005  Scoring 37/76: llama3.1:latest | EN | UNI-CL-001  Scoring 38/76: llama3.1:latest | AR | UNI-CL-001  Scoring 39/76: gemma3:27b | EN | UNI-CL-001  Scoring 40/76: gemma3:27b | AR | UNI-CL-001  Scoring 41/76: llama3.1:latest | EN | UNI-CL-002  Scoring 42/76: llama3.1:latest | AR | UNI-CL-002  Scoring 43/76: gemma3:27b | EN | UNI-CL-002  Scoring 44/76: gemma3:27b | AR | UNI-CL-002  Scoring 45/76: llama3.1:latest | EN | UNI-CL-003  Scoring 46/76: llama3.1:latest | AR | UNI-CL-003  Scoring 47/76: gemma3:27b | EN | UNI-CL-003  Scoring 48/76: gemma3:27b | AR | UNI-CL-003  Scoring 49/76: llama3.1:latest | EN | UNI-CL-004  Scoring 50/76: llama3.1:latest | AR | UNI-CL-004  Scoring 51/76: gemma3:27b | EN | UNI-CL-004  Scoring 52/76: gemma3:27b | AR | UNI-CL-004  Scoring 53/76: llama3.1:latest | EN | UNI-HP-001  Scoring 54/76: llama3.1:latest | AR | UNI-HP-001  Scoring 55/76: gemma3:27b | EN | UNI-HP-001  Scoring 56/76: gemma3:27b | AR | UNI-HP-001  Scoring 57/76: llama3.1:latest | EN | UNI-HP-002  Scoring 58/76: llama3.1:latest | AR | UNI-HP-002  Scoring 59/76: gemma3:27b | EN | UNI-HP-002  Scoring 60/76: gemma3:27b | AR | UNI-HP-002  Scoring 61/76: llama3.1:latest | EN | UNI-CS-001  Scoring 62/76: llama3.1:latest | AR | UNI-CS-001  Scoring 63/76: gemma3:27b | EN | UNI-CS-001  Scoring 64/76: gemma3:27b | AR | UNI-CS-001  Scoring 65/76: llama3.1:latest | EN | UNI-CS-002  Scoring 66/76: llama3.1:latest | AR | UNI-CS-002  Scoring 67/76: gemma3:27b | EN | UNI-CS-002  Scoring 68/76: gemma3:27b | AR | UNI-CS-002  Scoring 69/76: llama3.1:latest | EN | UNI-CS-003  Scoring 70/76: llama3.1:latest | AR | UNI-CS-003  Scoring 71/76: gemma3:27b | EN | UNI-CS-003  Scoring 72/76: gemma3:27b | AR | UNI-CS-003  Scoring 73/76: llama3.1:latest | EN | UNI-CS-004  Scoring 74/76: llama3.1:latest | AR | UNI-CS-004  Scoring 75/76: gemma3:27b | EN | UNI-CS-004  Scoring 76/76: gemma3:27b | AR | UNI-CS-004
+
+============================================================
+  PHASE 3: Calculating aggregates
+============================================================
+
+[+] Results saved to results/test_university_20260311_065655_results.json
+
+============================================================
+  EVALUATION SUMMARY
+============================================================
+
+  Model: llama3.1:latest
+  ──────────────────────────────────────────────────
+    accuracy                  EN:  20.7%  AR:   0.0%  Gap:  20.7%  [critical]
+    fluency                   EN:  90.0%  AR:  90.0%  Gap:   0.0%  [low]
+    cultural                  EN:  85.0%  AR:  85.0%  Gap:   0.0%  [low]
+    bias                      EN: 100.0%  AR:  96.0%  Gap:   4.0%  [low]
+    hallucination             EN:  90.0%  AR:  90.0%  Gap:   0.0%  [low]
+
+  Model: gemma3:27b
+  ──────────────────────────────────────────────────
+    accuracy                  EN:  16.0%  AR:  13.6%  Gap:   2.4%  [low]
+    fluency                   EN:  90.0%  AR:  87.6%  Gap:   2.4%  [low]
+    cultural                  EN:  85.0%  AR:  85.0%  Gap:   0.0%  [low]
+    bias                      EN: 100.0%  AR:  94.0%  Gap:   6.0%  [low]
+    hallucination             EN:  95.0%  AR:  90.0%  Gap:   5.0%  [low]
+
+============================================================

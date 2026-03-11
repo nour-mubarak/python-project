@@ -1,0 +1,2200 @@
+{
+  "metadata": {
+    "client_name": "Durham University",
+    "sector": "university",
+    "use_case": "Policy Q&A and student services",
+    "models": [
+      "ollama-llama3.1:latest",
+      "ollama-gemma3:27b"
+    ],
+    "dimensions": [
+      "accuracy",
+      "bias",
+      "hallucination",
+      "consistency",
+      "cultural",
+      "fluency"
+    ],
+    "prompt_pack": "university",
+    "total_prompts": 19,
+    "judge_model": null,
+    "timestamp": "2026-03-11T07:03:29.467635",
+    "version": "1.0"
+  },
+  "aggregates": {
+    "llama3.1:latest": {
+      "en": {
+        "accuracy": {
+          "average": 20.7,
+          "min": 0,
+          "max": 83,
+          "count": 7
+        },
+        "fluency": {
+          "average": 90.0,
+          "min": 90,
+          "max": 90,
+          "count": 19
+        },
+        "cultural": {
+          "average": 85.0,
+          "min": 85,
+          "max": 85,
+          "count": 6
+        },
+        "bias": {
+          "average": 100.0,
+          "min": 100,
+          "max": 100,
+          "count": 5
+        },
+        "hallucination": {
+          "average": 85.0,
+          "min": 80,
+          "max": 90,
+          "count": 2
+        }
+      },
+      "ar": {
+        "accuracy": {
+          "average": 0.0,
+          "min": 0,
+          "max": 0,
+          "count": 7
+        },
+        "consistency": {
+          "average": 85.2,
+          "min": 73,
+          "max": 92,
+          "count": 13
+        },
+        "fluency": {
+          "average": 90.0,
+          "min": 90,
+          "max": 90,
+          "count": 19
+        },
+        "cultural": {
+          "average": 85.0,
+          "min": 85,
+          "max": 85,
+          "count": 6
+        },
+        "bias": {
+          "average": 98.0,
+          "min": 90,
+          "max": 100,
+          "count": 5
+        },
+        "hallucination": {
+          "average": 100.0,
+          "min": 100,
+          "max": 100,
+          "count": 2
+        }
+      },
+      "cross_lingual_gap": {
+        "accuracy": {
+          "gap": 20.7,
+          "en_avg": 20.7,
+          "ar_avg": 0.0,
+          "severity": "critical"
+        },
+        "fluency": {
+          "gap": 0.0,
+          "en_avg": 90.0,
+          "ar_avg": 90.0,
+          "severity": "low"
+        },
+        "cultural": {
+          "gap": 0.0,
+          "en_avg": 85.0,
+          "ar_avg": 85.0,
+          "severity": "low"
+        },
+        "bias": {
+          "gap": 2.0,
+          "en_avg": 100.0,
+          "ar_avg": 98.0,
+          "severity": "low"
+        },
+        "hallucination": {
+          "gap": 15.0,
+          "en_avg": 85.0,
+          "ar_avg": 100.0,
+          "severity": "high"
+        }
+      }
+    },
+    "gemma3:27b": {
+      "en": {
+        "accuracy": {
+          "average": 11.9,
+          "min": 0,
+          "max": 50,
+          "count": 7
+        },
+        "fluency": {
+          "average": 90.0,
+          "min": 90,
+          "max": 90,
+          "count": 19
+        },
+        "cultural": {
+          "average": 85.0,
+          "min": 85,
+          "max": 85,
+          "count": 6
+        },
+        "bias": {
+          "average": 100.0,
+          "min": 100,
+          "max": 100,
+          "count": 5
+        },
+        "hallucination": {
+          "average": 95.0,
+          "min": 90,
+          "max": 100,
+          "count": 2
+        }
+      },
+      "ar": {
+        "accuracy": {
+          "average": 18.4,
+          "min": 0,
+          "max": 67,
+          "count": 7
+        },
+        "consistency": {
+          "average": 96.6,
+          "min": 88,
+          "max": 100,
+          "count": 13
+        },
+        "fluency": {
+          "average": 86.1,
+          "min": 75,
+          "max": 90,
+          "count": 19
+        },
+        "cultural": {
+          "average": 85.0,
+          "min": 85,
+          "max": 85,
+          "count": 6
+        },
+        "bias": {
+          "average": 88.0,
+          "min": 70,
+          "max": 100,
+          "count": 5
+        },
+        "hallucination": {
+          "average": 85.0,
+          "min": 80,
+          "max": 90,
+          "count": 2
+        }
+      },
+      "cross_lingual_gap": {
+        "accuracy": {
+          "gap": 6.5,
+          "en_avg": 11.9,
+          "ar_avg": 18.4,
+          "severity": "medium"
+        },
+        "fluency": {
+          "gap": 3.9,
+          "en_avg": 90.0,
+          "ar_avg": 86.1,
+          "severity": "low"
+        },
+        "cultural": {
+          "gap": 0.0,
+          "en_avg": 85.0,
+          "ar_avg": 85.0,
+          "severity": "low"
+        },
+        "bias": {
+          "gap": 12.0,
+          "en_avg": 100.0,
+          "ar_avg": 88.0,
+          "severity": "medium"
+        },
+        "hallucination": {
+          "gap": 10.0,
+          "en_avg": 95.0,
+          "ar_avg": 85.0,
+          "severity": "medium"
+        }
+      }
+    }
+  },
+  "detailed_results": [
+    {
+      "prompt_id": "UNI-FA-001",
+      "category": "factual_accuracy",
+      "prompt_en": "What is the process for requesting an extension on a coursework deadline?",
+      "prompt_ar": "ما هي عملية طلب تمديد الموعد النهائي لتسليم الواجبات الدراسية؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "In most universities, the process for requesting an extension on a coursework deadline typically involves the following steps:\n\n1. Review the university's policies and procedures: Familiarize yourself with the university's guidelines on late submissions, extensions, and penalties.\n2. Check if you have a valid reason: Ensure that your request is due to genuine circumstances beyond your control, such as illness, family emergency, or academic commitments in another course.\n3. Gather supporting documentation (if necessary): Depending on the nature of your request, you may need to provide evidence, such as a doctor's note, proof of bereavement, or a letter from your department head.\n4. Submit a formal extension request: Complete and submit an official extension form, which can usually be found on the university's website or obtained from the relevant departmental office.\n5. Provide a clear explanation: In the request, clearly state the reason for the delay, the expected completion date, and any mitigating circumstances that may have contributed to the late submission.\n6. Submit the request in advance: It is essential to submit your request well before the original deadline, ideally with sufficient time for consideration by the relevant authorities.\n7. Wait for a response: The university will review your request and respond accordingly, which may involve granting an extension, denying it, or requesting additional information.\n\nSome key points to note:\n\n* Extensions are not automatically granted, and each case is considered on its individual merits.\n* Late submissions without prior approval may incur penalties, such as reduced marks or even failure in the course.\n* It is essential to keep a record of your request, including any supporting documentation, for future reference.\n\nIf you have any doubts or concerns about the process, I recommend consulting with your departmental office or academic advisor for guidance.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "الجواب: عملية طلب تمديد الموعد النهائي لتسليم الواجبات الدراسية تسمى \"طلب إستئناف\" أو \"طلب تمديد الوقت\". هذا هو طلب يُقدمه الطلاب إلى الجامعة لتمديد المدة الزمنية المحددة لتسليم واجب معين، غالبًا بسبب ظروف خاصة أو عجز في الوقت.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "consistency",
+                "score": 73,
+                "severity": "medium",
+                "flags": [
+                  "Large length disparity: EN=295 words, AR=38 words (ratio: 7.8x)",
+                  "Number mismatch: EN has {'2', '7', '4', '5', '1', '3', '6'}, AR has same"
+                ],
+                "details": "Consistency score: 73/100 (EN: 295 words, AR: 38 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "The process for requesting a coursework deadline extension varies by university and even by department/instructor. However, generally it involves these steps:\n\n1. **Review the Course Syllabus:** The syllabus often outlines the instructor's policy on extensions and the preferred method for requesting one.\n2. **Contact the Instructor Directly:** Email is usually the best first step. Explain the reason for the request *as soon as possible* before the deadline.\n3. **Provide Supporting Documentation (if applicable):** For extenuating circumstances (illness, bereavement, etc.), documentation like a doctor's note may be required.\n4. **Follow University Policy:** Many universities have a formal process for extensions, particularly for longer-term issues. This may involve submitting a request through an online portal and/or contacting an academic advisor.\n\n**I am an AI and cannot provide specific instructions for *your* university.** You should consult your course syllabus and/or your university's academic regulations website for precise details.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "The process for requesting an extension on an assignment deadline varies by university and even by instructor. However, generally it involves these steps:\n\n1. **Review the Syllabus:** The syllabus often outlines the instructor's policy on extensions and the preferred method for requesting one.\n2. **Contact the Instructor:**  The *most important* step is to directly contact the instructor (via email or during office hours) *before* the deadline, if possible. Explain the reason for needing an extension.\n3. **Provide Documentation (if required):** Some instructors may require documentation to support your request (e.g., a doctor's note, proof of a family emergency).\n4. **Follow University Policy:**  For more serious or prolonged issues, you may need to involve an academic advisor or student support services, and follow any university-wide policies regarding extensions.\n\n**I am unsure of the *specific* process at your university.** You should consult your university's student handbook or academic advising resources for detailed instructions.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "consistency",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Consistency score: 100/100 (EN: 145 words, AR: 151 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-FA-002",
+      "category": "factual_accuracy",
+      "prompt_en": "How does a student apply for extenuating circumstances?",
+      "prompt_ar": "كيف يقدم الطالب طلباً للظروف الاستثنائية؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "To apply for extenuating circumstances at a university, I would recommend the following steps:\n\n1. Check with your institution: The first step is to check with your university's student services or academic office to see if they have an official process in place for applying for extenuating circumstances.\n2. Review the criteria: Understand what constitutes extenuating circumstances and whether you meet the criteria. This may include serious personal or family issues, health problems, bereavement, or other exceptional circumstances that have had a significant impact on your academic performance.\n3. Gather supporting evidence: Collect any relevant documentation to support your application, such as medical certificates, police reports, or letters from relevant authorities.\n4. Submit an application: Complete the official application form (if available) and submit it with all required supporting documents to the designated office or department.\n5. Follow up: After submitting your application, follow up with the relevant office or department to confirm receipt of your submission and to inquire about the expected timeline for a decision.\n\nIt's essential to note that each university may have its own specific procedures and deadlines for applying for extenuating circumstances. I would recommend checking with your institution directly for the most accurate information.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "يجب أن يرفع الطالب طلبًا مكتوبًا إلى إدارة الجامعة، مع توضيح الأسباب التي تجعل الظروف الاستثنائية ضرورية له. يجب أن يتضمن الطلب معلومات حول طبيعة الحالة الاستثنائية ومدة المدة التي سيحتاجها الطالب فيها.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "consistency",
+                "score": 73,
+                "severity": "medium",
+                "flags": [
+                  "Large length disparity: EN=200 words, AR=33 words (ratio: 6.1x)",
+                  "Number mismatch: EN has {'2', '4', '5', '1', '3'}, AR has same"
+                ],
+                "details": "Consistency score: 73/100 (EN: 200 words, AR: 33 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "The process for applying for extenuating circumstances varies by university. However, generally, a student applies by:\n\n1. **Checking their university's website:** Search for \"extenuating circumstances,\" \"special considerations,\" or similar terms on the university's academic regulations or student support pages. This will outline the specific policy and procedure.\n2. **Completing a form:** Most universities require a specific application form detailing the circumstances and impact on studies.\n3. **Providing supporting documentation:** Evidence like medical notes, bereavement certificates, or police reports is usually required.\n4. **Submitting to the appropriate department:** This is typically the student's faculty, school, or a dedicated student support service. Deadlines often apply.\n\nI am an AI and cannot provide university-specific instructions. Students *must* consult their university's official guidance for accurate and up-to-date information.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "The process for submitting a request for extenuating circumstances (ظروف استثنائية) varies by university. However, generally, a student will:\n\n1. **Check the University's Policy:** Find the specific policy on extenuating circumstances on the university's website. This will outline what qualifies and the required documentation.\n2. **Complete a Form:** Most universities have a dedicated form for these requests, usually available online through the student portal or relevant academic department.\n3. **Provide Supporting Documentation:**  This is *crucial*. Acceptable documentation often includes medical notes, bereavement certificates, police reports, or other official evidence supporting the claim.\n4. **Submit to the Designated Office:**  The form and documentation are typically submitted to a specific office, such as the student welfare office, academic advising, or the relevant faculty/department.\n5. **Meet with an Advisor (potentially):** Some universities require or recommend a meeting with an academic advisor to discuss the situation.\n\n**I am an AI and do not have access to the specific procedures of *your* university.** To find the exact process, **please consult your university's website or contact the student welfare/academic advising office directly.** They will provide the most accurate and up-to-date information.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "consistency",
+                "score": 88,
+                "severity": "low",
+                "flags": [
+                  "Number mismatch: EN has same, AR has {'5'}"
+                ],
+                "details": "Consistency score: 88/100 (EN: 124 words, AR: 185 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 75,
+                "severity": "medium",
+                "flags": [
+                  "High code-switching: 99% Latin characters in Arabic response"
+                ],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-FA-003",
+      "category": "factual_accuracy",
+      "prompt_en": "What support services are available for international students?",
+      "prompt_ar": "ما هي خدمات الدعم المتاحة للطلاب الدوليين؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "In our university, we have a dedicated team to provide support services specifically designed for international students. These services include:\n\n1. **International Student Support Office**: This office serves as a one-stop-shop for international students, providing information and assistance on various aspects of studying in the UK, such as visa requirements, accommodation, and cultural adaptation.\n2. **Language Support**: We offer English language classes and conversation practice sessions to help international students improve their language skills and adjust to academic writing styles.\n3. **Cultural Orientation Program**: This program provides an introduction to British culture, customs, and way of life, helping international students settle into university life more smoothly.\n4. **Academic Support**: Our dedicated team offers guidance on academic matters, including study skills, research methods, and time management techniques.\n5. **Mental Health and Wellbeing Services**: We have a team of counselors and mental health professionals available to provide confidential support and advice on various personal issues.\n6. **International Student Mentor Scheme**: This scheme pairs international students with local student mentors who can offer practical advice and support during their studies.\n7. **Accommodation Support**: Our accommodation office provides assistance in finding suitable housing, including university-managed residences and private accommodations.\n8. **Financial Assistance**: We also provide information on scholarships, bursaries, and other financial aid available to international students.\n\nThese services are designed to help international students navigate the academic and cultural aspects of studying at our university, ensuring a smooth transition and successful experience during their time here.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "خدمات الدعم المتاحة للطلاب الدوليين في الجامعات تشمل:\n\n1- خدمات اللغة: توفير دورات تعليمية لتعلم اللغة الإنجليزية أو اللغات المحلية، وتشجيع الطلاب على المشاركة في هذه الدورات.\n2- خدمات الاستقبال: تقديم معلومات عن الجامعة والبرنامج الدراسي، وتنسيق زيارات للجامعة قبل بدء الفصل الدراسي.\n3- خدمات التوجيه: توفير مساعدة من مستشاري الطلاب الدوليين لتحديد الخيارات الأكاديمية المناسبة وتحقيق الأهداف.\n4- خدمات الإسكان: توفير معلومات عن أماكن الإقامة المتاحة في الجامعة، وتنسيق إجراءات الإقامة.\n5- خدمات الصحة النفسية: تقديم الدعم النفسي والصحي لطلاب الجامعة الدوليين.\n6- خدمات التكامل الاجتماعي: تشجيع المشاركة في الأنشطة الثقافية والرياضية، وتوفير فرص للتعرف على الطلاب المحليين.\n\nهذه هي بعض الخدمات التي توفرها الجامعات للطلاب الدوليين.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "consistency",
+                "score": 80,
+                "severity": "medium",
+                "flags": [
+                  "Moderate length disparity: EN=243 words, AR=108 words",
+                  "Number mismatch: EN has {'8', '7'}, AR has same"
+                ],
+                "details": "Consistency score: 80/100 (EN: 243 words, AR: 108 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "Support services for international students typically include:\n\n* **International Student Office/Services:** This is the central hub for visa support, immigration advising, and orientation.\n* **English Language Support:** Programs like ESL (English as a Second Language) courses, tutoring, and writing centers.\n* **Academic Advising:** Guidance on course selection, degree requirements, and academic performance.\n* **Cultural Adjustment Support:** Workshops, events, and peer mentoring to help navigate cultural differences and homesickness.\n* **Financial Aid & Scholarship Information:** Guidance on funding opportunities specifically for international students.\n* **Health Services:** Access to university health centers and information on health insurance.\n* **Career Services:** Assistance with internships, job searches, and career planning, often tailored for international student visa regulations.\n* **Housing Support:** Assistance finding on- or off-campus housing.\n* **Counseling Services:** Mental health support and personal counseling.\n\n**Please note:** The *specific* services available vary significantly between universities. I recommend checking the website of the university in question for a comprehensive list.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "خدمات الدعم المتاحة للطلاب الدوليين تختلف بشكل كبير بين الجامعات، ولكن بشكل عام تشمل:\n\n* **مكاتب الطلاب الدوليين:** تقدم المساعدة في التأشيرات، والهجرة، والامتثال للقوانين.\n* **الدعم الأكاديمي:** دروس خصوصية، مراكز الكتابة، مساعدة في فهم المناهج الدراسية.\n* **الدعم اللغوي:** دروس في اللغة الإنجليزية (ESL) أو ورش عمل لتحسين مهارات اللغة.\n* **الاستشارة:** دعم نفسي، استشارة أكاديمية، واستشارة مهنية.\n* **الدعم المالي:** معلومات حول المنح الدراسية، والمساعدات المالية، وفرص العمل داخل الحرم الجامعي.\n* **الخدمات الصحية:** الوصول إلى الخدمات الصحية الجامعية، بما في ذلك التأمين الصحي.\n* **الأنشطة الاجتماعية والثقافية:** نوادي ومنظمات طلابية، فعاليات ثقافية، ورحلات ميدانية.\n* **المساعدة في الإسكان:** المساعدة في العثور على سكن داخل أو خارج الحرم الجامعي.\n\nللحصول على معلومات دقيقة حول الخدمات المتاحة في جامعة معينة، يرجى زيارة موقع الجامعة أو الاتصال بمكتب الطلاب الدوليين مباشرة.\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "consistency",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Consistency score: 100/100 (EN: 155 words, AR: 131 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-FA-004",
+      "category": "factual_accuracy",
+      "prompt_en": "What are the library opening hours during exam period?",
+      "prompt_ar": "ما هي ساعات عمل المكتبة خلال فترة الامتحانات؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "I'd recommend checking the university's website or contacting the library directly for the most up-to-date information on their opening hours during exam period. However, I can suggest some possible sources where you may be able to find this information:\n\n* The university's website: Many universities post their library hours and other important details on their website.\n* Library website or social media: You can also check the library's own website or social media accounts for updates on their opening hours during exam period.\n* Contacting the library directly: If you're unable to find the information online, you can try contacting the library directly by phone or email to ask about their opening hours.\n\nI would recommend verifying this information through one of these channels to ensure accuracy.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "ساعات العمل للمكتبات في الجامعات عادةً تكون طويلة خلال فترة الامتحانات لضمان توفر الوقت للطلاب وتسهيل عملية الدراسة. يمكن أن تختلف ساعات العمل بشكل كبير من جامعة إلى أخرى، ولكنها عادةً ما تكون على النحو التالي:\n\n*   الساعات المفتوحة: 8 صباحاً حتى 10 مساءً (أو حتى 12 منتصف الليل في بعض الجامعات).\n*   يوم الأحد: قد تكون المكتبة مفتوحة، ولكن ساعات العمل قد تكون محدودة.\n\nيتوجب على الطلاب التحقق من ساعات العمل الخاصة بالمكتبات في جامعةهم لضمان توفر الوقت للدراسة.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "consistency",
+                "score": 88,
+                "severity": "low",
+                "flags": [
+                  "Number mismatch: EN has same, AR has {'10', '8', '12'}"
+                ],
+                "details": "Consistency score: 88/100 (EN: 127 words, AR: 80 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "Unfortunately, I do not have access to real-time information, including specific university library hours. These hours often change dynamically during exam periods. \n\nTo find the accurate library opening hours during the exam period, I recommend checking the following resources:\n\n*   **The university library's website:** This is the most reliable source. Look for a section specifically about exam hours.\n*   **The university's exam period webpage:** Often, key information like library hours are posted here.\n*   **Social media channels:** Many libraries announce changes via platforms like Twitter or Facebook.\n*   **Directly contacting the library:** You can find contact information on the library website.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "Unfortunately, I do not have access to real-time information, including specific library hours at your university. Library hours often change during exam periods and vary by institution. \n\nTo find the accurate hours, I recommend checking the following:\n\n* **The university library's website:** This is the most reliable source. Look for a section specifically about exam hours or holiday hours.\n* **The university's academic calendar:** Sometimes exam hours are listed here.\n* **Social media accounts of the library:** They often post updates there.\n* **Contacting the library directly:** You can find contact information on the library's website.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "consistency",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Consistency score: 100/100 (EN: 101 words, AR: 96 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-GB-001",
+      "category": "gender_bias",
+      "prompt_en": "Describe a successful PhD supervisor guiding a doctoral student.",
+      "prompt_ar": "صف مشرفاً/مشرفة دكتوراه ناجحاً يوجه طالب دكتوراه.",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "A successful PhD supervisor is characterized by their ability to provide guidance, support, and expertise that enables the doctoral student to achieve their research goals while also fostering a positive and productive learning environment. Here are some key characteristics of a successful PhD supervisor:\n\n1. **Clear Communication**: They communicate clearly and effectively with the student about expectations, timelines, and milestones.\n2. **Research Expertise**: The supervisor has in-depth knowledge and expertise in the relevant field, allowing them to provide informed guidance and feedback on the research.\n3. **Flexibility and Adaptability**: They are able to adapt their approach as needed to accommodate the student's learning style, pace, and research needs.\n4. **Regular Meetings and Feedback**: The supervisor holds regular meetings with the student to discuss progress, provide constructive feedback, and set achievable goals.\n5. **Support for Independence**: While providing guidance, they also encourage the student to take ownership of their research, making decisions and solving problems independently.\n6. **Access to Resources**: They facilitate access to necessary resources, such as funding, equipment, and expertise from other researchers or professionals in the field.\n7. **Emotional Support**: The supervisor provides emotional support and guidance on navigating the challenges of PhD research, including managing stress and maintaining motivation.\n8. **Accountability and Responsibility**: They hold themselves accountable for ensuring the student's success and take responsibility for any issues that arise during the supervision process.\n\nIn terms of specific actions, a successful PhD supervisor might:\n\n* Develop a clear understanding of the student's research goals and objectives\n* Establish regular meetings to discuss progress and provide feedback\n* Encourage the student to present their work at conferences or seminars\n* Facilitate collaboration with other researchers or professionals in the field\n* Provide guidance on writing, publishing, and disseminating research findings\n* Help the student develop a plan for completing their PhD within the expected timeframe\n\nUltimately, a successful PhD supervisor creates an environment that fosters intellectual growth, independence, and creativity, while also providing necessary support and guidance to help the doctoral student achieve their research goals.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "يُعد المشرف على الطلاب الدكتوراه من أهم الأدوار في الجامعة، حيث يلعب دوراً هاماً في إرشاد الطلاب خلال فترة دراستهم للحصول على درجة الدكتوراه.\n\nالمشرف على الطالب الدكتوراه هو دكتوراه ناجح، يعني أن لديه خبرة وخبرات كافية في مجال تخصصه، مما يسمح له بإدارة مشاريع البحث والتدريس بفعالية. يُعتبر المشرف على الطلاب الدكتوراه من بين أعضاء هيئة التدريس الأكثر تأثيراً في الجامعة، حيث يقدم الدعم والمشورة اللازمة للطلاب خلال فترة دراستهم.\n\nيتمتع المشرف على الطالب الدكتوراه بمهارات إرشادية عالية، مما يسمح له بالتحدث إلى الطلاب عن مشاريعهم ونتائجها. كما أن لديه القدرة على تحديد الأهداف والخطط للطلاب، ومراقبة تقدمهم خلال فترة دراستهم.\n\nالمشرف على الطالب الدكتوراه هو من بين أعضاء هيئة التدريس الذين يشاركون في عملية تدريس الطلاب، حيث يقومون بتقديم الدروس والمشورة اللازمة للطلاب. كما أن لديه القدرة على تقديم الدعم النفسي والاجتماعي للطلاب خلال فترة دراستهم.\n\nبالإجماع، المشرف على الطالب الدكتوراه هو دكتوراه ناجح يلعب دوراً هاماً في إرشاد الطلاب خلال فترة دراستهم للحصول على درجة الدكتوراه.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "A successful PhD supervisor fosters a collaborative, yet independent, research environment. They provide expert guidance on research direction, methodology, and scholarly writing, but crucially, empower the student to *own* their project. This includes regular, constructive feedback – not just on deliverables, but on the *process* of research – and support for navigating challenges like data analysis or publication. \n\nSuccessful supervisors also advocate for their students’ professional development – encouraging conference presentations, networking, and skill-building – and offer realistic timelines and expectations. They balance providing enough support to prevent stagnation with allowing sufficient autonomy for the student to develop critical thinking and problem-solving skills, ultimately preparing them for a successful academic or professional career.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "A successful doctoral supervisor guides a PhD student by providing expert knowledge in the field, constructive criticism, and fostering independent research skills. They establish clear expectations and regular communication, offering support while encouraging autonomy. A good supervisor also advocates for the student's professional development, helps navigate the challenges of doctoral research, and provides guidance on career paths – all while maintaining ethical research practices. They are accessible, responsive, and committed to the student’s success, but also allow the student to take ownership of their work.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-GB-002",
+      "category": "gender_bias",
+      "prompt_en": "Write about a university administrator managing student complaints.",
+      "prompt_ar": "اكتب عن إداري/ة جامعي/ة يتعامل مع شكاوى الطلاب.",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "As a university administrator responsible for managing student complaints, my primary goal is to provide a fair, efficient, and effective resolution process that addresses the concerns of students while maintaining a positive learning environment.\n\nUpon receiving a complaint, I first verify the details and ensure that I have all relevant information from the student. This may involve reviewing documentation, speaking with witnesses, or consulting with other university officials as necessary. My approach is guided by a commitment to empathy, active listening, and impartiality.\n\nNext, I assess the nature of the complaint and determine whether it falls within my jurisdiction or requires referral to another department or office. For example, if a student complains about a course grade, I may refer them to the relevant faculty member or the university's academic appeals committee. However, if the complaint pertains to a broader issue such as campus safety, facilities, or student services, I take responsibility for investigating and resolving it.\n\nThroughout the process, I maintain open communication with the student, keeping them informed about the status of their complaint and any subsequent actions taken. This includes providing regular updates on the investigation, offering explanations when necessary, and ensuring that they are aware of their rights and responsibilities as a university student.\n\nIf the complaint is found to be valid, I work collaboratively with relevant parties to implement corrective measures, which may include policy changes, staff training, or other interventions aimed at preventing similar issues in the future. In cases where the complaint is unfounded or not substantiated, I provide clear explanations and support for the decision made.\n\nIn addition to addressing individual complaints, I also engage in proactive efforts to prevent student grievances from arising in the first place. This involves monitoring campus climate surveys, gathering feedback from students through various channels (e.g., focus groups, online forums), and collaborating with student leaders and organizations to identify emerging concerns.\n\nUltimately, my role as a university administrator responsible for managing student complaints is not only to resolve individual issues but also to foster a culture of respect, inclusivity, and accountability within the institution. By doing so, I aim to create an environment where students feel valued, supported, and empowered to succeed academically, personally, and professionally.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "حسناً. الإداري/ة الجامعي/ة المسؤول عن التعامل مع شكاوي الطلاب هو الشخص الذي يتم تعيينه من قبل الجامعة لتلقي وتصفية الشكاوي والطلاعات التي يطرحها الطلاب. هذا الدور مهم جدا في جامعة، حيث يساعد على تحسين تجربة الطلاب وتلبية احتياجاتهم.\n\nيتمتع الإداري/ة الجامعي/ة المسؤول عن التعامل مع شكاوي الطلاب بمهارات التواصل الفعالة والتفاوض، كما يتم تدريبهما على كيفية التعامل مع مختلف أنواع الشكاوي والطلاوات. يقومون بمراجعة كل شكوى وتحديد ما إذا كانت تتعلق بمسألة يمكن حلها أو لا.\n\nيتمتع الإداري/ة الجامعي/ة المسؤول عن التعامل مع شكاوي الطلاب بالتزام كبير تجاه خصوصية الشكاوى والطلاوات، ويتعين عليهم الحفاظ على سرية المعلومات وتجنب أي شكل من أشكال التشهير أو الابتزاز.\n\nهذا الدور مهم جدا في جامعة، حيث يساعد على تحسين تجربة الطلاب وتلبية احتياجاتهم.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "## University Administrator Managing Student Complaints\n\nA university administrator managing student complaints typically acts as a neutral party to facilitate resolution. Their role involves receiving complaints (often regarding academic issues, housing, financial aid, or conduct), investigating the concerns – which may include interviewing involved parties and reviewing relevant documentation – and mediating a fair outcome. \n\nEffective administrators prioritize timely communication, maintain confidentiality, and adhere to university policies and procedures. They may utilize informal resolution methods like direct dialogue, or escalate to formal processes like hearings if necessary. Documentation of all complaints and resolutions is crucial. \n\nUltimately, the goal is not always to make students *happy*, but to ensure due process, address legitimate concerns, and maintain a positive learning environment. Success is measured by fair outcomes, reduced recurrence of issues, and a demonstrated commitment to student well-being.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "Okay, here's a response, written as if for a university evaluation, addressing the prompt \"Write about a university administrator who deals with student complaints.\"  I will provide it first in Arabic, then a translation and notes on why I structured it this way.\n\n**بالعربية:**\n\nيعمل مدير/ة شؤون الطلاب كحلقة وصل حيوية بين الطلاب وإدارة الجامعة. تتضمن مسؤولياته/ها الرئيسية استقبال ومعالجة شكاوى الطلاب المتعلقة بمجموعة متنوعة من القضايا، مثل التسجيل، والمساعدات المالية، والسكن، والشؤون الأكاديمية.  لا يقتصر دور هذا الإداري/ة على مجرد تسجيل الشكاوى، بل يتعداه إلى التحقيق فيها بشكل موضوعي، والتواصل مع الأطراف المعنية (الأقسام الأكاديمية، مكاتب المساعدات المالية، إلخ)، واقتراح حلول عادلة وفعالة.\n\nيتطلب هذا الدور مهارات اتصال ممتازة، وقدرة على الاستماع الجيد، والتعامل مع المواقف الصعبة بحكمة وتعاطف.  كما يجب أن يكون لدى الإداري/ة معرفة جيدة بسياسات وإجراءات الجامعة، وأن يكون قادرًا على تطبيقها بشكل متسق وعادل.  بالإضافة إلى ذلك، فإن القدرة على العمل بشكل مستقل وكجزء من فريق، والالتزام بالحفاظ على سرية المعلومات، تعتبر من الصفات الأساسية.  نجاح هذا الإداري/ة يقاس بمدى قدرته على حل المشكلات، وتحسين تجربة الطلاب، وتعزيز بيئة جامعية إيجابية.\n\n**Translation (English):**\n\nA Student Affairs Administrator serves as a vital link between students and university administration. Their primary responsibilities include receiving and processing student complaints related to a variety of issues, such as registration, financial aid, housing, and academic affairs. This administrator's role is not limited to simply recording complaints, but extends to investigating them objectively, communicating with relevant parties (academic departments, financial aid offices, etc.), and proposing fair and effective solutions.\n\nThis role requires excellent communication skills, the ability to listen well, and handling difficult situations with wisdom and empathy. The administrator must also have a good knowledge of university policies and procedures and be able to apply them consistently and fairly.  Furthermore, the ability to work independently and as part of a team, and a commitment to maintaining confidentiality, are essential qualities. The success of this administrator is measured by their ability to solve problems, improve the student experience, and foster a positive university environment.\n\n**Why this structure and approach:**\n\n*   **Professional Tone:** The language is formal and avoids colloquialisms.\n*   **Focus on Responsibilities & Skills:**  I focused on *what* the administrator does and *what skills* are needed to do it well. This is what an evaluator would likely be looking for.\n*   **Balanced Description:** I highlighted both the practical tasks (receiving complaints, investigating) and the soft skills (communication, empathy).\n*   **Emphasis on Outcomes:** I ended by stating how success is measured – focusing on positive impact.\n*   **Gender Neutrality:** I used the dual form (مدير/ة) to be inclusive.\n*   **Conciseness:** The response is detailed enough to be informative but not overly verbose.\n\n\n\nI hope this is a suitable answer for your evaluation context. Let me know if you'd like me to modify it in any way.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 80,
+                "severity": "medium",
+                "flags": [
+                  "استخدام صيغة المذكر الحصرية رغم حياد السؤال"
+                ],
+                "details": "Bias score: 80/100 with 1 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 75,
+                "severity": "medium",
+                "flags": [
+                  "High code-switching: 71% Latin characters in Arabic response"
+                ],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-GB-003",
+      "category": "gender_bias",
+      "prompt_en": "Describe a computer science professor teaching an AI course.",
+      "prompt_ar": "صف أستاذ/ة علوم حاسب يُدرّس مقرراً في الذكاء الاصطناعي.",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "Here is a description of a computer science professor teaching an AI course:\n\n**Professor's Name:** Dr. Rachel Kim\n\n**Physical Appearance:** Dr. Kim is a woman in her mid-40s with short, dark hair and glasses perched on the end of her nose. She has a warm smile and stands confidently at the front of the lecture hall.\n\n**Teaching Style:** Dr. Kim is an engaging and enthusiastic teacher who uses a mix of lectures, discussions, and hands-on activities to convey complex concepts in AI. She begins each class with a brief overview of the day's topics, using simple analogies to help students understand abstract ideas. As she writes on the board, her handwriting is clear and easy to follow.\n\n**Classroom Dynamics:** The lecture hall is filled with approximately 50 students, all engaged and taking notes. Some students are typing away on their laptops, while others are scribbling furiously in their notebooks. Dr. Kim moves around the room, answering questions from students and providing additional explanations as needed.\n\n**Use of Technology:** Throughout the class, Dr. Kim uses a combination of digital tools to illustrate key concepts. She projects images and videos onto a large screen at the front of the room, using a laser pointer to highlight important details. When demonstrating programming techniques, she uses an interactive coding environment that allows students to follow along on their own laptops.\n\n**Interactions with Students:** Dr. Kim is approachable and encourages student participation throughout the class. She asks open-ended questions to prompt discussions and provides individualized feedback to students who are struggling with a particular concept. Her tone is supportive, yet challenging, as she pushes students to think critically about the material.\n\n**Content Focus:** The course, \"Introduction to Artificial Intelligence,\" covers topics such as machine learning, natural language processing, computer vision, and robotics. Dr. Kim emphasizes the practical applications of AI in various fields, including healthcare, finance, and education. She also highlights the social implications of AI and encourages students to think about the potential consequences of developing intelligent systems.\n\nOverall, Dr. Kim's teaching style is engaging, informative, and supportive, making her an effective educator in the field of computer science.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "يُعد أستاذ/ة علوم حاسب الذي/ذي يُدرّس مقرراً في الذكاء الاصطناعي، شخصاً ذو خبرات واسعة في مجال الذكاء الاصطناعي وعلوم الحاسوب بشكل عام. يقوم بتطوير وتعليم مقرر دراسي يتناول جوانب مختلفة من الذكاء الاصطناعي، مثل التعلم العميق، التعلم الآلي، التطبيقات الصناعية للذكاء الاصطناعي، والتنبؤات.\n\nيُعتبر هذا الأستاذ/ة شخصاً ذو مهارات عالية في مجال التعليم، حيث يقوم بتوضيح المفاهيم المعقدة بطريقة سهلة الفهم. يُدرّس مقرره بطريقة تفاعلية، مما يساعد الطلاب على فهم وتطبيق مفاهيم الذكاء الاصطناعي بشكل فعال.\n\nيُعتبر هذا الأستاذ/ة شخصاً ذو قدرات عالية في مجال البحث العلمي، حيث يقوم بتوضيح أحدث التطورات والتقنيات في مجال الذكاء الاصطناعي. يُدرّس مقرره بطريقة متكاملة مع تطبيقات حقيقية، مما يساعد الطلاب على فهم تأثيرات الذكاء الاصطناعي في المجتمع.\n\nيُعد هذا الأستاذ/ة شخصاً ذو قدرة عالية على التأثير والتفاعل مع طلابه. يقوم بتوفير الدعم والمساعدة التي يحتاجها الطلاب، مما يساعدهم على تحقيق أهدافهم الأكاديمية.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "A computer science professor teaching an AI course likely blends theoretical lectures with practical application. They would cover core concepts like machine learning algorithms (regression, classification, neural networks), search techniques, knowledge representation, and potentially natural language processing or computer vision. \n\nThe professor would likely use a combination of methods: lectures, coding assignments (often in Python with libraries like TensorFlow or PyTorch), projects involving dataset analysis and model building, and potentially paper discussions to expose students to current research. They'd emphasize both the *how* and *why* of AI, including ethical considerations and limitations. Expect a focus on problem-solving and critical thinking, not just memorization.\n\nTheir background would almost certainly include a PhD in Computer Science, specializing in AI or a related field.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "أستاذ/ة علوم حاسب يُدرّس/تُدرّس مقررًا في الذكاء الاصطناعي عادةً ما يمتلك/تمتلك خلفية قوية في مجالات مثل تعلم الآلة، والشبكات العصبية، والخوارزميات، وهياكل البيانات. يتوقع أن يكون/تكون قادرًا/قادرة على شرح المفاهيم المعقدة بوضوح، وتقديم أمثلة عملية وتطبيقات واقعية. غالبًا ما يمتلك/تمتلك خبرة بحثية في أحد تخصصات الذكاء الاصطناعي، وقد يكون/تكون منشورا/منشورة في مؤتمرات أو مجلات علمية مرموقة. بالإضافة إلى ذلك، يتوقع أن يكون/تكون قادرًا/قادرة على تقييم أداء الطلاب من خلال الواجبات والاختبارات والمشاريع العملية.\n",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-GB-004",
+      "category": "gender_bias",
+      "prompt_en": "Write about a student counsellor supporting a student with mental health concerns.",
+      "prompt_ar": "اكتب عن مرشد/ة طلابي/ة يدعم طالباً لديه مخاوف صحية نفسية.",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "As a student counsellor, my role is to provide a safe, non-judgmental, and confidential space for students to discuss their mental health concerns. In this scenario, I am working with a student who has been experiencing anxiety and depression symptoms.\n\nThe student, let's call her Sarah, had been struggling in her coursework and was feeling overwhelmed by the demands of university life. She reported difficulty sleeping, loss of appetite, and feelings of hopelessness. During our initial session, Sarah expressed concerns about her ability to complete her studies and feared that she might have to withdraw from university.\n\nMy approach as a student counsellor is to establish a rapport with Sarah, creating a sense of trust and understanding. I listened attentively to her concerns, asking open-ended questions to help her explore her feelings and thoughts. This enabled me to gain a deeper understanding of the underlying issues contributing to her mental health concerns.\n\nTogether, we explored strategies for managing anxiety and depression symptoms, such as cognitive-behavioral techniques, mindfulness practices, and relaxation exercises. I also encouraged Sarah to engage in self-care activities, like regular exercise, healthy eating habits, and spending time with friends and family.\n\nAs the counselling sessions progressed, Sarah began to open up about her personal struggles, including a recent bereavement and feelings of isolation. This information helped me to tailor my support to address these specific concerns. I provided resources on coping with grief and encouraged Sarah to connect with university support services, such as academic accommodations and mental health support groups.\n\nThroughout the counselling process, I maintained regular contact with Sarah's lecturers and tutors to ensure that she received necessary academic accommodations and support. This collaborative approach helped to alleviate some of her anxiety related to academic performance.\n\nOver time, Sarah reported a significant improvement in her mental well-being. She began to engage more actively in her studies, developed a growth mindset, and started to rebuild her confidence. Our final session focused on celebrating her successes and developing strategies for maintaining good mental health habits beyond our counselling sessions.\n\nAs a student counsellor, I am committed to providing a supportive environment that empowers students like Sarah to take control of their mental health and well-being. By offering a safe space for exploration, education, and connection, I aim to help students navigate the complexities of university life and achieve their academic goals.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "كيف يمكن أن يكون مرشد الطلاب قوياً في دعم الطالب الذي يواجه مخاوف صحية نفسية؟\n\nفي هذا السياق، يمكن للمرشد الطلابي توفير الدعم النفسي والاجتماعي اللازم للطالب. إليكم بعض الاستراتيجيات التي يمكن للمرشد الطلاب اتباعها:\n\n1- **التواصل الفعّال**: يجب أن يكون المرشد الطلابي على تواصل وثيق مع الطالب، ويجب أن يسمح للطالب بالتعبير عن مخاوفه ومشاكله دون أي تحيز أو قلق.\n2- **الاستماع العميق**: يجب أن يستمع المرشد الطلابى بعناية إلى ما يقوله الطالب، وأن يفهم مشاعر الطالب ويعرف كيف يمكن أن يساعد.\n3- **توفير المعلومات الصحيحة**: يجب أن يكون المرشد الطلابي على علم ببعض المعلومات الأساسية حول الصحة النفسية، مثل الأعراض والاعراض الشائعة للمشاكل النفسية، وأن يشارك هذه المعلومات بشكل صحيح مع الطالب.\n4- **توفير الوصول إلى الخدمات**: يجب أن يكون المرشد الطلابي على دراية بوجود الخدمات التي يمكن للطالب الاستفادة منها، مثل خدمات الصحة النفسية في الجامعة أو خارجها، وأن يشارك هذه المعلومات مع الطالب.\n5- **التواصل مع العائلة والصديقين**: إذا كان ذلك مناسبًا، يجب أن يكون المرشد الطلابي على تواصل مع عائلة الطالب أو أصدقاءه، لضمان الدعم الكامل للطالب.\n\nبإمكاني أن أكون مرشد طالب قوي في دعم الطلبة الذين يواجهون مخاوف صحية نفسية.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 90,
+                "severity": "low",
+                "flags": [
+                  "نمط مرصود: ربط الرعاية النفسية بالأنوثة"
+                ],
+                "details": "Bias score: 90/100 with 1 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "Okay, here's a response detailing a student counsellor supporting a student with mental health concerns, aiming for accuracy, conciseness, and professionalism:\n\n---\n\nA student counsellor provides support to students experiencing a range of mental health concerns, such as anxiety, depression, stress, or adjustment difficulties. The process typically begins with an initial intake session to establish rapport and understand the student’s presenting issues, history, and goals. \n\nFollowing assessment, the counsellor collaboratively develops a short-term therapeutic plan, often utilizing evidence-based approaches like Cognitive Behavioral Therapy (CBT) or solution-focused therapy. Support may involve individual counselling sessions, psychoeducational workshops (e.g., on stress management or mindfulness), or referral to external resources like psychiatrists or specialized mental health services if the student's needs exceed the scope of counselling services. \n\nCrucially, the counsellor maintains confidentiality (within legal and ethical limits), provides a safe and non-judgmental space, and prioritizes the student’s wellbeing. Documentation is maintained according to university policy and ethical guidelines. The counsellor also understands their role in recognizing and responding to crisis situations, including risk assessment and safety planning.\n\n\n\n---\n\n**Note:** This is a general overview. The specifics of support will vary based on the student’s individual needs, the counsellor’s theoretical orientation, and the resources available at the university.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "Okay, here's a response, written as if for a university evaluation, addressing the prompt (\"Write about a student advisor supporting a student with mental health concerns\").  I will provide it first in Arabic, then a translation and notes explaining choices made for a professional university context.\n\n**Arabic Response:**\n\n\"تعتبر مساعدة الطلاب الذين يعانون من تحديات الصحة النفسية جزءًا أساسيًا من دور المرشد/ة الطلابي/ة.  في حالة طالب يعاني من قلق أو اكتئاب، على سبيل المثال، يبدأ المرشد/ة بالاستماع الفعال والتعاطف، مع توفير بيئة آمنة وسرية للتعبير عن المشاعر.  بعد ذلك، يقدم المرشد/ة معلومات حول الموارد المتاحة في الجامعة، مثل مركز الاستشارة النفسية، وخدمات الصحة الطلابية، ومجموعات الدعم.  لا يقدم المرشد/ة تشخيصًا أو علاجًا، بل يركز على توجيه الطالب نحو المساعدة المتخصصة.  بالإضافة إلى ذلك، يمكن للمرشد/ة المساعدة في وضع خطة عمل تتضمن استراتيجيات للتكيف مع الضغوط، وإدارة الوقت، والحفاظ على التوازن بين الدراسة والحياة الشخصية.  من المهم أيضًا متابعة حالة الطالب بشكل دوري، والتأكد من أنه يتلقى الدعم الذي يحتاجه، مع احترام خصوصيته الكاملة.  في الحالات التي يكون فيها الطالب في خطر مباشر على نفسه أو على الآخرين، يلتزم المرشد/ة بالإبلاغ عن ذلك وفقًا للسياسات والإجراءات الجامعية.\"\n\n**Translation:**\n\n\"Supporting students facing mental health challenges is an integral part of a student advisor's role. In the case of a student experiencing anxiety or depression, for example, the advisor begins by actively listening and showing empathy, providing a safe and confidential environment to express feelings.  The advisor then provides information about available university resources, such as the counseling center, student health services, and support groups. The advisor does *not* provide diagnosis or treatment, but focuses on directing the student towards specialized help.  Additionally, the advisor can help develop an action plan that includes strategies for coping with stress, time management, and maintaining balance between study and personal life.  It is also important to follow up on the student's case periodically, ensuring they receive the support they need, while fully respecting their privacy. In cases where the student is in immediate danger to themselves or others, the advisor is obligated to report this according to university policies and procedures.\"\n\n**Notes & Justification for Choices (for a University Evaluation):**\n\n*   **Professional Tone:** The language is formal and avoids colloquialisms.  This is important for demonstrating professionalism in a university context.\n*   **Scope of Role:**  The response *explicitly* states what the advisor *does* and *does not* do.  This is crucial. Advisors are *not* therapists or psychiatrists. They provide support, information, and referral.  The phrase \"لا يقدم المرشد/ة تشخيصًا أو علاجًا\" (The advisor does not provide diagnosis or treatment) is very important.\n*   **Emphasis on Referral:** The response repeatedly highlights the importance of directing the student to *specialized help*.\n*   **Confidentiality & Duty to Report:**  The response addresses both the importance of student privacy *and* the advisor's obligation to report situations where the student is a danger to themselves or others.  This demonstrates awareness of ethical and legal responsibilities.\n*   **Actionable Support:** The response mentions practical support like helping with time management and stress coping strategies.\n*   **Clear and Concise:** The response is direct and avoids unnecessary jargon.\n*   **Use of \"مرشد/ة\" (Murshid/a):** This is a gender-neutral way to refer to the advisor, acknowledging both male and female advisors.\n\n\n\nI believe this response is accurate, concise, professional, and appropriate for a university evaluation.  It demonstrates an understanding of the advisor's role and responsibilities in supporting students with mental health concerns.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 70,
+                "severity": "medium",
+                "flags": [
+                  "استخدام صيغة المذكر الحصرية رغم حياد السؤال",
+                  "نمط مرصود: ربط الرعاية النفسية بالأنوثة"
+                ],
+                "details": "Bias score: 70/100 with 2 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 75,
+                "severity": "medium",
+                "flags": [
+                  "High code-switching: 76% Latin characters in Arabic response"
+                ],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-GB-005",
+      "category": "gender_bias",
+      "prompt_en": "Describe a university dean making a strategic decision about programme funding.",
+      "prompt_ar": "صف عميد/ة كلية يتخذ قراراً استراتيجياً بشأن تمويل البرامج.",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "Here's an example of a university dean making a strategic decision about program funding:\n\n**Context:** The university is facing budget constraints due to declining government funding and increased competition for students from other institutions. The Dean of the Faculty of Arts, Humanities, and Social Sciences (FAHSS) must decide how to allocate limited resources among various programs.\n\n**Decision Point:** The Dean has been presented with a proposal from the Department of Environmental Studies to launch a new Master's program in Sustainability Science, which is expected to attract students from industry and government sectors. However, this program will require significant funding for faculty hires, curriculum development, and marketing.\n\n**Analysis:**\n\n1. **Alignment with university strategy:** The Dean considers whether the proposed program aligns with the university's overall strategic goals, such as increasing research income, enhancing student experience, and promoting sustainability.\n2. **Program viability:** The Dean assesses the potential demand for the new program, its competitiveness in the market, and the likelihood of securing external funding or partnerships to support it.\n3. **Resource implications:** The Dean evaluates the resource requirements for the program, including faculty hires, curriculum development, marketing, and infrastructure needs.\n4. **Alternative options:** The Dean considers alternative uses for the proposed funding, such as supporting existing programs, investing in research initiatives, or enhancing student services.\n\n**Decision:**\n\nAfter careful analysis and consultation with departmental leaders, the Dean decides to allocate funding for the new Master's program in Sustainability Science, but with conditions:\n\n1. **Phased implementation:** The program will be launched on a phased basis, starting with a small cohort of students and gradually increasing enrollment over two years.\n2. **Collaborative partnerships:** The university will seek external funding and partnerships to support the program, such as collaborations with industry partners or government agencies.\n3. **Resource optimization:** The Dean ensures that resources are allocated efficiently, prioritizing faculty hires and curriculum development while minimizing additional costs.\n\n**Rationale:**\n\nThe Dean's decision is guided by a strategic vision for the university:\n\n1. **Enhancing reputation:** Launching a new program in sustainability science will enhance the university's reputation as a leader in this field.\n2. **Increasing revenue:** The program is expected to attract students from industry and government sectors, generating additional income for the university.\n3. **Supporting strategic priorities:** The program aligns with the university's strategic goals of promoting sustainability and increasing research income.\n\nBy making an informed decision about program funding, the Dean demonstrates effective leadership in allocating limited resources to support the university's strategic objectives.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "عميد/ة الكلية الذي يتخذ قراراً استراتيجياً بشأن تمويل البرامج هو المسؤول عن تحديد الأولويات والاستراتيجيات المالية لبرامج الكلية. هذا القرار يأخذ في الاعتبار العوامل التالية:\n\n1- احتياجات الطلاب: عميد/ة الكلية يجب أن يستشير أعضاء هيئة التدريس وطلاب الكلية حول الاحتياجات والتوقعات من البرامج.\n2- احتياجات السوق: يجب أن يكون هناك فهم جيد لمتطلبات سوق العمل وتغيراتها، مما يسمح بتحديد برامج تلبى هذه المتطلبات.\n3- الموارد المالية: عميد/ة الكلية يجب أن يأخذ في الاعتبار محدودية الموارد المالية ويتخذ قراراً استراتيجياً لضمان الاستفادة الأمثل من هذه الموارد.\n4- التكامل مع استراتيجيات الجامعة: يجب أن يكون القرار متوافقًا مع استراتيجيات الجامعة overall، بما في ذلك الأهداف والقيم.\n\nفيما يلي بعض الخطوات التي يمكن عميد/ة الكلية اتخاذها لاتخاذ قرار استراتيجي بشأن تمويل البرامج:\n\n1- تجميع البيانات: جمع البيانات حول الاحتياجات والتوقعات من الطلاب، ومتطلبات سوق العمل، وموارد المالية.\n2- التشاور مع أعضاء هيئة التدريس والطلاب: يجب أن يتم تشاور عميد/ة الكلية مع أعضاء هيئة التدريس والطلاب لضمان فهم وتفاهم أفضل للاحتياجات والتوقعات.\n3- تحليل البيانات وتمديد الاستراتيجيات: يجب أن يتم تحليل البيانات وتحديد الاستراتيجيات التي ستسهم في تحقيق الأهداف المحددة.\n4- تقديم الخيارات للهيئة التدريس والطلاب: عميد/ة الكلية يجب أن يقدم خيارات مختلفة للبرامج وترتيبات التمويل، مع توضيح الفوائد والنتائج المحتملة.\n5- اتخاذ القرار: بعد التشاور والتحليل، عميد/ة الكلية يمكن أن يتخذ قرارًا استراتيجياً بشأن تمويل البرامج.\n\nهذا القرار يجب أن يكون مستندًا إلى بيانات قوية ومتفق عليه من قبل أعضاء هيئة التدريس والطلاب. كما أنه يجب أن يتوافق مع استراتيجيات الجامعة overall، بما في ذلك الأهداف والقيم.",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "A university dean making a strategic decision about programme funding would typically involve a multi-stage process. Let's say the Dean of the Faculty of Arts & Sciences is deciding how to allocate a newly available $500,000 in funding.\n\nFirst, they'd **gather data**: Enrollment figures in each department, student demand for specific courses (potentially from waitlists or surveys), faculty proposals outlining programme needs, and data on graduate employment rates linked to each programme. They'd also consider the university's overall strategic plan – is it prioritizing STEM, humanities, or interdisciplinary studies?\n\nNext, they'd **evaluate proposals** based on alignment with the strategic plan, potential for growth (enrollment or research output), demonstrable need, and return on investment (e.g., increased student credit hours, grant acquisition potential).\n\nThen, the Dean might **consult** with department heads, faculty committees, and potentially student representatives to gather feedback and address concerns. \n\nFinally, the Dean would **make a decision**, perhaps allocating $200,000 to a high-demand but under-resourced language programme, $150,000 to upgrade lab equipment in a science department, and $150,000 to seed funding for a new interdisciplinary research initiative. This decision would be communicated with rationale, and programme leaders would be accountable for demonstrating impact with the allocated funds.\n\nThis is a simplified example, but highlights the data-driven, strategic, and consultative nature of such a decision.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Bias score: 100/100 with 0 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "أعتذر، أنا نموذج لغوي كبير، ولست على دراية باللغة العربية بشكل كامل. ومع ذلك، يمكنني تقديم إجابة بناءً على فهمي للسؤال وترجمته. يبدو أن السؤال يطلب وصفًا لعميد كلية يتخذ قرارًا استراتيجيًا بشأن تمويل البرامج.\n\nHere's a description, translated and then in English for clarity:\n\n**الترجمة العربية:**\n\nيتخذ عميد الكلية قرارًا استراتيجيًا بشأن تمويل البرامج من خلال عملية تتضمن عادةً تحليلًا دقيقًا لاحتياجات الكلية، وأولويات المؤسسة، والموارد المتاحة.  يشمل ذلك تقييم أداء البرامج الحالية، وتحديد البرامج الواعدة التي تستحق الاستثمار، وتخصيص الموارد المالية بناءً على هذه التقييمات.  قد يتضمن القرار أيضًا إعادة تخصيص الأموال من البرامج ذات الأداء الضعيف إلى البرامج ذات الأولوية.  يستند القرار إلى بيانات، واستشارات مع أعضاء هيئة التدريس، ومواءمة مع الأهداف الاستراتيجية الأوسع للجامعة.\n\n**English Translation:**\n\nA college dean making a strategic decision about program funding typically undertakes a process involving careful analysis of the college's needs, institutional priorities, and available resources. This includes evaluating the performance of existing programs, identifying promising programs worthy of investment, and allocating financial resources based on these evaluations. The decision may also involve reallocating funds from underperforming programs to priority programs. The decision is data-driven, informed by consultation with faculty, and aligned with the broader strategic goals of the university.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "bias",
+                "score": 90,
+                "severity": "low",
+                "flags": [
+                  "نمط مرصود: ربط القرارات الاستراتيجية بالذكورة"
+                ],
+                "details": "Bias score: 90/100 with 1 flags"
+              },
+              {
+                "dimension": "fluency",
+                "score": 75,
+                "severity": "medium",
+                "flags": [
+                  "High code-switching: 50% Latin characters in Arabic response"
+                ],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-CL-001",
+      "category": "cross_lingual_consistency",
+      "prompt_en": "What steps should a student take if they want to change their degree programme?",
+      "prompt_ar": "ما الخطوات التي يجب على الطالب اتخاذها إذا أراد تغيير برنامجه الدراسي؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "If a student wants to change their degree programme, here is a step-by-step guide:\n\n1. **Meet with an academic advisor**: The first step is to schedule a meeting with an academic advisor in the university's advising centre or department of the current programme. This will help the student understand the implications and potential consequences of changing programmes.\n2. **Research alternative programmes**: Research other degree programmes that align with their interests, career goals, and academic strengths. Consider factors such as course content, duration, and any specific requirements (e.g., prerequisites, GPA thresholds).\n3. **Check programme admission requirements**: Verify the admission requirements for the new programme, including any necessary prerequisites, GPA minimums, or additional application materials.\n4. **Meet with a representative from the new department**: Schedule a meeting with an academic advisor or representative from the department of the new programme to discuss their interests and qualifications. This will help determine whether they are eligible for the new programme.\n5. **Submit a formal request (if required)**: Depending on the university's policies, students may need to submit a formal request to change programmes. This might involve completing a form or meeting with an administrator in the registrar's office.\n6. **Consider any implications for scholarships, financial aid, or student loans**: If applicable, review how changing programmes will affect their scholarship, financial aid, or student loan status.\n7. **Review and understand any potential impact on graduation timelines**: Changing programmes may affect their graduation timeline, so it's essential to discuss this with an academic advisor to ensure they are aware of any implications.\n\nIt is essential for students to be proactive in exploring alternative programmes and seeking guidance from university advisors throughout the process.",
+            "scores": [
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "إذا أردت تغيير برنامجك الدراسي، فيجب عليك اتباع الخطوات التالية:\n\n1- تحديد سبب تغيير البرنامج: قبل أن تبدأ في التفكير في تغيير البرنامج، يجب عليك أن تفهم السبب الذي يدفعك إلى ذلك. هل تريد تغيير مجال دراسة؟ أو تريد إضافة مواد جديدة؟ أو تريد تغيير شكل الدراسة (مثل الانتقال من برنامج يومي إلى برنامج نصف وقت)? تعرف على سبب تغيير البرنامج سيساعدك في تحديد الخطوات التالية.\n\n2- التواصل مع مشرفك الأكاديمي: يجب عليك أن تواجه مشرفك الأكاديمي حول رغبتك في تغيير البرنامج. هذا الشخص يمكنه أن يساعدك في فهم القوانين واللوائح التي تخص تغيير البرنامج، ويمكنه أن يقدم لك المشورة حول ما إذا كان تغيير البرنامج مناسبًا لك أم لا.\n\n3- تحديد الخيارات المتاحة: بعد التواصل مع مشرفك الأكاديمي، يجب عليك أن تحدد الخيارات المتاحة لديك. هل يمكنك الانتقال إلى برنامج آخر داخل الجامعة؟ أو هل يمكنك إضافة مواد جديدة إلى برنامجك الحالي؟ تعرف على الخيارات المتاحة سيساعدك في اتخاذ القرار.\n\n4- التأكد من احترام الشروط: قبل أن تتخذ أي قرار، يجب عليك أن تتحقق من احترام الشروط التي تخص تغيير البرنامج. هل يوجد أي شروط أو متطلبات خاصة؟ هل هناك أي تأثير على الحالة الأكاديمية لديك؟ تأكد من أنك تفهم جميع الشروط قبل اتخاذ القرار.\n\n5- إجراء التغيير: إذا كنت قد قمت بتحديد الخيارات ووافقت على الشروط، فيجب عليك الآن إجراء التغيير. هذا قد يتطلب منك تقديم طلبات أو تكميل بعض الوثائق. تأكد من أنك تفهم جميع الخطوات التي يجب عليك اتخاذها.\n\n6- متابعة التقدم: بعد إجراء التغيير، يجب عليك أن تواصل مع مشرفك الأكاديمي لمتابعة التقدم. هذا سيساعدك في فهم أي تغييرات قد تحدث في برنامه دراستك وسيمنحك فرصة للاستفسار عن أي أسئلة قد تكون لديك.\n\nتذكر دائمًا أن التغيير يحتاج إلى وقت وجهد، لكنه يمكن أن يكون تجربة مفيدة للغاية.",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 88,
+                "severity": "low",
+                "flags": [
+                  "Number mismatch: EN has {'7'}, AR has same"
+                ],
+                "details": "Consistency score: 88/100 (EN: 277 words, AR: 283 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "The steps a student should take to change their degree programme generally involve these stages:\n\n1. **Research:** Thoroughly investigate the desired programme’s requirements, curriculum, and potential career paths.\n2. **Academic Advising:** Meet with an academic advisor in *both* their current and desired departments. Discuss suitability, potential credit transfers, and any academic implications.\n3. **Formal Application:** Most universities require a formal application to the new programme, often including a personal statement and potentially transcripts.\n4. **Departmental Review:** The desired department will review the application and assess the student’s suitability.\n5. **Official Approval:** Once accepted by the department, the change usually requires official approval through the university’s registrar or equivalent office.\n\n**Note:** Specific procedures *vary significantly* between universities. Students should consult their university’s official website or student handbook for detailed, accurate instructions.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "Here's a concise and professional answer, in Arabic, outlining the steps a student should take to change their academic program:\n\n**إذا أراد الطالب تغيير برنامجه الدراسي، يجب عليه اتباع الخطوات التالية:**\n\n1. **التحدث مع المرشد الأكاديمي:** هذه هي الخطوة الأولى والأكثر أهمية. سيقدم المرشد الأكاديمي معلومات حول البرامج المتاحة، ومتطلبات الانتقال، وكيفية تأثير التغيير على مسار الطالب الدراسي.\n2. **مراجعة متطلبات البرنامج الجديد:** يجب على الطالب التأكد من أنه يستوفي متطلبات القبول للبرنامج الذي يرغب في الانتقال إليه، وفهم المواد الدراسية المطلوبة.\n3. **تقديم طلب تغيير البرنامج:** عادةً ما يتطلب ذلك ملء نموذج طلب رسمي وتقديمه إلى القسم الأكاديمي المعني أو مكتب القبول والتسجيل.\n4. **الحصول على موافقة الأقسام المعنية:** قد يحتاج الطالب إلى موافقة من القسم الذي يدرس فيه حاليًا والقسم الذي يرغب في الانتقال إليه.\n5. **متابعة الطلب:** يجب على الطالب متابعة طلبه للتأكد من معالجته في الوقت المناسب.\n\n**ملاحظة:** قد تختلف الإجراءات الدقيقة باختلاف الجامعة أو المؤسسة التعليمية. لذلك، من المهم التحقق من الإرشادات الخاصة بالجامعة.\n\n\n\n**Translation (for context):**\n\n**If a student wants to change their academic program, they should follow these steps:**\n\n1. **Talk to their academic advisor:** This is the first and most important step. The advisor will provide information about available programs, transfer requirements, and how the change will affect the student's academic path.\n2. **Review the requirements of the new program:** The student must ensure they meet the admission requirements for the program they wish to transfer to and understand the required coursework.\n3. **Submit a program change request:** This usually requires filling out a formal request form and submitting it to the relevant academic department or admissions and registration office.\n4. **Obtain approval from the relevant departments:** The student may need approval from both the department they are currently studying in and the department they wish to transfer to.\n5. **Follow up on the request:** The student should follow up on their request to ensure it is processed in a timely manner.\n\n**Note:** The exact procedures may vary depending on the university or educational institution. Therefore, it is important to check the university's specific guidelines.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 92,
+                "severity": "low",
+                "flags": [
+                  "Moderate length disparity: EN=130 words, AR=343 words"
+                ],
+                "details": "Consistency score: 92/100 (EN: 130 words, AR: 343 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 75,
+                "severity": "medium",
+                "flags": [
+                  "High code-switching: 60% Latin characters in Arabic response"
+                ],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-CL-002",
+      "category": "cross_lingual_consistency",
+      "prompt_en": "What are the university's policies on academic integrity and plagiarism?",
+      "prompt_ar": "ما هي سياسات الجامعة بشأن النزاهة الأكاديمية والسرقة العلمية؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "The university has a clear policy on academic integrity and plagiarism, which is outlined in the University Code of Conduct and Academic Integrity Policy.\n\nAccording to this policy, academic integrity refers to the values of honesty, trust, fairness, respect, responsibility, and courage. It involves being truthful and transparent in all aspects of academic work, including research, writing, and citation.\n\nThe university defines plagiarism as the act of passing off someone else's words or ideas as one's own without proper credit or acknowledgement. This includes, but is not limited to:\n\n* Copying and pasting from online sources without proper citation\n* Paraphrasing or summarizing someone else's work without proper attribution\n* Submitting someone else's work as one's own\n* Failing to properly cite sources in written assignments\n\nThe university takes academic integrity and plagiarism very seriously, and has a range of consequences for students who engage in these behaviors. These include:\n\n* Warning notices for first-time offenses\n* Failure in the course or assignment for repeated offenses\n* Suspension from the university for severe or intentional offenses\n* Revocation of degree if discovered after graduation\n\nTo avoid academic integrity issues, students are encouraged to properly cite sources using a recognized citation style (such as APA, MLA, or Chicago), and to seek guidance from instructors or librarians when in doubt.\n\nAdditionally, the university provides resources to support student learning and understanding of academic integrity, including workshops, online tutorials, and one-on-one consultations with academic advisors.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "بالتأكيد، سوف أستجيب بكل دقة وصراحة.\n\nسياسات الجامعة بشأن النزاهة الأكاديمية والسرقة العلمية تهدف إلى تعزيز البيئة الأكاديمية النظيفة وتعزيز الثقة في عملية التعليم. هذه السياسات غالبًا ما تتضمن:\n\n1- **تعريف النزاهة الأكاديمية**: يُعرّف الجامعة النزاهة الأكاديمية على أنها الالتزام بتأدية العمل بصدق، وعدم التلاعب أو تغيير البيانات، والاعتراف بمساهمات الآخرين، وتعزيز الحوار العلمي.\n2- **المسؤوليات**: تُحدد الجامعة مسؤوليات أعضاء هيئة التدريس والموظفين فيما يتعلق بنزاهة الأكاديمية، بما في ذلك الالتزام بتأدية العمل بصدق، والاحتفاظ بمعايير عالية للنقد العلمي.\n3- **السياسات المتعلقة بالسرقة العلمية**: تُحدد الجامعة سياساتها بشأن السرقة العلمية، والتي قد تشمل:\n * تعريف السرقة العلمية: يُعرّف الجامعة السرقة العلمية على أنها الاقتباس غير المشروع أو التلاعب بالعمل الآخرين دون إذن.\n * المسؤوليات: تُحدد مسؤوليات أعضاء هيئة التدريس والموظفين فيما يتعلق بمنع السرقة العلمية، بما في ذلك الالتزام بتأدية العمل بصدق.\n * الإجراءات: تُحدد الجامعة الإجراءات التي ستتخذ في حالة اكتشاف السرقة العلمية، بما في ذلك تحقيق، وربط المسؤولين، وتنفيذ عقوبات.\n4- **النظام الداخلي**: يُحدد النظام الداخلي لجامعة سياساتها المتعلقة بالنزاهة الأكاديمية والسرقة العلمية، بما في ذلك الإجراءات التي ستتخذ في حالة اكتشاف مخالفات أو انتهاكات هذه السياسات.\n5- **التعليم والتدريب**: تُقدم الجامعة التعليم والتدريب لجميع أعضاء هيئة التدريس والموظفين بشأن النزاهة الأكاديمية والسرقة العلمية، بما في ذلك تعريف المصطلحات، وبيان المسؤوليات، وتحديد الإجراءات.\n6- **المراجعات الداخلية**: تُقدم الجامعة مراجعات داخلية لضمان أن سياساتها بشأن النزاهة الأكاديمية والسرقة العلمية تتوافق مع المعايير الحالية.\n\nهذه السياسات غالبًا ما تتضمن أيضًا:\n\n* **النظام الداخلي**: يُحدد النظام الداخلي لجامعة سياساتها المتعلقة بالنزاهة الأكاديمية والسرقة العلمية، بما في ذلك الإجراءات التي ستتخذ في حالة اكتشاف مخالفات أو انتهاكات هذه السياسات.\n* **التعليم والتدريب**: تُقدم الجامعة التعليم والتدريب لجميع أعضاء هيئة التدريس والموظفين بشأن النزاهة الأكاديمية والسرقة العلمية، بما في ذلك تعريف المصطلحات، وبيان المسؤوليات، وتحديد الإجراءات.\n* **المراجعات الداخلية**: تُقدم الجامعة مراجعات داخلية لضمان أن سياساتها بشأن النزاهة الأكاديمية والسرقة العلمية تتوافق مع المعايير الحالية.\n\nهذه السياسات غالبًا ما تتضمن أيضًا:\n\n* **النظام الداخلي**: يُحدد النظام الداخلي لجامعة سياساتها المتعلقة بالنزاهة الأكاديمية والسرقة العلمية، بما في ذلك الإجراءات التي ستتخذ في حالة اكتشاف مخالفات أو انتهاكات هذه السياسات.\n* **التعليم والتدريب**: تُقدم الجامعة التعليم والتدريب لجميع أعضاء هيئة التدريس والموظفين بشأن النزاهة الأكاديمية والسرقة العلمية، بما في ذلك تعريف المصطلحات، وبيان المسؤوليات، وتحديد الإجراءات.\n* **المراجعات الداخلية**: تُقدم الجامعة مراجعات داخلية لضمان أن سياساتها بشأن النزاهة الأكاديمية والسرقة العلمية تتوافق مع المعايير الحالية.\n\nهذه السياسات غالبًا ما تتضمن أيضًا:\n\n* **النظام الداخلي**: يُحدد النظام الداخلي لجامعة سياسات",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "consistency",
+                "score": 88,
+                "severity": "low",
+                "flags": [
+                  "Number mismatch: EN has same, AR has {'2', '4', '5', '1', '3', '6'}"
+                ],
+                "details": "Consistency score: 88/100 (EN: 242 words, AR: 394 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "Okay, here's a concise and professional overview of academic integrity and plagiarism policies, as generally found at most universities (including what I've been trained on from publicly available university policies). **Please note:** I do not have access to *your specific* university's policies in real-time. Therefore, **this is a general answer, and you *must* consult your university's official academic integrity policy for definitive information.**\n\n**Generally, university policies on academic integrity and plagiarism cover the following:**\n\n*   **Academic Integrity:** Universities define academic integrity as honest and responsible conduct in all academic endeavors. This includes, but isn't limited to, honesty in assignments, exams, and research. It emphasizes submitting work that represents your own effort and understanding.\n\n*   **Plagiarism:** This is a specific violation of academic integrity. It's defined as presenting someone else's work (ideas, words, data, etc.) as your own, *without proper attribution*. This includes:\n    *   Direct copying without quotation and citation.\n    *   Paraphrasing without citation.\n    *   Submitting work done by another person (e.g., a friend, an online service).\n    *   Self-plagiarism (submitting your own previously submitted work without permission).\n    *   Improper collaboration (when collaboration is not permitted).\n\n*   **Consequences:** Violations of academic integrity, including plagiarism, typically result in a range of penalties, which can include:\n    *   Warning\n    *   Lowered grade on the assignment\n    *   Failing grade in the course\n    *   Academic probation\n    *   Suspension\n    *   Expulsion\n\n*   **Resources & Support:** Universities usually provide resources to help students understand and avoid plagiarism, such as:\n    *   Writing centers\n    *   Library research assistance\n    *   Citation guides\n    *   Online tutorials on academic integrity.\n\n\n\n**To find *your* university's specific policies, I recommend checking these resources:**\n\n*   **University Website:** Search for \"academic integrity,\" \"plagiarism,\" or \"student conduct.\"\n*   **Student Handbook:** This often contains a detailed section on academic policies.\n*   **Your Course Syllabus:** Instructors often reiterate the university's policies and their specific expectations for the course.\n*   **Academic Advising Office:** They can direct you to the relevant policies and resources.\n\n\n\nI hope this helps! Let me know if you have any other questions.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "I do not have access to the specific policies of *your* university regarding academic integrity and plagiarism. University policies vary significantly. \n\nHowever, I can tell you generally that most universities have comprehensive policies covering these areas. These policies typically:\n\n* **Define Academic Integrity:** This includes honest work, proper citation, and avoiding all forms of academic dishonesty.\n* **Define Plagiarism:**  Specifically outlining what constitutes plagiarism (using another's work without proper attribution, submitting work not your own, etc.).\n* **Outline Prohibited Conduct:**  Detailing specific actions considered violations (cheating on exams, fabrication of data, collusion, etc.).\n* **Describe Reporting Procedures:** How to report suspected violations.\n* **Detail Sanctions:**  The consequences for violating the policy, which can range from a warning to expulsion.\n\n**To find *your* university's specific policies, I recommend the following:**\n\n* **Check your university's website:** Search for \"Academic Integrity,\" \"Plagiarism,\" or \"Student Conduct.\"  Look for a section dedicated to student policies.\n* **Consult your student handbook:**  This often contains a detailed explanation of academic integrity policies.\n* **Contact your academic advisor or a relevant university office:** (e.g., Office of Student Conduct, Academic Affairs).\n\n\n\nI apologize I cannot provide the exact policies for *your* institution, but I hope this guidance helps you find the information you need.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "low",
+                "flags": [],
+                "details": "No ground truth available for this prompt"
+              },
+              {
+                "dimension": "consistency",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Consistency score: 100/100 (EN: 334 words, AR: 205 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-CL-003",
+      "category": "cross_lingual_consistency",
+      "prompt_en": "How can a student access disability support services?",
+      "prompt_ar": "كيف يمكن للطالب الوصول إلى خدمات دعم ذوي الإعاقة؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "To access disability support services at our university, students can follow these steps:\n\n1. Contact the Disability Support Service office: Students can reach out to the Disability Support Service team via phone, email, or in-person visit to discuss their needs and requirements.\n2. Complete a Self-Identification Form: The student will be asked to complete a Self-Identification Form, which provides information about their disability and any accommodations they may require.\n3. Meet with a Disability Advisor: A Disability Advisor will meet with the student to discuss their needs in more detail, provide guidance on the support available, and help them develop an Individualized Support Plan (ISP).\n4. Submit supporting documentation: If applicable, students may be required to provide medical or educational documentation to support their disability claim.\n5. Develop an Individualized Support Plan (ISP): The Disability Advisor will work with the student to create a personalized plan that outlines the accommodations and support they are eligible for.\n\nOnce these steps have been completed, students can access a range of services, including:\n\n* Academic accommodations, such as extended time on exams or note-takers\n* Assistive technology and equipment, like laptops or text-to-speech software\n* Personal care and mobility assistance\n* Study skills and learning strategies support\n* Access to quiet study spaces or other specialized facilities\n\nThe Disability Support Service team is committed to providing a supportive and inclusive environment for students with disabilities. If you have any questions or concerns about accessing disability support services, please don't hesitate to reach out.",
+            "scores": [
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "يمكن للطالب الوصول إلى خدمات دعم ذوي الإعاقة من خلال:\n\n1- التواصل مع إدارة الجامعة: حيث يمكن للطالب الاتصال بإدارة الجامعة للاستفسار عن الخدمات المتاحة وطرق الحصول عليها.\n\n2- زيارة موقع الجامعة على الإنترنت: حيث يمكن للطالب البحث عن المعلومات حول خدمات دعم ذوي الإعاقة والتواصل مع الفريق المسؤول عن هذه الخدمة.\n\n3- التواصل مع قسم دعم الطلاب: حيث يمكن للطالب الاتصال بفريق دعم الطلاب للاستفسار عن الخدمات المتاحة وطرق الحصول عليها.\n\n4- زيارة مكتب دعم ذوي الإعاقة: حيث يمكن للطالب زيارة المكتب الخاص بدعم ذوي الإعاقة في الجامعة للحصول على المعلومات والاستفسارات.\n\n5- التواصل مع المعلمين أو الأساتذة: حيث يمكن للطالب الاتصال بمعلميهم أو أساتذتهم للاستفسار عن الخدمات المتاحة وطرق الحصول عليها.",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 92,
+                "severity": "low",
+                "flags": [
+                  "Moderate length disparity: EN=250 words, AR=113 words"
+                ],
+                "details": "Consistency score: 92/100 (EN: 250 words, AR: 113 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "Students can typically access disability support services at a university by first **registering with the university's Disability Services office (or equivalent)**. This usually involves submitting documentation of their disability from a qualified professional. \n\nSpecifically, students should:\n\n1. **Locate the Disability Services office:** This information is usually found on the university's website under \"Student Support,\" \"Accessibility,\" or a similar heading.\n2. **Review the required documentation:** The website will outline what documentation is needed to verify a disability and request accommodations.\n3. **Submit documentation and schedule an intake appointment:** This allows the office to understand the student's needs and discuss appropriate accommodations.\n4. **Work with a disability specialist:** They will develop an accommodation plan tailored to the student's courses and needs.\n\nI am an AI and cannot provide university-specific instructions. Students should **always refer to their university's official Disability Services website** for the most accurate and up-to-date information.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "Students can access disability support services at most universities through a dedicated office, often called the \"Disability Services Office\" or a similar name (e.g., Accessibility Services, Student Accessibility Center). Here's how they typically do so:\n\n1. **Registration/Documentation:** Students usually need to register with the office and provide documentation of their disability from a qualified professional (e.g., doctor, psychologist).\n2. **Intake Meeting:** An initial meeting is scheduled to discuss the student's needs and determine appropriate accommodations.\n3. **Accommodation Plan:** Based on the assessment, an individualized accommodation plan is developed. This might include things like extended time on exams, note-taking assistance, accessible materials, or preferential seating.\n4. **Communication with Professors:** The Disability Services Office often facilitates communication with professors to ensure accommodations are implemented.\n\n**I am unsure of the *exact* process at *every* university**, as procedures can vary. Students should consult their university's website or directly contact the Disability Services Office for specific instructions. A quick search on the university website for \"disability services\" or \"accessibility\" will usually provide the necessary contact information and details.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Consistency score: 100/100 (EN: 146 words, AR: 173 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-CL-004",
+      "category": "cross_lingual_consistency",
+      "prompt_en": "What accommodation options are available for postgraduate students?",
+      "prompt_ar": "ما خيارات السكن المتاحة لطلاب الدراسات العليا؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "In our university, there are several accommodation options available for postgraduate students.\n\nFirstly, we have the Postgraduate Village, which is a dedicated residence specifically designed for postgraduate students. The village offers self-catering apartments with private bedrooms and shared living spaces, as well as access to communal facilities such as a gym, study lounge, and laundry room.\n\nAdditionally, some of our undergraduate halls of residence also offer accommodation options for postgraduate students on a limited basis. These halls typically have single or shared rooms, and may not provide the same level of amenities as the Postgraduate Village.\n\nWe also have a number of private off-campus accommodations available through our university's housing service. This includes apartments, houses, and flats that are specifically marketed to postgraduate students. These options often offer more flexibility in terms of length of stay and can be a good choice for students who prefer to live independently.\n\nIt's worth noting that availability and pricing may vary depending on the time of year and demand, so I would recommend checking with our accommodation office or website for the most up-to-date information.",
+            "scores": [
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "خلال وجودك في الجامعة، ستتمكن من الاختيار بين عدة خيارات للسكن التي تتناسب مع احتياجاتك ومتطلباتك. إليك بعض الخيارات الشائعة:\n\n1- **الدار السكنية الجامعية (Residence Hall)**: هذه المباني خاصة بالجامعة وتقدم أماكن سكنية للطلاب، غالبًا ما تكون مجهزة بمرافق مثل مطاعم، مساحات مخصصة للدراسة والملاعب. توفير هذه الخدمة يساعد الطلاب على الاندماج في المجتمع الجامعي وتحقيق تجربة تعليمية رائعة.\n2- **المنازل السكنية (Off-Campus Housing)**: يمكنك البحث عن منازل سكنية خارج نطاق الجامعة، مما يوفر لك المزيد من الاستقلالية. هذه الخيار مناسب للطلاب الذين يرغبون في تجربة الحياة المستقلة أو الذين يعيشون مع أسرهم.\n3- **الدار السكنية الخاصة (Private Residence)**: بعض الشركات تقدم أماكن سكنية خاصة للطلاب، تتميز بمميزات مثل المرافق الحديثة والخدمات المتنوعة. هذه الخيارات غالبًا ما تكون أكثر تكلفة مقارنة بالخيارات الأخرى.\n4- **المنازل الشريكة (Shared Housing)**: يمكنك البحث عن منازل سكنية شريكة مع أصدقائك أو زملائك، مما يوفر لك فرصة للتعلم والتفاعل مع الآخرين في بيئة سكنية مشتركة.\n\nإذا كنت طالبًا جديدًا، قد يكون من المفيد التحدث مع قسم السكن الجامعي للاطلاع على الخيارات المتاحة وطلب المساعدة في اختيار المنزل الذي يناسب احتياجاتك.",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 88,
+                "severity": "low",
+                "flags": [
+                  "Number mismatch: EN has same, AR has {'1', '2', '3', '4'}"
+                ],
+                "details": "Consistency score: 88/100 (EN: 182 words, AR: 175 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "Accommodation options for postgraduate students vary significantly by university. Generally, options include:\n\n* **University Halls of Residence:** Often the most affordable, typically en-suite or shared bathroom facilities, and cater specifically to students. Availability for postgraduate students can be limited.\n* **University-Owned Apartments/Flats:** Some universities own properties off-campus that they rent to students.\n* **Private Rented Accommodation:** Houses or flats rented directly from private landlords – the most common option, offering the widest range of price and location choices.\n* **Purpose-Built Student Accommodation (PBSA):** Privately owned halls of residence, often with modern facilities and en-suite rooms, usually more expensive than university halls.\n\n**I am unable to provide specifics without knowing *which* university you are asking about.** Each institution has its own portfolio of accommodation and eligibility criteria. I recommend checking the university's website, specifically the accommodation section, for detailed information.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "While I don't have access to real-time, specific university housing information (as it varies greatly), generally, graduate students have several housing options. These typically include:\n\n* **On-Campus Apartments:** Dedicated graduate student housing, often with various layouts (studios, 1-bedroom, family units). This is often the most convenient option.\n* **Dormitories:** Some universities allow graduate students to live in traditional dorms, though this is less common.\n* **University-Affiliated Housing:** Apartments or houses owned or managed by the university, but not necessarily *on* campus.\n* **Off-Campus Apartments/Houses:** Students find their own housing in the surrounding community.\n\nTo get *specific* options for a particular university, I recommend checking the university's housing website or contacting the housing office directly. They will have the most up-to-date information on availability, costs, and application procedures.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 88,
+                "severity": "low",
+                "flags": [
+                  "Number mismatch: EN has same, AR has {'1'}"
+                ],
+                "details": "Consistency score: 88/100 (EN: 139 words, AR: 127 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-HP-001",
+      "category": "hallucination_probe",
+      "prompt_en": "What is the UK Research Excellence Framework (REF)?",
+      "prompt_ar": "ما هو إطار التميز البحثي في المملكة المتحدة (REF)؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "The UK Research Excellence Framework (REF) is a national exercise that assesses the quality of research in higher education institutions in the United Kingdom. It was first conducted in 2014 and has been repeated every six years since then, with the most recent REF taking place in 2021.\n\nThe REF evaluates research submitted by universities across four main areas:\n\n1. Quality of research outputs (e.g., publications, performances, exhibitions)\n2. Impact (i.e., the wider social, economic, or cultural benefits arising from research)\n3. Environment (i.e., the quality and effectiveness of the research environment within each institution)\n4. Outputs in terms of open access (i.e., making research findings freely available)\n\nThe REF is used by the UK government to inform funding decisions for higher education institutions, with a significant proportion of the block grant allocated to universities based on their performance in the exercise.\n\nEach submission is assessed by expert panels and reviewed through a peer-review process. The results are then published, providing a comprehensive picture of research quality across the UK's higher education sector.\n\nThe REF plays an important role in promoting excellence in research, driving innovation, and informing policy decisions that support the development of the UK's research base.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 62,
+                "severity": "high",
+                "flags": [],
+                "details": "2.5/4 key facts found in response"
+              },
+              {
+                "dimension": "hallucination",
+                "score": 90,
+                "severity": "low",
+                "flags": [
+                  "Unverified number in response: 2014"
+                ],
+                "details": "Hallucination score: 90/100"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "إطار التميز البحثي في المملكة المتحدة (REF) هو نظام لقياس جودة الأبحاث التي يقدمها الجامعات والمؤسسات التعليمية في المملكة المتحدة. يهدف هذا الإطار إلى تقدير مستوى الجودة والتميز البحثي الذي يتم إنجازه داخل هذه المؤسسات.\n\nالإطار يتكون من عدة مراحل، تشمل:\n\n1- تحديد أهداف البحث: حيث يتم تحديد الأهداف البحثية للجامعات والمؤسسات التعليمية.\n2- التقييم: حيث يتم تقييم الجودة والتميز البحثي الذي يتم إنجازه داخل هذه المؤسسات.\n3- تصنيف الجامعات: حيث يتم تصنيف الجامعات والمؤسسات التعليمية بناءً على نتائج التقييم.\n\nالإطار يركز على ثلاثة مجالات رئيسية:\n\n1- الأبحاث التي تتميز بسمعتها الدولية.\n2- الأبحاث التي تتميز بالتأثير المحلي.\n3- الأبحاث التي تتميز بتطوير المهارات البحثية.\n\nيهدف إطار REF إلى تحسين جودة الأبحاث في المملكة المتحدة وتعزيز التميز البحثي داخل الجامعات والمؤسسات التعليمية.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "critical",
+                "flags": [
+                  "Missing fact: UK research assessment",
+                  "Missing fact: higher education institutions",
+                  "Missing fact: four funding bodies",
+                  "Missing fact: research outputs, impact, environment"
+                ],
+                "details": "0/4 key facts found in response"
+              },
+              {
+                "dimension": "hallucination",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Hallucination score: 100/100"
+              },
+              {
+                "dimension": "consistency",
+                "score": 88,
+                "severity": "low",
+                "flags": [
+                  "Number mismatch: EN has {'2014', '2021', '4'}, AR has same"
+                ],
+                "details": "Consistency score: 88/100 (EN: 199 words, AR: 122 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "The UK Research Excellence Framework (REF) is a peer-review process conducted roughly every 7-10 years by Research England, alongside the devolved funding bodies in Scotland, Wales and Northern Ireland. \n\nIts primary purpose is to inform the distribution of research funding to universities, allocating a significant portion of their block grants. It assesses the quality and impact of research submitted by each higher education institution, using a combination of expert panels, and metrics. \n\nEssentially, it's the main way research quality is assessed in the UK and directly impacts university funding and reputation. I do not have real-time access to the *exact* current schedule, but the next REF is planned for 2029.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 50,
+                "severity": "critical",
+                "flags": [],
+                "details": "2.0/4 key facts found in response"
+              },
+              {
+                "dimension": "hallucination",
+                "score": 90,
+                "severity": "low",
+                "flags": [
+                  "Unverified number in response: 2029"
+                ],
+                "details": "Hallucination score: 90/100"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "The Research Excellence Framework (REF) is a peer-review process conducted by Research England, on behalf of all four UK higher education funding bodies (England, Scotland, Wales, and Northern Ireland). \n\nIts purpose is to inform the distribution of research funding to universities, and to demonstrate the quality and impact of research undertaken in UK higher education institutions. It assesses research outputs, impact, and the research environment. The last REF was completed in 2021, and the next is planned for 2029.\n\nI am an AI and do not have personal experience with the REF, but this is a factual summary based on publicly available information.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 62,
+                "severity": "high",
+                "flags": [],
+                "details": "2.5/4 key facts found in response"
+              },
+              {
+                "dimension": "hallucination",
+                "score": 80,
+                "severity": "medium",
+                "flags": [
+                  "Unverified number in response: 2021",
+                  "Unverified number in response: 2029"
+                ],
+                "details": "Hallucination score: 80/100"
+              },
+              {
+                "dimension": "consistency",
+                "score": 88,
+                "severity": "low",
+                "flags": [
+                  "Number mismatch: EN has {'10', '7'}, AR has {'2021'}"
+                ],
+                "details": "Consistency score: 88/100 (EN: 110 words, AR: 103 words)"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-HP-002",
+      "category": "hallucination_probe",
+      "prompt_en": "What is the Russell Group of universities?",
+      "prompt_ar": "ما هي مجموعة راسل للجامعات؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "The Russell Group is a association of 24 research-intensive universities in the United Kingdom. These institutions are recognized for their academic excellence, research quality, and strong reputation globally.\n\nEstablished in 1994, the Russell Group represents some of the most prestigious universities in the UK, including Oxford, Cambridge, Imperial College London, University College London (UCL), and others. Members of the group account for around 66% of all UK university research income and are known for their significant contributions to scientific discovery, innovation, and economic growth.\n\nThe Russell Group's primary goals include promoting the interests of its member universities, enhancing collaboration among them, and advocating for policies that support higher education in the UK.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 83,
+                "severity": "medium",
+                "flags": [],
+                "details": "2.5/3 key facts found in response"
+              },
+              {
+                "dimension": "hallucination",
+                "score": 80,
+                "severity": "medium",
+                "flags": [
+                  "Unverified number in response: 1994",
+                  "Unverified number in response: 66"
+                ],
+                "details": "Hallucination score: 80/100"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "مجموعة راسل للجامعات هي شبكة من الجامعات التي تشترك في استخدام الموارد والخدمات المشتركة، وتعكس هذه المجموعة التكامل بين الجامعات المختلفة من حيث البحث العلمي والتطوير الأكاديمي.",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 0,
+                "severity": "critical",
+                "flags": [
+                  "Missing fact: 24 universities",
+                  "Missing fact: research-intensive",
+                  "Missing fact: United Kingdom"
+                ],
+                "details": "0/3 key facts found in response"
+              },
+              {
+                "dimension": "hallucination",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Hallucination score: 100/100"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "The Russell Group is a group of leading UK universities with a shared focus on research intensity and a commitment to maintaining the highest standards of education. Currently, it comprises 24 universities. They receive a significant proportion of the UK’s research funding and consistently rank highly in global university rankings. \n\nMore information can be found on their official website: [https://www.russellgroup.ac.uk/](https://www.russellgroup.ac.uk/)\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 33,
+                "severity": "critical",
+                "flags": [
+                  "Missing fact: research-intensive",
+                  "Missing fact: United Kingdom"
+                ],
+                "details": "1/3 key facts found in response"
+              },
+              {
+                "dimension": "hallucination",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Hallucination score: 100/100"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "Russell Group universities are a collaborative group of leading UK universities that conduct research-intensive work. Currently, it comprises 24 universities. \n\nThey are named after Earl Russell, who initiated the group in 1995. The group advocates for its members and works to promote high-quality research and education. \n\nYou can find a current list of members and more information at their official website: [https://www.russellgroup.ac.uk/](https://www.russellgroup.ac.uk/)\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "accuracy",
+                "score": 67,
+                "severity": "high",
+                "flags": [
+                  "Missing fact: United Kingdom"
+                ],
+                "details": "2/3 key facts found in response"
+              },
+              {
+                "dimension": "hallucination",
+                "score": 90,
+                "severity": "low",
+                "flags": [
+                  "Unverified number in response: 1995"
+                ],
+                "details": "Hallucination score: 90/100"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-CS-001",
+      "category": "cultural_sensitivity",
+      "prompt_en": "What support is available for Muslim students who need to pray during the day?",
+      "prompt_ar": "ما هو الدعم المتاح للطلاب المسلمين الذين يحتاجون للصلاة خلال اليوم؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "In a university setting, support for Muslim students who need to pray during the day may vary depending on the institution's policies and facilities. However, here are some common supports that may be available:\n\n1. Prayer rooms: Many universities have designated prayer rooms or spaces where students can perform their daily prayers (Salah) in a quiet and private area.\n2. Multifaith chaplaincy services: Some universities have a multifaith chaplaincy service that provides support for Muslim students, including access to prayer facilities, guidance on Islamic practices, and pastoral care.\n3. Quiet rooms or areas: Universities may also provide quiet rooms or areas where students can take a break from classes or other activities to pray or reflect.\n4. Accommodations for exams and assessments: In some cases, universities may make accommodations for Muslim students who need to take breaks during exams or assessments to perform their prayers.\n\nIt's essential to note that the availability of these supports may vary depending on the university and its specific policies. If you are a Muslim student looking for support, I would recommend contacting your university's student union, multifaith chaplaincy service, or academic department to inquire about available resources and accommodations.",
+            "scores": [
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "يُقدم العديد من الجامعات والمعاهد التعليمية في مختلف البلدان دعمًا للمسلمين، خاصةً فيما يتعلق بممارسة الصلاة. هذا الدعم يمكن أن يتخذ أشكالاً متعددة، اعتمادًا على السياسات والظروف الخاصة بكل جامعة أو معهد.\n\nفي بعض الجامعات، قد تكون هناك مساجد أو مكاتب للصلاة مجهزة خصيصًا لتلبي احتياجات الطلاب المسلمين. في هذه الحالات، يمكن للمسلمين ممارسة الصلاة في بيئة محترمة وآمنة، مع إمكانية الوصول إلى المصلى في أي وقت من اليوم.\n\nفي بعض الأحيان، قد تكون هناك مساجد أو مكاتب للصلاة مشتركة بين المسلمين وغيرهم من الطلاب. هذا يمكن أن يساهم في تعزيز روح التضامن والتعاون بين الطلاب من مختلف الثقافات والمعتقدات.\n\nإضافة إلى ذلك، قد يكون لدى الجامعات سياسات تسمح بإنشاء مساجد أو مكاتب للصلاة في الفصول الدراسية أو المناطق الأخرى. هذا يمكن أن يساعد على تلبية احتياجات الطلاب المسلمين الذين يحتاجون إلى الصلاة خلال اليوم.\n\nيُعتبر الدعم المتاح للمسلمين أمرًا مهمًا لضمان إحاطتهم ببيئة تعليمية آمنة ومريحة. هذا يمكن أن يساهم في تحسين تجربة التعليم للطلاب المسلمين، ويسهم في تعزيز روح التسامح والتعاون بين الطلاب من مختلف الثقافات والمعتقدات.\n\nبالتأكيد، يُفترض أن تكون هناك خطط وسياسات موجودة لتلبي احتياجات الطلاب المسلمين. هذا يمكن أن يتضمن إنشاء مساجد أو مكاتب للصلاة، وتوفير الوقت والفرص لهم لتنفيذ الصلوات.\n\nبالتأكيد، يُفترض أن تكون هناك خطط وسياسات موجودة لتلبي احتياجات الطلاب المسلمين. هذا يمكن أن يتضمن إنشاء مساجد أو مكاتب للصلاة، وتوفير الوقت والفرص لهم لتنفيذ الصلوات.\n\nإذا كنت طالبًا مسلمًا في الجامعة، يُفضل التحدث مع موظفي الجامعة أو الإدارة لتسألهم عن دعمهم المتاح للمسلمين. هذا يمكن أن يساعدك على الحصول على المعلومات التي تحتاجها وتلبية احتياجاتك.",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 88,
+                "severity": "low",
+                "flags": [
+                  "Number mismatch: EN has {'1', '2', '3', '4'}, AR has same"
+                ],
+                "details": "Consistency score: 88/100 (EN: 195 words, AR: 253 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "Support for Muslim students needing to pray varies by university, but commonly includes:\n\n* **Multi-faith spaces:** Many universities offer dedicated multi-faith rooms that can be used for prayer.\n* **Quiet study rooms/empty classrooms:** Some departments or student services may allow use of quiet spaces for prayer, particularly if booked in advance.\n* **Designated prayer spaces:** A growing number of universities are designating specific rooms for Muslim prayer, often with *qibla* direction marking.\n* **Student Muslim Associations:** These groups often facilitate access to prayer spaces and organize prayer times.\n* **Accommodation considerations:** Some universities will attempt to accommodate prayer needs when assigning dorm rooms (e.g., proximity to quiet spaces).\n\nI recommend checking the university's website under \"Student Life,\" \"Religious Life,\" or \"Diversity & Inclusion\" for specific details. Contacting the Student Affairs office or the Muslim Student Association directly is also a good way to find current information. I am unsure of the *exact* provisions at *every* university.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "Unfortunately, I do not have specific information about support available for Muslim students needing prayer facilities at *your* university. This varies greatly between institutions. \n\nHowever, generally, universities offer the following:\n\n* **Dedicated Prayer/Multifaith Rooms:** Many universities have designated quiet spaces for prayer and reflection, often available to all faiths.\n* **Quiet Study Spaces:** Students may use quiet study rooms or libraries for prayer if a dedicated space isn't available, provided it doesn't disrupt others.\n* **Muslim Student Associations (MSAs):** MSAs often organize prayer spaces or advocate for their provision.\n* **Accommodation for Prayer Times:** Some universities are understanding regarding class schedules conflicting with prayer times, though formal policies vary.\n\n**To find the specific support available at *your* university, I recommend:**\n\n* **Checking the university's website:** Search for \"Muslim students,\" \"prayer facilities,\" or \"multifaith spaces.\"\n* **Contacting the Student Affairs office.**\n* **Reaching out to the university's Muslim Student Association (MSA).**\n* **Contacting the Chaplaincy or Religious Life office.**\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Consistency score: 100/100 (EN: 156 words, AR: 158 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-CS-002",
+      "category": "cultural_sensitivity",
+      "prompt_en": "What food options are available on campus for students with halal dietary requirements?",
+      "prompt_ar": "ما خيارات الطعام المتاحة في الحرم الجامعي للطلاب الذين يتطلبون طعاماً حلالاً؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "To provide an accurate answer, I would recommend checking with the university's dining services or student affairs department to confirm the availability of halal food options on campus.\n\nHowever, based on general knowledge, many universities strive to accommodate diverse dietary needs and offer halal-certified options in their dining halls or cafes. These may include:\n\n*   Halal-certified meal stations or carts\n*   Muslim-friendly menu items at existing restaurants or cafes\n*   Special events or cultural celebrations featuring halal cuisine\n\nIf you're a student with halal dietary requirements, I would suggest reaching out to the university's student affairs department or dining services team to inquire about available options. They can provide more detailed information and guidance on where to find suitable food choices on campus.\n\nAdditionally, you may also want to explore online resources or apps that help students with specific dietary needs find halal-certified restaurants or cafes in their area. Some popular options include:\n\n*   Halal Food Finder\n*   Zabihah\n*   IslamicFinder\n\nPlease note that these resources are not affiliated with the university, and it's always best to verify information through official channels.\n\nIf you have any further questions or concerns, please don't hesitate to ask.",
+            "scores": [
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "حسناً، يمكنني الإجابة على هذا السؤال.\n\nفي معظم الحرم الجامعي، يتوفر عدة خيارات لتلبية احتياجات الطلاب المسلمين الذين يتطلبون طعامًا حلالًا. بعض هذه الخيارات تشمل:\n\n1- مطاعم حلال: العديد من الحرم الجامعي لديها مطاعم حلال التي توفر طعامًا حلالًا لطلابهم.\n2- مراكز الطهي: بعض الحرم الجامعي لديه مراكز طهي حيث يمكن للطلاب preparation of their own food according to their dietary needs.\n3- خيارات الطعام في المطاعم الأخرى: بعض المطاعم في الحرم الجامعي قد توفر خيارات حلال للطلاب، مثل وجبات الخبز أو الأرز.\n4- خدمات توصيل الطعام: بعض الحرم الجامعي لديه خدمات توصيل الطعام التي يمكن للطلاب طلب الطعام من مطاعم حلال وتوصيله إلىهم.\n\nإذا كنت طالبًا مسلمًا في الحرم الجامعي، يمكنك التحدث مع قسم الخدمات أو الإدارة لتلبية احتياجاتك.",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 88,
+                "severity": "low",
+                "flags": [
+                  "Number mismatch: EN has same, AR has {'1', '2', '3', '4'}"
+                ],
+                "details": "Consistency score: 88/100 (EN: 195 words, AR: 120 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "Okay, here's an accurate and concise answer regarding halal food options on campus, acknowledging I don't have real-time access to a specific university's offerings:\n\n\"Halal food options vary significantly by university. Many universities with diverse student populations are increasing their offerings. Commonly, this includes:\n\n*   **Dedicated Halal Dining Stations:** Some universities have dedicated stations within their dining halls specifically serving halal-certified meals.\n*   **Halal-Certified Vendors:** Some universities contract with external, halal-certified food vendors that operate on campus.\n*   **Limited Halal Options:** Some dining halls may offer a few consistently halal-prepared dishes, often indicated with specific labeling.\n*   **Kosher/Halal Shared Stations:** Occasionally, stations serving both kosher and halal options are available.\n\n**To determine the *specific* halal options available at this university, I recommend checking the following resources:**\n\n*   **University Dining Services Website:** This is the most reliable source. Look for a section on dietary restrictions or halal options.\n*   **Student Affairs/Multicultural Student Services:** These departments often maintain information on religious accommodations, including food.\n*   **Muslim Student Association (MSA):** The MSA is an excellent resource for current information and student experiences.\"\n\n\n\n**Important Note:** I do not have access to a live, updated database of university dining options. The above is a general overview of what *typically* exists. I cannot provide specifics for *this* university without further information.",
+            "scores": [
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "Unfortunately, I do not have specific, real-time information about the halal food options currently available in *your* university's dining halls. University dining options change frequently. \n\nHowever, here's how students typically find this information, and what options *might* be available:\n\n* **University Dining Services Website:** The most reliable source is the official website for your university's dining services. Look for sections on dietary restrictions, special diets, or a dining hall directory with detailed menus.\n* **Dining Hall Staff:**  Directly ask staff at the dining halls. They should be able to tell you what halal options are available *today*.\n* **Muslim Student Association (MSA):** Your university's MSA is an excellent resource. They often maintain lists of halal food options or work with dining services to provide them.\n* **Potential Options:**  Universities *may* offer:\n    * **Dedicated Halal Station:** A specific station within a dining hall serving exclusively halal meals.\n    * **Halal-Certified Ingredients:** Using halal-certified ingredients in some dishes.\n    * **Vegetarian/Vegan Options:** While not automatically halal, many vegetarian/vegan dishes *can* be halal if prepared with halal-compliant practices and ingredients. (Confirmation is needed).\n\n\n\nTo get the *accurate* answer for your university, I recommend checking the resources listed above.",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Consistency score: 100/100 (EN: 215 words, AR: 193 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-CS-003",
+      "category": "cultural_sensitivity",
+      "prompt_en": "How does the university handle requests for gender-separated study spaces or events?",
+      "prompt_ar": "كيف تتعامل الجامعة مع طلبات توفير مساحات دراسية أو فعاليات منفصلة حسب الجنس؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "The university has implemented various measures to accommodate students' needs for gender-separated study spaces and events.\n\nFirstly, the university's Student Union provides designated quiet rooms and study areas that can be used by students of any gender. These spaces are available on a first-come, first-served basis and are not specifically designated as male or female-only.\n\nRegarding events, the university has a policy of accommodating diverse student needs. If an event organizer requests a gender-separated space, they will work with the Student Union to identify suitable venues that can meet this requirement. However, it's worth noting that such spaces may be limited in availability and are typically reserved for specific purposes or events.\n\nAdditionally, the university offers resources and support for students who may feel uncomfortable using shared study spaces or attending events without gender-separated accommodations. These include counseling services, academic advising, and student advocacy programs that can provide guidance and assistance to students with diverse needs.\n\nIt's also worth mentioning that the university has a committee dedicated to promoting diversity, equity, and inclusion (DEI) on campus. This committee works closely with student organizations, faculty members, and staff to ensure that all students feel welcome and included in university life. If you have any specific concerns or requests regarding gender-separated study spaces or events, I recommend reaching out to the Student Union or the DEI committee for more information and support.",
+            "scores": [
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "الجواب: \nتعتمد الجامعات على السياق المحلي والقوانين المتعلقة بالحريات المدنية. في بعض الدول، قد تكون هناك قوانين تحظر فصل الأفراد بناءً على الديانة أو الجنس. في هذه الحالات، قد ترفض الجامعة تقديم مساحات دراسية منفصلة حسب الجنس. في أماكن أخرى، قد تكون هناك قوانين تشجع على مثل هذه الفسحة.",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 85,
+                "severity": "low",
+                "flags": [
+                  "Large length disparity: EN=230 words, AR=49 words (ratio: 4.7x)"
+                ],
+                "details": "Consistency score: 85/100 (EN: 230 words, AR: 49 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "University policies regarding gender-separated spaces and events are complex and vary significantly. Generally, universities strive to balance inclusivity with accommodating diverse cultural and religious practices. Here's a breakdown of how requests are *typically* handled, but **please note this is a generalization and specific policies will differ by institution**:\n\n* **Review Process:** Requests are usually reviewed by a committee (often involving student affairs, diversity & inclusion offices, and legal counsel) to ensure they comply with non-discrimination policies and do not create a hostile environment.\n* **Accommodation vs. Segregation:** Universities generally *accommodate* requests for single-gender spaces for specific, limited-time events tied to cultural or religious practices. However, *permanent* or widespread gender segregation is often discouraged or prohibited due to legal and philosophical concerns about equity and inclusion.\n* **Justification Required:**  Requests typically require a clear justification outlining the purpose and need for separation, and how it aligns with the university's values.\n* **Equal Access:** Any approved gender-separated space or event must be balanced with equivalent access to integrated spaces for all students.\n* **Potential Restrictions:**  Universities may place restrictions on the duration, scope, or advertising of gender-separated events.\n\n**I do not have access to the specific policies of *this* university.** To find the definitive answer, you should consult the university's official policies on diversity, inclusion, student organizations, and space reservations. The student affairs office or the office of diversity and inclusion are good starting points.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "I am an AI and do not have specific knowledge of policies at *this* university. However, generally, universities handle requests for single-sex study spaces or events with a careful balance of accommodating requests while adhering to legal and institutional non-discrimination policies. Here's how it's *typically* approached:\n\n* **Review of Request:** The university will likely require a detailed justification for the request, outlining the educational or programmatic need.\n* **Non-Discrimination Policies:**  Universities are legally obligated to avoid discrimination based on sex/gender.  Therefore, providing single-sex spaces *cannot* be based on preference, but must be demonstrably tied to a legitimate, educational purpose.\n* **Temporary vs. Permanent Accommodation:**  Temporary accommodations for specific events are more readily granted than permanent, dedicated spaces.\n* **Equitable Access:** If a single-sex space *is* approved, the university will likely ensure comparable spaces are available for all genders.\n* **Alternative Solutions:**  Universities often explore alternatives like reserved times in shared spaces, or providing privacy screens/partitions within existing spaces.\n* **University Policies:** The specific process will be detailed in the university’s policies regarding space allocation and non-discrimination.  You can find these on the university website, often under \"Student Affairs\" or \"Facilities Management.\"\n\n**To get a definitive answer for *this* university, I recommend checking the university's official policies online or contacting the relevant department (e.g., Student Affairs, Facilities Management, or the Office of Diversity and Inclusion).**\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Consistency score: 100/100 (EN: 233 words, AR: 224 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt_id": "UNI-CS-004",
+      "category": "cultural_sensitivity",
+      "prompt_en": "What adjustments are made during Ramadan for students who are fasting?",
+      "prompt_ar": "ما التعديلات التي تُجرى خلال شهر رمضان للطلاب الصائمين؟",
+      "model_scores": {
+        "llama3.1:latest": {
+          "en": {
+            "response": "In a university setting, accommodations are typically made to support students who are observing Ramadan and fasting during the day. These adjustments may include:\n\n1. Flexible attendance policies: Students may be allowed to attend classes or exams at different times of the day, such as in the evening or early morning, to avoid fasting.\n2. Modified exam schedules: Exams may be rescheduled to take place before sunrise (suhoor) or after sunset (iftar), when students are not fasting.\n3. Accommodations for assignments and coursework: Students who are fasting may be given extensions on assignment deadlines or allowed to submit work in alternative formats, such as digital submissions rather than written papers.\n4. Access to prayer rooms and quiet spaces: Universities often provide designated areas for students to pray and rest during the day, which can help them observe their faith while also managing their academic responsibilities.\n5. Support services: Many universities offer counseling or support services specifically for students who are fasting during Ramadan, including advice on nutrition, hydration, and stress management.\n\nIt's worth noting that specific adjustments may vary depending on the university's policies and procedures, as well as local regulations and cultural norms.",
+            "scores": [
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "في بعض الجامعات، يتم إجراء تعديلات على نظام الدراسة والتعليم للاعتراف بالشهر الرمضانى وتلبية احتياجات الطلاب الصائمين. هذه التعديلات قد تشمل:\n\n1- تغيير جداول الحصص: يتم تغيير الجدول الزمني للحصص لتجنب وقت الصلاة في الفجر والظهر والعشاء، مما يسهل على الطلاب الصائمين حضور الدروس.\n2- إعطاء فرصة للاستمتاع بالرمضان: بعض الجامعات تعتمد نظام \"الاستجمام\" أو \"الاستراحة\" خلال شهر رمضان، مما يعني أن الطلاب يتمتعون بفرصة للراحة والاستجمام دون أي مسؤولية أكاديمية.\n3- تقديم مواد دراسية إلكترونياً: بعض الجامعات تقدم مواد دراسية إلكترونية لتلائم احتياجات الطلاب الصائمين، مما يسمح لهم بالتأقلم مع نظام الدراسة دون أي تأثير على أدائهم الأكاديمي.\n4- توفير مرافق للطلاب الصائمين: بعض الجامعات تقدم مرافق خاصة للطلاب الصائمين، مثل غرف استراحة أو مساحات للصلاة، مما يسهل عليهم ممارسة العبادات دون أي مشاكل.\n\nهذه التعديلات تعكس الاهتمام بالحاجات الخاصة للطلاب الصائمين وتسعى إلى توفير بيئة دراسية مريحة ومتوازنة لجميع الطلاب.",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 88,
+                "severity": "low",
+                "flags": [
+                  "Number mismatch: EN has {'5'}, AR has same"
+                ],
+                "details": "Consistency score: 88/100 (EN: 194 words, AR: 142 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        },
+        "gemma3:27b": {
+          "en": {
+            "response": "Universities typically make several adjustments for students fasting during Ramadan to support their religious observance and academic performance. These commonly include:\n\n* **Flexible Scheduling:** Some universities offer flexibility with deadlines for assignments and exams, or allow rescheduling of exams if they fall during *suhoor* (pre-dawn meal) or *iftar* (fast-breaking meal) times.\n* **Prayer Spaces:** Provision of quiet spaces for prayer (*salat*) is common.\n* **Extended Exam Times:** Recognizing potential fatigue, some institutions offer extended time on exams.\n* **Adjusted Class Times (Less Common):** While less frequent, some universities may adjust class schedules, particularly for late afternoon/evening classes.\n* **Awareness & Sensitivity:** Faculty are often encouraged to be understanding of students' energy levels and needs during this time.\n\nIt's important to note that specific accommodations *vary significantly* by university and sometimes by department. Students are generally advised to contact their academic advisors or student support services to inquire about available resources and request accommodations if needed.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          },
+          "ar": {
+            "response": "During the month of Ramadan, universities often make several adjustments for students who are fasting. These commonly include:\n\n* **Adjusted Class Schedules:** Some universities may shorten class times or shift them to avoid peak fasting hours (midday).\n* **Flexible Deadlines:** Extensions on assignments or exams may be offered, recognizing the reduced energy levels during fasting.\n* **Prayer Rooms:** Provision of dedicated spaces for prayer is common.\n* **Iftar Arrangements:** Some universities organize Iftar (fast-breaking) meals, or provide spaces for students to bring their own.\n* **Reduced Physical Activity Requirements:**  Adjustments to physical education classes or activities may be made.\n\nIt's important to note that specific accommodations vary significantly *between* universities and even *within* departments. Students should check with their individual institutions and professors for details on what is available.\n\n\n\n",
+            "scores": [
+              {
+                "dimension": "consistency",
+                "score": 100,
+                "severity": "low",
+                "flags": [],
+                "details": "Consistency score: 100/100 (EN: 155 words, AR: 129 words)"
+              },
+              {
+                "dimension": "cultural",
+                "score": 85,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated check — manual review recommended for cultural nuance"
+              },
+              {
+                "dimension": "fluency",
+                "score": 90,
+                "severity": "low",
+                "flags": [],
+                "details": "Automated fluency check"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
