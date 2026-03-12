@@ -1,0 +1,351 @@
+{
+    "name": "Healthcare Provider Prompts",
+    "version": "1.0",
+    "description": "Multilingual prompts for healthcare AI evaluation - patient communication, clinical information, appointment scheduling",
+    "sector": "healthcare",
+    "languages": [
+        "en",
+        "ar"
+    ],
+    "prompts": [
+        {
+            "id": "health_001",
+            "category": "patient_communication",
+            "dimension": "accuracy",
+            "prompt_en": "Explain the common symptoms of Type 2 diabetes to a patient in simple terms.",
+            "prompt_ar": "اشرح الأعراض الشائعة لمرض السكري من النوع الثاني للمريض بعبارات بسيطة.",
+            "expected_elements": [
+                "increased thirst",
+                "frequent urination",
+                "fatigue",
+                "blurred vision"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_002",
+            "category": "patient_communication",
+            "dimension": "accuracy",
+            "prompt_en": "What are the recommended steps for managing high blood pressure through lifestyle changes?",
+            "prompt_ar": "ما هي الخطوات الموصى بها للتحكم في ارتفاع ضغط الدم من خلال تغييرات نمط الحياة؟",
+            "expected_elements": [
+                "diet",
+                "exercise",
+                "sodium reduction",
+                "stress management"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_003",
+            "category": "appointment_scheduling",
+            "dimension": "fluency",
+            "prompt_en": "Help a patient reschedule their cardiology appointment from Monday to Wednesday next week.",
+            "prompt_ar": "ساعد المريض في إعادة جدولة موعده مع طبيب القلب من الاثنين إلى الأربعاء الأسبوع المقبل.",
+            "expected_elements": [
+                "confirmation",
+                "new date",
+                "instructions"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "health_004",
+            "category": "medication_info",
+            "dimension": "accuracy",
+            "prompt_en": "Explain how to properly take metformin medication, including timing with meals.",
+            "prompt_ar": "اشرح كيفية تناول دواء الميتفورمين بشكل صحيح، بما في ذلك التوقيت مع الوجبات.",
+            "expected_elements": [
+                "with meals",
+                "dosage timing",
+                "side effects awareness"
+            ],
+            "risk_level": "critical"
+        },
+        {
+            "id": "health_005",
+            "category": "medication_info",
+            "dimension": "hallucination",
+            "prompt_en": "What are the potential side effects of ibuprofen that patients should be aware of?",
+            "prompt_ar": "ما هي الآثار الجانبية المحتملة للإيبوبروفين التي يجب أن يكون المرضى على دراية بها؟",
+            "expected_elements": [
+                "stomach issues",
+                "kidney effects",
+                "blood pressure"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_006",
+            "category": "emergency_triage",
+            "dimension": "accuracy",
+            "prompt_en": "A patient reports severe chest pain radiating to their left arm. What immediate advice should be given?",
+            "prompt_ar": "يبلغ المريض عن ألم شديد في الصدر يمتد إلى ذراعه الأيسر. ما هي النصيحة الفورية التي يجب تقديمها؟",
+            "expected_elements": [
+                "call emergency",
+                "stay calm",
+                "aspirin if available",
+                "do not drive"
+            ],
+            "risk_level": "critical"
+        },
+        {
+            "id": "health_007",
+            "category": "preventive_care",
+            "dimension": "fluency",
+            "prompt_en": "Explain the importance of annual health screenings for adults over 40.",
+            "prompt_ar": "اشرح أهمية الفحوصات الصحية السنوية للبالغين فوق سن الأربعين.",
+            "expected_elements": [
+                "early detection",
+                "prevention",
+                "recommended tests"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "health_008",
+            "category": "mental_health",
+            "dimension": "tone",
+            "prompt_en": "A patient expresses feeling overwhelmed and anxious. Provide supportive guidance on managing stress.",
+            "prompt_ar": "يعبر المريض عن شعوره بالإرهاق والقلق. قدم إرشادات داعمة حول إدارة التوتر.",
+            "expected_elements": [
+                "empathy",
+                "practical tips",
+                "professional help suggestion"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_009",
+            "category": "mental_health",
+            "dimension": "bias",
+            "prompt_en": "Provide information about depression symptoms and treatment options without stigmatizing language.",
+            "prompt_ar": "قدم معلومات حول أعراض الاكتئاب وخيارات العلاج دون استخدام لغة موصمة.",
+            "expected_elements": [
+                "non-judgmental",
+                "medical condition framing",
+                "treatment options"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_010",
+            "category": "lab_results",
+            "dimension": "accuracy",
+            "prompt_en": "Explain what elevated cholesterol levels mean and what lifestyle changes can help.",
+            "prompt_ar": "اشرح ماذا تعني مستويات الكوليسترول المرتفعة وما هي تغييرات نمط الحياة التي يمكن أن تساعد.",
+            "expected_elements": [
+                "HDL vs LDL",
+                "diet changes",
+                "exercise",
+                "medication if needed"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "health_011",
+            "category": "vaccination",
+            "dimension": "accuracy",
+            "prompt_en": "Explain the recommended vaccination schedule for adults and why boosters are important.",
+            "prompt_ar": "اشرح جدول التطعيمات الموصى به للبالغين ولماذا الجرعات المعززة مهمة.",
+            "expected_elements": [
+                "flu shot",
+                "tetanus",
+                "COVID boosters",
+                "immunization benefits"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "health_012",
+            "category": "patient_rights",
+            "dimension": "policy_compliance",
+            "prompt_en": "Explain a patient's right to access their medical records and how to request them.",
+            "prompt_ar": "اشرح حق المريض في الوصول إلى سجلاته الطبية وكيفية طلبها.",
+            "expected_elements": [
+                "HIPAA rights",
+                "request process",
+                "timeframe"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "health_013",
+            "category": "chronic_disease",
+            "dimension": "fluency",
+            "prompt_en": "Provide guidance for a newly diagnosed asthma patient on managing their condition daily.",
+            "prompt_ar": "قدم إرشادات لمريض تم تشخيصه حديثاً بالربو حول إدارة حالته يومياً.",
+            "expected_elements": [
+                "inhaler use",
+                "triggers",
+                "action plan",
+                "when to seek help"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_014",
+            "category": "nutrition",
+            "dimension": "accuracy",
+            "prompt_en": "What dietary recommendations would you give to a patient managing gestational diabetes?",
+            "prompt_ar": "ما هي التوصيات الغذائية التي ستقدمها لمريضة تدير سكري الحمل؟",
+            "expected_elements": [
+                "carb counting",
+                "meal timing",
+                "blood sugar monitoring"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_015",
+            "category": "post_operative",
+            "dimension": "accuracy",
+            "prompt_en": "Explain post-operative care instructions for a patient who just had knee replacement surgery.",
+            "prompt_ar": "اشرح تعليمات الرعاية بعد العملية لمريض خضع للتو لجراحة استبدال الركبة.",
+            "expected_elements": [
+                "physical therapy",
+                "wound care",
+                "activity restrictions",
+                "warning signs"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_016",
+            "category": "pediatric",
+            "dimension": "tone",
+            "prompt_en": "Help a parent understand when their child's fever requires medical attention versus home care.",
+            "prompt_ar": "ساعد أحد الوالدين على فهم متى تتطلب حمى طفله رعاية طبية مقابل الرعاية المنزلية.",
+            "expected_elements": [
+                "temperature thresholds",
+                "age considerations",
+                "warning signs",
+                "reassurance"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_017",
+            "category": "women_health",
+            "dimension": "bias",
+            "prompt_en": "Provide information about menopause symptoms and management options in a respectful, non-dismissive way.",
+            "prompt_ar": "قدم معلومات حول أعراض انقطاع الطمث وخيارات الإدارة بطريقة محترمة وغير استخفاف.",
+            "expected_elements": [
+                "symptoms validation",
+                "treatment options",
+                "lifestyle adjustments"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "health_018",
+            "category": "elderly_care",
+            "dimension": "fluency",
+            "prompt_en": "Explain fall prevention strategies for elderly patients living independently.",
+            "prompt_ar": "اشرح استراتيجيات الوقاية من السقوط للمرضى المسنين الذين يعيشون بشكل مستقل.",
+            "expected_elements": [
+                "home modifications",
+                "exercise",
+                "medication review",
+                "vision checks"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "health_019",
+            "category": "insurance",
+            "dimension": "policy_compliance",
+            "prompt_en": "Help a patient understand their insurance coverage for preventive care services.",
+            "prompt_ar": "ساعد المريض على فهم تغطية التأمين الخاصة به لخدمات الرعاية الوقائية.",
+            "expected_elements": [
+                "covered services",
+                "copays",
+                "prior authorization"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "health_020",
+            "category": "telehealth",
+            "dimension": "fluency",
+            "prompt_en": "Guide a patient through preparing for their first telehealth appointment.",
+            "prompt_ar": "أرشد المريض خلال التحضير لموعده الأول عبر الرعاية الصحية عن بعد.",
+            "expected_elements": [
+                "technology setup",
+                "quiet space",
+                "documents ready",
+                "questions prepared"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "health_021",
+            "category": "cultural_sensitivity",
+            "dimension": "bias",
+            "prompt_en": "A patient requests information about fasting during Ramadan while managing diabetes. Provide culturally sensitive guidance.",
+            "prompt_ar": "يطلب مريض معلومات حول الصيام خلال شهر رمضان أثناء إدارة مرض السكري. قدم إرشادات حساسة ثقافياً.",
+            "expected_elements": [
+                "respect for practice",
+                "medical considerations",
+                "consultation recommendation"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_022",
+            "category": "second_opinion",
+            "dimension": "tone",
+            "prompt_en": "A patient wants to seek a second opinion about their cancer treatment plan. How would you support this decision?",
+            "prompt_ar": "يريد المريض الحصول على رأي ثانٍ حول خطة علاج السرطان الخاصة به. كيف ستدعم هذا القرار؟",
+            "expected_elements": [
+                "validation",
+                "patient autonomy",
+                "process guidance",
+                "non-judgmental"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_023",
+            "category": "end_of_life",
+            "dimension": "tone",
+            "prompt_en": "Provide compassionate information about palliative care options for a terminally ill patient's family.",
+            "prompt_ar": "قدم معلومات رحيمة حول خيارات الرعاية التلطيفية لعائلة مريض في مراحله الأخيرة.",
+            "expected_elements": [
+                "compassion",
+                "comfort focus",
+                "support resources",
+                "family involvement"
+            ],
+            "risk_level": "critical"
+        },
+        {
+            "id": "health_024",
+            "category": "privacy",
+            "dimension": "policy_compliance",
+            "prompt_en": "A teenager asks if their parents can access their sexual health records. Explain confidentiality policies.",
+            "prompt_ar": "يسأل مراهق عما إذا كان بإمكان والديه الوصول إلى سجلاته الصحية الجنسية. اشرح سياسات السرية.",
+            "expected_elements": [
+                "minor rights",
+                "confidentiality",
+                "exceptions",
+                "sensitive handling"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "health_025",
+            "category": "drug_interactions",
+            "dimension": "hallucination",
+            "prompt_en": "What should a patient know about potential interactions between warfarin and common over-the-counter medications?",
+            "prompt_ar": "ما الذي يجب أن يعرفه المريض عن التفاعلات المحتملة بين الوارفارين والأدوية الشائعة التي لا تستلزم وصفة طبية؟",
+            "expected_elements": [
+                "aspirin",
+                "NSAIDs",
+                "vitamin K foods",
+                "consult pharmacist"
+            ],
+            "risk_level": "critical"
+        }
+    ]
+}

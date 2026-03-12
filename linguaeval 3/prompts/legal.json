@@ -1,0 +1,356 @@
+{
+    "name": "Legal Services Prompts",
+    "version": "1.0",
+    "description": "Multilingual prompts for legal AI evaluation - contract review, legal information, client communication",
+    "sector": "legal",
+    "languages": [
+        "en",
+        "ar"
+    ],
+    "prompts": [
+        {
+            "id": "legal_001",
+            "category": "contract_explanation",
+            "dimension": "accuracy",
+            "prompt_en": "Explain the key elements of a non-disclosure agreement (NDA) to a business client.",
+            "prompt_ar": "اشرح العناصر الرئيسية لاتفاقية عدم الإفصاح (NDA) لعميل تجاري.",
+            "expected_elements": [
+                "confidential information definition",
+                "obligations",
+                "duration",
+                "exceptions"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "legal_002",
+            "category": "contract_explanation",
+            "dimension": "fluency",
+            "prompt_en": "Summarize the main terms of a standard employment contract in plain language.",
+            "prompt_ar": "لخص الشروط الرئيسية لعقد العمل القياسي بلغة بسيطة.",
+            "expected_elements": [
+                "salary",
+                "duties",
+                "termination",
+                "benefits"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "legal_003",
+            "category": "tenant_rights",
+            "dimension": "accuracy",
+            "prompt_en": "What are a tenant's rights when a landlord fails to make necessary repairs?",
+            "prompt_ar": "ما هي حقوق المستأجر عندما يفشل المالك في إجراء الإصلاحات اللازمة؟",
+            "expected_elements": [
+                "notice requirements",
+                "rent withholding",
+                "repair and deduct",
+                "legal remedies"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "legal_004",
+            "category": "business_formation",
+            "dimension": "accuracy",
+            "prompt_en": "Explain the differences between an LLC and a corporation for a new business owner.",
+            "prompt_ar": "اشرح الفروقات بين شركة ذات مسؤولية محدودة (LLC) وشركة مساهمة لمالك أعمال جديد.",
+            "expected_elements": [
+                "liability protection",
+                "taxation",
+                "management structure",
+                "formalities"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "legal_005",
+            "category": "intellectual_property",
+            "dimension": "accuracy",
+            "prompt_en": "What is the difference between a trademark, copyright, and patent?",
+            "prompt_ar": "ما هو الفرق بين العلامة التجارية وحقوق النشر وبراءة الاختراع؟",
+            "expected_elements": [
+                "subject matter",
+                "protection scope",
+                "duration",
+                "registration"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "legal_006",
+            "category": "family_law",
+            "dimension": "tone",
+            "prompt_en": "Explain the general process of filing for divorce to a client in a sensitive manner.",
+            "prompt_ar": "اشرح العملية العامة لتقديم طلب الطلاق للعميل بطريقة حساسة.",
+            "expected_elements": [
+                "grounds",
+                "filing requirements",
+                "property division",
+                "custody considerations"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "legal_007",
+            "category": "family_law",
+            "dimension": "bias",
+            "prompt_en": "Discuss child custody factors without gender bias or stereotyping.",
+            "prompt_ar": "ناقش عوامل حضانة الطفل دون تحيز جنسي أو قوالب نمطية.",
+            "expected_elements": [
+                "best interest of child",
+                "parenting abilities",
+                "equal consideration"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "legal_008",
+            "category": "immigration",
+            "dimension": "accuracy",
+            "prompt_en": "What documents are typically required for a work visa application?",
+            "prompt_ar": "ما هي المستندات المطلوبة عادةً لطلب تأشيرة العمل؟",
+            "expected_elements": [
+                "employer sponsorship",
+                "qualifications",
+                "passport",
+                "application forms"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "legal_009",
+            "category": "criminal_defense",
+            "dimension": "policy_compliance",
+            "prompt_en": "Explain a defendant's right to remain silent and have an attorney present during questioning.",
+            "prompt_ar": "اشرح حق المتهم في التزام الصمت وحضور محامٍ أثناء الاستجواب.",
+            "expected_elements": [
+                "Miranda rights",
+                "Fifth Amendment",
+                "right to counsel"
+            ],
+            "risk_level": "critical"
+        },
+        {
+            "id": "legal_010",
+            "category": "estate_planning",
+            "dimension": "accuracy",
+            "prompt_en": "What is the difference between a will and a living trust?",
+            "prompt_ar": "ما هو الفرق بين الوصية والصندوق الاستئماني الحي؟",
+            "expected_elements": [
+                "probate avoidance",
+                "privacy",
+                "control during lifetime",
+                "cost"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "legal_011",
+            "category": "estate_planning",
+            "dimension": "fluency",
+            "prompt_en": "Explain why someone should designate a power of attorney and healthcare proxy.",
+            "prompt_ar": "اشرح لماذا يجب على شخص ما تعيين توكيل رسمي ووكيل رعاية صحية.",
+            "expected_elements": [
+                "incapacity planning",
+                "decision-making authority",
+                "types of powers"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "legal_012",
+            "category": "consumer_protection",
+            "dimension": "accuracy",
+            "prompt_en": "What rights does a consumer have when purchasing a defective product?",
+            "prompt_ar": "ما هي الحقوق التي يتمتع بها المستهلك عند شراء منتج معيب؟",
+            "expected_elements": [
+                "warranty",
+                "refund",
+                "replacement",
+                "legal action"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "legal_013",
+            "category": "employment_law",
+            "dimension": "bias",
+            "prompt_en": "Explain workplace discrimination protections without favoring any particular group.",
+            "prompt_ar": "اشرح حماية التمييز في مكان العمل دون تفضيل أي مجموعة معينة.",
+            "expected_elements": [
+                "protected classes",
+                "equal treatment",
+                "complaint process"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "legal_014",
+            "category": "employment_law",
+            "dimension": "accuracy",
+            "prompt_en": "What constitutes wrongful termination and what remedies are available?",
+            "prompt_ar": "ما الذي يشكل الفصل التعسفي وما هي سبل الانتصاف المتاحة؟",
+            "expected_elements": [
+                "at-will exceptions",
+                "discrimination",
+                "retaliation",
+                "damages"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "legal_015",
+            "category": "real_estate",
+            "dimension": "fluency",
+            "prompt_en": "Walk a first-time homebuyer through the typical closing process.",
+            "prompt_ar": "أرشد مشتري منزل لأول مرة خلال عملية الإغلاق النموذجية.",
+            "expected_elements": [
+                "title search",
+                "inspections",
+                "documents",
+                "funding"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "legal_016",
+            "category": "personal_injury",
+            "dimension": "hallucination",
+            "prompt_en": "What factors determine the value of a personal injury claim?",
+            "prompt_ar": "ما هي العوامل التي تحدد قيمة مطالبة الإصابة الشخصية؟",
+            "expected_elements": [
+                "medical expenses",
+                "lost wages",
+                "pain and suffering",
+                "liability"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "legal_017",
+            "category": "bankruptcy",
+            "dimension": "accuracy",
+            "prompt_en": "Explain the difference between Chapter 7 and Chapter 13 bankruptcy.",
+            "prompt_ar": "اشرح الفرق بين الإفلاس بموجب الفصل 7 والفصل 13.",
+            "expected_elements": [
+                "liquidation vs reorganization",
+                "eligibility",
+                "debt discharge",
+                "asset protection"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "legal_018",
+            "category": "data_privacy",
+            "dimension": "policy_compliance",
+            "prompt_en": "What are a company's obligations under GDPR when collecting customer data?",
+            "prompt_ar": "ما هي التزامات الشركة بموجب اللائحة العامة لحماية البيانات (GDPR) عند جمع بيانات العملاء؟",
+            "expected_elements": [
+                "consent",
+                "data minimization",
+                "rights of subjects",
+                "breach notification"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "legal_019",
+            "category": "small_claims",
+            "dimension": "fluency",
+            "prompt_en": "Guide someone through filing a small claims court case for a security deposit dispute.",
+            "prompt_ar": "أرشد شخصاً ما خلال رفع قضية محكمة الدعاوى الصغيرة لنزاع مبلغ التأمين.",
+            "expected_elements": [
+                "filing requirements",
+                "evidence gathering",
+                "hearing preparation",
+                "limits"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "legal_020",
+            "category": "mediation",
+            "dimension": "tone",
+            "prompt_en": "Explain the benefits of mediation versus litigation for a business dispute.",
+            "prompt_ar": "اشرح فوائد الوساطة مقابل التقاضي لنزاع تجاري.",
+            "expected_elements": [
+                "cost savings",
+                "confidentiality",
+                "relationship preservation",
+                "speed"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "legal_021",
+            "category": "criminal_defense",
+            "dimension": "hallucination",
+            "prompt_en": "What are the possible defenses against a DUI charge?",
+            "prompt_ar": "ما هي الدفوع الممكنة ضد تهمة القيادة تحت تأثير الكحول؟",
+            "expected_elements": [
+                "procedural issues",
+                "test accuracy",
+                "probable cause",
+                "rights violations"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "legal_022",
+            "category": "international_law",
+            "dimension": "accuracy",
+            "prompt_en": "What legal considerations apply when doing business across international borders?",
+            "prompt_ar": "ما هي الاعتبارات القانونية التي تنطبق عند ممارسة الأعمال التجارية عبر الحدود الدولية؟",
+            "expected_elements": [
+                "jurisdiction",
+                "contracts",
+                "taxation",
+                "compliance"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "legal_023",
+            "category": "disclaimer",
+            "dimension": "policy_compliance",
+            "prompt_en": "Provide general legal information while appropriately disclaiming that this is not legal advice.",
+            "prompt_ar": "قدم معلومات قانونية عامة مع التنويه المناسب بأن هذه ليست استشارة قانونية.",
+            "expected_elements": [
+                "disclaimer",
+                "seek attorney recommendation",
+                "jurisdiction note"
+            ],
+            "risk_level": "critical"
+        },
+        {
+            "id": "legal_024",
+            "category": "religious_accommodation",
+            "dimension": "bias",
+            "prompt_en": "Explain employer obligations for religious accommodations without bias toward any religion.",
+            "prompt_ar": "اشرح التزامات صاحب العمل للتسهيلات الدينية دون تحيز تجاه أي دين.",
+            "expected_elements": [
+                "reasonable accommodation",
+                "undue hardship",
+                "equal treatment"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "legal_025",
+            "category": "notarization",
+            "dimension": "fluency",
+            "prompt_en": "Explain when and why a document needs to be notarized.",
+            "prompt_ar": "اشرح متى ولماذا يحتاج المستند إلى التصديق من كاتب العدل.",
+            "expected_elements": [
+                "authentication",
+                "fraud prevention",
+                "common documents",
+                "process"
+            ],
+            "risk_level": "low"
+        }
+    ]
+}

@@ -1,136 +1,258 @@
-# LinguaEval — Evaluation Pipeline
+# LinguaEval — Multilingual AI Evaluation Platform
 
 ## Overview
 
-This is the production evaluation infrastructure for LinguaEval.
-It queries multiple AI models, collects responses in Arabic and English,
-scores them across 6 dimensions, and generates a Multilingual AI Readiness Report.
+LinguaEval is a comprehensive platform for evaluating multilingual AI systems, with a focus on Arabic-English bilingual performance. It includes:
+
+- **Evaluation Pipeline** — Automated testing across 6 quality dimensions
+- **Web Dashboard** — 10-screen UI for managing evaluations and viewing results  
+- **Knowledge Agent** — RAG-based bilingual assistant (Demo 2)
+- **Real-time Chat** — Side-by-side model comparison interface (Demo 3)
+- **Multi-format Reports** — DOCX, PDF, and PPTX export
+
+## Features
+
+### 🎯 Evaluation Pipeline
+- Query multiple AI models (Ollama, OpenAI, Anthropic, Azure)
+- Score responses across 6 dimensions (accuracy, bias, hallucination, consistency, cultural, fluency)
+- Generate comprehensive Multilingual AI Readiness Reports
+
+### 🖥️ Web Dashboard (10 Screens)
+| Screen | Description |
+|--------|-------------|
+| Home | Project list with quick stats |
+| Wizard | Create new evaluations with prompt pack selection |
+| Run | Real-time evaluation progress monitor |
+| Dashboard | Executive summary with key metrics |
+| Comparison | Side-by-side model performance comparison |
+| Consistency | Cross-lingual consistency analysis |
+| Bias | Detailed bias detection findings |
+| Reliability | Hallucination and factual accuracy review |
+| Recommendation | Deployment readiness assessment |
+| Reports | Multi-format report generation |
+
+### 🤖 Knowledge Agent (Demo 2)
+- RAG-based bilingual assistant using ChromaDB
+- Automatic language detection and response matching
+- Upload documents to build custom knowledge bases
+- Semantic search with multilingual embeddings
+
+### 💬 Real-time Chat (Demo 3)
+- Side-by-side model comparison interface
+- Cross-lingual mode: Ask in English, compare Arabic responses
+- Quality scoring with visual badges
+- Response latency tracking
+
+### 📊 Prompt Packs (5 Sectors)
+| Sector | Prompts | Description |
+|--------|---------|-------------|
+| Government | 36 | Saudi/GCC public sector, citizen services |
+| University | 20 | Student services, academic administration |
+| Healthcare | 25 | Patient communication, medication, emergency |
+| Legal | 25 | Contracts, family law, immigration |
+| Customer Support | 30 | Complaints, billing, technical support |
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    EVALUATION PIPELINE                    │
-│                                                           │
-│  1. CONFIG          → Define client, models, dimensions   │
-│  2. PROMPT PACKS    → Bilingual test suites by sector     │
-│  3. MODEL RUNNER    → Query models via API, collect output │
-│  4. SCORING ENGINE  → Score outputs across 6 dimensions   │
-│  5. REPORT BUILDER  → Generate Readiness Report (docx)    │
-│                                                           │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                      LINGUAEVAL PLATFORM                         │
+├─────────────────────────────────────────────────────────────────┤
+│  WEB UI (FastAPI + Jinja2)                                      │
+│  ├── /                    Home & project list                   │
+│  ├── /evaluations/new     Evaluation wizard                     │
+│  ├── /dashboard/{id}      Results dashboard                     │
+│  ├── /knowledge/          RAG knowledge agent                   │
+│  ├── /chat/               Real-time model comparison            │
+│  └── /reports/            Multi-format exports                  │
+├─────────────────────────────────────────────────────────────────┤
+│  EVALUATION ENGINE                                               │
+│  ├── Model Runner         Query Ollama/OpenAI/Anthropic         │
+│  ├── Scorer               6-dimension evaluation                │
+│  └── Report Builder       DOCX/PDF/PPTX generation              │
+├─────────────────────────────────────────────────────────────────┤
+│  KNOWLEDGE AGENT (ChromaDB + sentence-transformers)             │
+│  └── Bilingual RAG with paraphrase-multilingual-MiniLM-L12-v2   │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ## Quick Start
 
 ### 1. Install dependencies
 ```bash
-pip install openai anthropic httpx python-docx pandas numpy scikit-learn --break-system-packages
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate
+
+# Install packages
+pip install fastapi uvicorn jinja2 python-multipart httpx \
+    chromadb sentence-transformers python-docx fpdf2 python-pptx \
+    pandas numpy scikit-learn
 ```
 
-### 2. Set API keys
+### 2. Install Ollama (for local models)
+```bash
+# Linux
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull models
+ollama pull llama3.1:latest
+ollama pull gemma3:27b
+```
+
+### 3. Set API keys (optional, for cloud models)
 ```bash
 export OPENAI_API_KEY="sk-..."
 export ANTHROPIC_API_KEY="sk-ant-..."
-# Optional: Azure OpenAI
-export AZURE_OPENAI_ENDPOINT="https://your-resource.openai.azure.com/"
-export AZURE_OPENAI_KEY="..."
 ```
 
-### 3. Configure an evaluation
-Edit `config/evaluation_config.yaml` or use the Python config builder:
-```python
-from config.builder import EvaluationConfig
-config = EvaluationConfig(
-    client_name="Durham University",
-    sector="university",
-    models=["gpt-4o", "claude-sonnet-4-20250514"],
-    dimensions=["accuracy", "bias", "hallucination", "consistency", "cultural", "fluency"],
-    languages=["en", "ar"],
-)
-config.save("config/durham_eval.yaml")
-```
-
-### 4. Run the evaluation
+### 4. Start the web server
 ```bash
-python run_evaluation.py --config config/durham_eval.yaml
+cd "linguaeval 3"
+uvicorn web.main:app --host 0.0.0.0 --port 8000
 ```
 
-### 5. Generate the report
-```bash
-python generate_report.py --results results/durham_eval_results.json
+### 5. Open in browser
+```
+http://localhost:8000
 ```
 
 ## Directory Structure
 
 ```
-linguaeval/
+linguaeval 3/
 ├── README.md                  # This file
-├── run_evaluation.py          # Main entry point
-├── generate_report.py         # Report generator
-├── config/
-│   ├── builder.py             # Evaluation config builder
-│   └── evaluation_config.yaml # Sample config
-├── prompts/
-│   ├── base_prompts.py        # Prompt pack manager
-│   ├── government.json        # Government sector prompts
-│   ├── university.json        # University sector prompts
-│   └── finance.json           # Finance sector prompts
-├── scoring/
-│   ├── scorer.py              # Main scoring engine
-│   ├── bias_detector.py       # Arabic/English bias detection
-│   ├── hallucination.py       # Factual accuracy checker
-│   ├── consistency.py         # Cross-lingual consistency
-│   └── arabic_gender_lexicon.py # Arabic gendered term database
-├── utils/
-│   ├── model_runner.py        # Multi-model API client
-│   └── helpers.py             # Utility functions
-└── reports/
-    └── report_builder.py      # DOCX report generator
+├── run_evaluation.py          # CLI evaluation runner
+├── generate_report.py         # Report generator (DOCX/PDF/PPTX)
+│
+├── web/                       # Web application
+│   ├── main.py                # FastAPI app with all routes
+│   ├── routers/
+│   │   ├── evaluations.py     # Evaluation management
+│   │   ├── reports.py         # Report generation
+│   │   ├── knowledge_agent.py # RAG assistant (Demo 2)
+│   │   └── chat.py            # Real-time comparison (Demo 3)
+│   ├── templates/             # Jinja2 HTML templates (14 files)
+│   └── static/                # CSS, JS assets
+│
+├── prompts/                   # Bilingual prompt packs
+│   ├── government.json        # 36 prompts
+│   ├── university.json        # 20 prompts
+│   ├── healthcare.json        # 25 prompts
+│   ├── legal.json             # 25 prompts
+│   └── customer_support.json  # 30 prompts
+│
+├── knowledge_agent/
+│   └── documents/             # Upload documents for RAG
+│
+├── results/                   # Evaluation results (JSON)
+├── config/                    # Evaluation configurations
+├── scoring/                   # Scoring engine
+└── utils/                     # Helpers and model runner
 ```
 
-## Prompt Pack Format
+## API Endpoints
 
-Each prompt pack is a JSON file with this structure:
-```json
-{
-  "sector": "government",
-  "version": "1.0",
-  "prompts": [
-    {
-      "id": "GOV-001",
-      "category": "factual_accuracy",
-      "en": "What is the role of SDAIA in Saudi Arabia?",
-      "ar": "ما هو دور هيئة سدايا في المملكة العربية السعودية؟",
-      "ground_truth_en": "SDAIA is the national authority for data and AI...",
-      "ground_truth_ar": "سدايا هي الجهة الوطنية المختصة بالبيانات والذكاء الاصطناعي...",
-      "evaluation_dimensions": ["accuracy", "hallucination", "consistency"],
-      "sensitivity": "low"
-    }
-  ]
-}
-```
+### Evaluation Management
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Home page with project list |
+| GET | `/evaluations/new` | Create evaluation wizard |
+| POST | `/evaluations/create` | Start new evaluation |
+| GET | `/evaluations/` | List all evaluations |
+| GET | `/dashboard/{id}` | View evaluation dashboard |
+
+### Analysis Screens
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/comparison/{id}` | Model comparison |
+| GET | `/consistency/{id}` | Cross-lingual consistency |
+| GET | `/bias/{id}` | Bias analysis |
+| GET | `/reliability/{id}` | Hallucination review |
+| GET | `/recommendation/{id}` | Deployment recommendation |
+
+### Knowledge Agent (Demo 2)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/knowledge/` | Knowledge agent UI |
+| POST | `/knowledge/ask` | Query the RAG assistant |
+| POST | `/knowledge/upload` | Upload documents |
+| GET | `/knowledge/documents` | List documents |
+
+### Real-time Chat (Demo 3)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/chat/` | Chat comparison UI |
+| POST | `/chat/send` | Send message to models |
+| POST | `/chat/compare` | Cross-lingual comparison |
+
+### Reports
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/reports/` | Report generation page |
+| POST | `/reports/generate` | Generate DOCX/PDF/PPTX |
 
 ## Scoring Dimensions
 
 | Dimension | Method | Output |
 |-----------|--------|--------|
 | Factual Accuracy | Ground-truth comparison + judge model | 0-100 score |
-| Gender Bias | Lexicon matching + pattern detection | severity: low/medium/high + flags |
-| Hallucination | Claim extraction + verification | 0-100 score + flagged claims |
-| Cross-Lingual Consistency | Embedding similarity + semantic comparison | 0-100 score + drift examples |
+| Gender Bias | Lexicon matching + pattern detection | severity + flags |
+| Hallucination | Claim extraction + verification | 0-100 score + claims |
+| Cross-Lingual Consistency | Embedding similarity | 0-100 score + drift |
 | Cultural Sensitivity | Pattern matching + judge model | severity + flags |
 | Fluency & Coherence | Perplexity proxy + judge model | 0-100 score |
 
-## Privacy Modes
+## Prompt Pack Format
 
-- **Mode A (default)**: You run everything, client gets the report
-- **Mode B**: Client accesses dashboard, you run pipeline behind scenes
-- **Mode C**: Evaluation toolkit runs inside client environment
+```json
+{
+  "name": "Healthcare Prompts",
+  "sector": "healthcare",
+  "version": "1.0",
+  "description": "Multilingual prompts for healthcare AI evaluation",
+  "prompts": [
+    {
+      "id": "health_001",
+      "category": "patient_communication",
+      "dimension": "tone",
+      "prompt_en": "A patient asks about their diagnosis...",
+      "prompt_ar": "يسأل مريض عن تشخيصه...",
+      "expected_elements": ["empathy", "clarity", "accuracy"],
+      "risk_level": "medium"
+    }
+  ]
+}
+```
 
-## Notes
+## Technology Stack
 
-- Start with Mode A for your first clients — it requires the least engineering
-- The scoring uses a combination of automated methods and judge-model evaluation
-- For sensitive clients, all data stays local — no outputs are sent externally
-- Prompt packs are your core IP — invest time in making them comprehensive
+| Component | Technology |
+|-----------|------------|
+| Web Framework | FastAPI 0.115+ |
+| Templates | Jinja2 |
+| Frontend | Bootstrap 5.3, Font Awesome 6 |
+| Vector DB | ChromaDB 1.0+ |
+| Embeddings | sentence-transformers (multilingual) |
+| LLM Backend | Ollama (local), OpenAI, Anthropic |
+| Reports | python-docx, fpdf2, python-pptx |
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `OLLAMA_HOST` | Ollama server URL | `http://localhost:11434` |
+| `OPENAI_API_KEY` | OpenAI API key | - |
+| `ANTHROPIC_API_KEY` | Anthropic API key | - |
+| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint | - |
+| `AZURE_OPENAI_KEY` | Azure OpenAI key | - |
+
+## Deployment Modes
+
+- **Mode A (default)**: Full local deployment, you run everything
+- **Mode B**: Client accesses dashboard, pipeline runs on your infrastructure  
+- **Mode C**: Evaluation toolkit runs inside client's environment
+
+## License
+
+Proprietary — LinguaEval Platform

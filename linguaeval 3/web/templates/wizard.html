@@ -50,11 +50,26 @@
                                                     id="pack_{{ pack.id }}" value="{{ pack.id }}" {% if loop.first
                                                     %}checked{% endif %}>
                                                 <label class="form-check-label w-100" for="pack_{{ pack.id }}">
-                                                    <h6 class="mb-1">{{ pack.name }}</h6>
-                                                    <p class="text-muted small mb-2">{{ pack.description }}</p>
-                                                    <div class="d-flex justify-content-between">
-                                                        <span class="badge bg-info">v{{ pack.version }}</span>
-                                                        <span class="badge bg-secondary">{{ pack.count }} prompts</span>
+                                                    <div class="d-flex align-items-start">
+                                                        <div
+                                                            class="sector-icon me-3 text-{{ pack.sector|default('primary') }}">
+                                                            <i
+                                                                class="fas fa-{{ pack.icon|default('file-lines') }} fa-2x"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">{{ pack.name }}</h6>
+                                                            <p class="text-muted small mb-2">{{ pack.description[:80]
+                                                                }}{% if pack.description|length > 80 %}...{% endif %}
+                                                            </p>
+                                                            <div class="d-flex flex-wrap gap-1">
+                                                                <span class="badge bg-info">v{{ pack.version }}</span>
+                                                                <span class="badge bg-secondary">{{ pack.count }}
+                                                                    prompts</span>
+                                                                <span
+                                                                    class="badge bg-{{ pack.sector|default('primary') }}-subtle text-{{ pack.sector|default('primary') }}">{{
+                                                                    pack.sector|default('general')|title }}</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </label>
                                             </div>
@@ -157,6 +172,56 @@
     .model-card:has(input:checked) {
         border-color: var(--bs-primary);
         background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .sector-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(13, 110, 253, 0.05));
+    }
+
+    .text-government {
+        color: #6c757d !important;
+    }
+
+    .text-education {
+        color: #0d6efd !important;
+    }
+
+    .text-healthcare {
+        color: #dc3545 !important;
+    }
+
+    .text-legal {
+        color: #6f42c1 !important;
+    }
+
+    .text-support {
+        color: #198754 !important;
+    }
+
+    .bg-government-subtle {
+        background-color: rgba(108, 117, 125, 0.1) !important;
+    }
+
+    .bg-education-subtle {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
+
+    .bg-healthcare-subtle {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+    }
+
+    .bg-legal-subtle {
+        background-color: rgba(111, 66, 193, 0.1) !important;
+    }
+
+    .bg-support-subtle {
+        background-color: rgba(25, 135, 84, 0.1) !important;
     }
 </style>
 {% endblock %}

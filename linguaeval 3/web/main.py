@@ -34,7 +34,7 @@ from fastapi.templating import Jinja2Templates
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from web.routers import evaluations, reports, knowledge_agent
+from web.routers import evaluations, reports, knowledge_agent, chat
 
 # ═══════════════════════════════════════════════════════════════
 # APP CONFIGURATION
@@ -55,6 +55,7 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 app.include_router(evaluations.router, prefix="/evaluations", tags=["evaluations"])
 app.include_router(reports.router, prefix="/reports", tags=["reports"])
 app.include_router(knowledge_agent.router, prefix="/agent", tags=["knowledge_agent"])
+app.include_router(chat.router, prefix="/chat", tags=["chat"])
 
 
 # ═══════════════════════════════════════════════════════════════

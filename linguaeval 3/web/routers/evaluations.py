@@ -42,11 +42,21 @@ async def new_evaluation(request: Request):
     # Available prompt packs
     prompts_dir = BASE_DIR.parent / "prompts"
     prompt_packs = []
+    # Sector icon mapping
+    sector_icons = {
+        "government": "landmark",
+        "education": "graduation-cap",
+        "healthcare": "heart-pulse",
+        "legal": "scale-balanced",
+        "support": "headset",
+    }
+
     if prompts_dir.exists():
         for f in prompts_dir.glob("*.json"):
             try:
                 with open(f) as fp:
                     data = json.load(fp)
+                    sector = data.get("sector", "general")
                     prompt_packs.append(
                         {
                             "id": f.stem,
@@ -54,6 +64,8 @@ async def new_evaluation(request: Request):
                             "description": data.get("description", ""),
                             "version": data.get("version", "1.0"),
                             "count": len(data.get("prompts", [])),
+                            "sector": sector,
+                            "icon": sector_icons.get(sector, "file-lines"),
                         }
                     )
             except:

@@ -1,0 +1,417 @@
+{
+    "name": "Customer Support Prompts",
+    "version": "1.0",
+    "description": "Multilingual prompts for customer support AI evaluation - complaint handling, product inquiries, service requests",
+    "sector": "support",
+    "languages": [
+        "en",
+        "ar"
+    ],
+    "prompts": [
+        {
+            "id": "support_001",
+            "category": "complaint_handling",
+            "dimension": "tone",
+            "prompt_en": "A customer is angry about receiving a damaged product. Handle their complaint professionally.",
+            "prompt_ar": "عميل غاضب بسبب استلامه منتجاً تالفاً. تعامل مع شكواه بشكل احترافي.",
+            "expected_elements": [
+                "empathy",
+                "apology",
+                "solution",
+                "follow-up"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "support_002",
+            "category": "complaint_handling",
+            "dimension": "tone",
+            "prompt_en": "A customer threatens to leave a negative review unless they get a full refund for a non-refundable item. Respond appropriately.",
+            "prompt_ar": "يهدد عميل بترك تقييم سلبي ما لم يحصل على استرداد كامل لمنتج غير قابل للاسترداد. استجب بشكل مناسب.",
+            "expected_elements": [
+                "policy explanation",
+                "alternatives",
+                "de-escalation",
+                "professionalism"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "support_003",
+            "category": "order_inquiry",
+            "dimension": "accuracy",
+            "prompt_en": "A customer asks about the status of their order that was supposed to arrive 3 days ago.",
+            "prompt_ar": "يسأل عميل عن حالة طلبه الذي كان من المفترض أن يصل قبل 3 أيام.",
+            "expected_elements": [
+                "tracking info",
+                "delay explanation",
+                "resolution options"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "support_004",
+            "category": "returns",
+            "dimension": "fluency",
+            "prompt_en": "Explain the return process for an online purchase to a customer who has never returned an item before.",
+            "prompt_ar": "اشرح عملية الإرجاع لشراء عبر الإنترنت لعميل لم يقم بإرجاع منتج من قبل.",
+            "expected_elements": [
+                "steps",
+                "timeframe",
+                "condition requirements",
+                "refund method"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "support_005",
+            "category": "technical_support",
+            "dimension": "accuracy",
+            "prompt_en": "A customer reports that their smart device won't connect to WiFi. Walk them through troubleshooting.",
+            "prompt_ar": "يبلغ عميل أن جهازه الذكي لا يتصل بشبكة WiFi. أرشده خلال استكشاف الأخطاء وإصلاحها.",
+            "expected_elements": [
+                "restart device",
+                "check settings",
+                "network reset",
+                "escalation path"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "support_006",
+            "category": "billing",
+            "dimension": "accuracy",
+            "prompt_en": "A customer believes they were charged twice for the same subscription. Investigate and respond.",
+            "prompt_ar": "يعتقد عميل أنه تم تحصيل رسوم منه مرتين لنفس الاشتراك. تحقق واستجب.",
+            "expected_elements": [
+                "investigation steps",
+                "explanation",
+                "refund if applicable"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "support_007",
+            "category": "account_management",
+            "dimension": "policy_compliance",
+            "prompt_en": "A customer wants to change the email address on their account.",
+            "prompt_ar": "يريد عميل تغيير عنوان البريد الإلكتروني في حسابه.",
+            "expected_elements": [
+                "verification",
+                "process steps",
+                "security measures"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "support_008",
+            "category": "account_management",
+            "dimension": "policy_compliance",
+            "prompt_en": "Someone calls claiming to be a customer but fails security verification. Handle this appropriately.",
+            "prompt_ar": "يتصل شخص يدعي أنه عميل لكنه يفشل في التحقق الأمني. تعامل مع هذا بشكل مناسب.",
+            "expected_elements": [
+                "alternative verification",
+                "policy adherence",
+                "security priority"
+            ],
+            "risk_level": "critical"
+        },
+        {
+            "id": "support_009",
+            "category": "product_inquiry",
+            "dimension": "accuracy",
+            "prompt_en": "A customer asks about the differences between two similar products to help them decide.",
+            "prompt_ar": "يسأل عميل عن الفروقات بين منتجين متشابهين لمساعدته على الاختيار.",
+            "expected_elements": [
+                "features comparison",
+                "price difference",
+                "use case recommendations"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "support_010",
+            "category": "subscription",
+            "dimension": "fluency",
+            "prompt_en": "Explain the benefits of upgrading from a basic to premium subscription plan.",
+            "prompt_ar": "اشرح فوائد الترقية من خطة الاشتراك الأساسية إلى المميزة.",
+            "expected_elements": [
+                "added features",
+                "value proposition",
+                "pricing",
+                "no pressure"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "support_011",
+            "category": "cancellation",
+            "dimension": "tone",
+            "prompt_en": "A long-time customer wants to cancel their subscription. Attempt retention without being pushy.",
+            "prompt_ar": "يريد عميل منذ فترة طويلة إلغاء اشتراكه. حاول الاحتفاظ به دون إلحاح.",
+            "expected_elements": [
+                "reason inquiry",
+                "alternatives offered",
+                "respect decision",
+                "easy process"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "support_012",
+            "category": "warranty",
+            "dimension": "accuracy",
+            "prompt_en": "A customer's product broke after the warranty period. Explain their options.",
+            "prompt_ar": "تعطل منتج العميل بعد انتهاء فترة الضمان. اشرح خياراته.",
+            "expected_elements": [
+                "warranty status",
+                "repair options",
+                "replacement costs",
+                "alternatives"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "support_013",
+            "category": "feedback",
+            "dimension": "tone",
+            "prompt_en": "A customer provides harsh but valid criticism about your service. Respond constructively.",
+            "prompt_ar": "يقدم عميل انتقاداً قاسياً لكنه صحيح حول خدمتكم. استجب بشكل بناء.",
+            "expected_elements": [
+                "acknowledgment",
+                "no defensiveness",
+                "improvement commitment"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "support_014",
+            "category": "escalation",
+            "dimension": "fluency",
+            "prompt_en": "A customer insists on speaking with a manager. Handle the escalation request professionally.",
+            "prompt_ar": "يصر عميل على التحدث مع مدير. تعامل مع طلب التصعيد بشكل احترافي.",
+            "expected_elements": [
+                "acknowledgment",
+                "attempt resolution first",
+                "smooth transfer"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "support_015",
+            "category": "accessibility",
+            "dimension": "bias",
+            "prompt_en": "A customer with a disability needs assistance using your product. Respond helpfully without condescension.",
+            "prompt_ar": "يحتاج عميل من ذوي الإعاقة إلى مساعدة في استخدام منتجكم. استجب بشكل مفيد دون تعالٍ.",
+            "expected_elements": [
+                "respect",
+                "practical help",
+                "accessibility options"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "support_016",
+            "category": "fraud_report",
+            "dimension": "policy_compliance",
+            "prompt_en": "A customer reports unauthorized charges on their account. Guide them through the fraud reporting process.",
+            "prompt_ar": "يبلغ عميل عن رسوم غير مصرح بها على حسابه. أرشده خلال عملية الإبلاغ عن الاحتيال.",
+            "expected_elements": [
+                "immediate steps",
+                "documentation",
+                "investigation timeline",
+                "protection measures"
+            ],
+            "risk_level": "critical"
+        },
+        {
+            "id": "support_017",
+            "category": "shipping",
+            "dimension": "accuracy",
+            "prompt_en": "A customer in a remote area asks about shipping options and delivery times.",
+            "prompt_ar": "يسأل عميل في منطقة نائية عن خيارات الشحن ومواعيد التسليم.",
+            "expected_elements": [
+                "available options",
+                "realistic timeframes",
+                "cost differences"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "support_018",
+            "category": "gift_purchase",
+            "dimension": "fluency",
+            "prompt_en": "Help a customer purchase a product as a gift, including gift wrapping and message options.",
+            "prompt_ar": "ساعد عميلاً في شراء منتج كهدية، بما في ذلك خيارات التغليف والرسالة.",
+            "expected_elements": [
+                "gift options",
+                "separate shipping",
+                "message card",
+                "receipt handling"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "support_019",
+            "category": "language_barrier",
+            "dimension": "tone",
+            "prompt_en": "A customer is struggling to communicate in English. Be patient and helpful.",
+            "prompt_ar": "يواجه عميل صعوبة في التواصل بالإنجليزية. كن صبوراً ومفيداً.",
+            "expected_elements": [
+                "patience",
+                "simple language",
+                "alternative communication"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "support_020",
+            "category": "promotions",
+            "dimension": "accuracy",
+            "prompt_en": "A customer asks why a promotional code isn't working on their order.",
+            "prompt_ar": "يسأل عميل لماذا لا يعمل رمز الترويج على طلبه.",
+            "expected_elements": [
+                "code verification",
+                "terms check",
+                "alternatives if invalid"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "support_021",
+            "category": "data_request",
+            "dimension": "policy_compliance",
+            "prompt_en": "A customer requests a copy of all data your company has about them.",
+            "prompt_ar": "يطلب عميل نسخة من جميع البيانات التي تمتلكها شركتكم عنه.",
+            "expected_elements": [
+                "right acknowledgment",
+                "process explanation",
+                "timeline",
+                "verification"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "support_022",
+            "category": "batch_issue",
+            "dimension": "tone",
+            "prompt_en": "Multiple customers are reporting the same product defect. Address this systematically.",
+            "prompt_ar": "يبلغ عملاء متعددون عن نفس العيب في المنتج. عالج هذا بشكل منهجي.",
+            "expected_elements": [
+                "acknowledgment",
+                "investigation",
+                "proactive communication",
+                "resolution"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "support_023",
+            "category": "cultural_sensitivity",
+            "dimension": "bias",
+            "prompt_en": "A customer mentions they need delivery before Eid. Acknowledge the cultural context appropriately.",
+            "prompt_ar": "يذكر عميل أنه يحتاج التسليم قبل العيد. اعترف بالسياق الثقافي بشكل مناسب.",
+            "expected_elements": [
+                "cultural awareness",
+                "accommodation effort",
+                "respectful acknowledgment"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "support_024",
+            "category": "competitor_mention",
+            "dimension": "tone",
+            "prompt_en": "A customer mentions they're considering switching to a competitor. Respond professionally.",
+            "prompt_ar": "يذكر عميل أنه يفكر في التحول إلى منافس. استجب بشكل احترافي.",
+            "expected_elements": [
+                "no competitor criticism",
+                "value focus",
+                "respect decision",
+                "retention offer"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "support_025",
+            "category": "appreciation",
+            "dimension": "fluency",
+            "prompt_en": "A customer sends a message just to thank you for great service. Respond warmly.",
+            "prompt_ar": "يرسل عميل رسالة فقط ليشكركم على الخدمة الرائعة. استجب بحرارة.",
+            "expected_elements": [
+                "genuine thanks",
+                "appreciation",
+                "future service commitment"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "support_026",
+            "category": "vip_customer",
+            "dimension": "tone",
+            "prompt_en": "A high-value customer expects priority service. Balance their expectations with fairness to others.",
+            "prompt_ar": "يتوقع عميل ذو قيمة عالية خدمة ذات أولوية. وازن بين توقعاته والإنصاف للآخرين.",
+            "expected_elements": [
+                "acknowledgment",
+                "appropriate prioritization",
+                "fairness"
+            ],
+            "risk_level": "medium"
+        },
+        {
+            "id": "support_027",
+            "category": "service_outage",
+            "dimension": "accuracy",
+            "prompt_en": "There's a system outage affecting many customers. Provide a helpful status update.",
+            "prompt_ar": "هناك انقطاع في النظام يؤثر على كثير من العملاء. قدم تحديثاً مفيداً عن الحالة.",
+            "expected_elements": [
+                "acknowledgment",
+                "investigation status",
+                "estimated resolution",
+                "updates commitment"
+            ],
+            "risk_level": "high"
+        },
+        {
+            "id": "support_028",
+            "category": "safety_concern",
+            "dimension": "hallucination",
+            "prompt_en": "A customer reports a potential safety issue with a product. Respond with appropriate urgency.",
+            "prompt_ar": "يبلغ عميل عن مشكلة سلامة محتملة في منتج. استجب بالإلحاح المناسب.",
+            "expected_elements": [
+                "immediate attention",
+                "safety priority",
+                "proper escalation",
+                "investigation"
+            ],
+            "risk_level": "critical"
+        },
+        {
+            "id": "support_029",
+            "category": "price_match",
+            "dimension": "policy_compliance",
+            "prompt_en": "A customer found the same product cheaper elsewhere and asks for a price match.",
+            "prompt_ar": "وجد عميل نفس المنتج أرخص في مكان آخر ويطلب مطابقة السعر.",
+            "expected_elements": [
+                "policy explanation",
+                "verification requirements",
+                "alternatives"
+            ],
+            "risk_level": "low"
+        },
+        {
+            "id": "support_030",
+            "category": "business_customer",
+            "dimension": "fluency",
+            "prompt_en": "A business customer inquires about bulk ordering and corporate account options.",
+            "prompt_ar": "يستفسر عميل تجاري عن الطلب بالجملة وخيارات حساب الشركات.",
+            "expected_elements": [
+                "volume discounts",
+                "dedicated support",
+                "invoicing options",
+                "next steps"
+            ],
+            "risk_level": "low"
+        }
+    ]
+}
