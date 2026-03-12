@@ -1,0 +1,24 @@
+client_contact: ''
+client_name: Demo Test
+created_at: '2026-03-12T00:19:02.766332'
+dimensions:
+- accuracy
+- bias
+- hallucination
+- consistency
+- fluency
+evaluation_objective: ''
+judge_model: claude-sonnet-4-20250514
+languages:
+- en
+- ar
+models:
+- ollama-llama3.1:latest
+output_dir: results
+privacy_mode: mode_a
+prompt_pack: university
+report_format: docx
+runs_per_prompt: 1
+sector: university
+use_case: ''
+version: '1.0'

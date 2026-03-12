@@ -1,0 +1,81 @@
+# LinguaEval Platform - Docker Compose
+# Run: docker-compose up -d
+
+version: '3.8'
+
+services:
+  # LinguaEval Web Application
+  linguaeval:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: linguaeval-app
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
+      - AZURE_OPENAI_KEY=${AZURE_OPENAI_KEY:-}
+    volumes:
+      # Persist evaluation results
+      - ./results:/app/results
+      # Persist knowledge base documents
+      - ./knowledge_agent/documents:/app/knowledge_agent/documents
+      # Persist ChromaDB data
+      - linguaeval-chromadb:/app/data/chromadb
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - linguaeval-network
+
+  # Ollama LLM Server
+  ollama:
+    image: ollama/ollama:latest
+    container_name: linguaeval-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - linguaeval-network
+
+  # Model initialization (runs once to pull models)
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: linguaeval-ollama-init
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Pulling llama3.1 model..."
+        ollama pull llama3.1:latest
+        echo "Models ready!"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    networks:
+      - linguaeval-network
+    restart: "no"
+
+volumes:
+  ollama-models:
+    name: linguaeval-ollama-models
+  linguaeval-chromadb:
+    name: linguaeval-chromadb
+
+networks:
+  linguaeval-network:
+    name: linguaeval-network
+    driver: bridge

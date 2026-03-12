@@ -45,10 +45,35 @@
                     </li>
                 </ul>
                 <div class="d-flex align-items-center">
-                    <span class="text-light me-3">
-                        <i class="fas fa-globe me-1"></i>
-                        EN | AR
-                    </span>
+                    <a href="/settings" class="btn btn-outline-light btn-sm me-2">
+                        <i class="fas fa-cog me-1"></i> Settings
+                    </a>
+                    <a href="/docs" class="btn btn-outline-light btn-sm me-2" target="_blank">
+                        <i class="fas fa-book me-1"></i> API
+                    </a>
+                    {% if current_user %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i> {{ current_user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/auth/profile">
+                                    <i class="fas fa-user-circle me-2"></i>Profile
+                                </a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="/auth/logout">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="/auth/login" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">Settings</li>
+        </ol>
+    </nav>
+
+    {% if request.query_params.get('saved') %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        Settings saved successfully!
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+    <h2 class="mb-4">
+        <i class="fas fa-cog text-primary me-2"></i>
+        Platform Settings
+    </h2>
+
+    <div class="row">
+        <!-- Main Settings Form -->
+        <div class="col-lg-8">
+            <form action="/settings/save" method="POST" id="settingsForm">
+                <!-- Ollama Configuration -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-server me-2"></i>
+                            Ollama Configuration
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="ollama_host" class="form-label fw-semibold">Ollama Server URL</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="ollama_host" name="ollama_host"
+                                    value="{{ settings.ollama_host }}" placeholder="http://localhost:11434">
+                                <button class="btn btn-outline-secondary" type="button" id="testOllama">
+                                    <i class="fas fa-plug me-1"></i> Test
+                                </button>
+                            </div>
+                            <div class="form-text">The URL of your Ollama server. Default: http://localhost:11434</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="default_model" class="form-label fw-semibold">Default Model</label>
+                                <select class="form-select" id="default_model" name="default_model">
+                                    {% for model in ollama_models %}
+                                    <option value="{{ model }}" {% if model==settings.default_model %}selected{% endif
+                                        %}>{{ model }}</option>
+                                    {% endfor %}
+                                    {% if not ollama_models %}
+                                    <option value="{{ settings.default_model }}" selected>{{ settings.default_model }}
+                                    </option>
+                                    {% endif %}
+                                </select>
+                                <div class="form-text">Model used for chat and evaluations</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="judge_model" class="form-label fw-semibold">Judge Model</label>
+                                <select class="form-select" id="judge_model" name="judge_model">
+                                    {% for model in ollama_models %}
+                                    <option value="{{ model }}" {% if model==settings.judge_model %}selected{% endif %}>
+                                        {{ model }}</option>
+                                    {% endfor %}
+                                    {% if not ollama_models %}
+                                    <option value="{{ settings.judge_model }}" selected>{{ settings.judge_model }}
+                                    </option>
+                                    {% endif %}
+                                </select>
+                                <div class="form-text">Model used for LLM-as-Judge scoring</div>
+                            </div>
+                        </div>
+
+                        <!-- Connection Status -->
+                        <div id="ollamaStatus" class="alert 
+                            {% if ollama_status == 'connected' %}alert-success
+                            {% elif ollama_status == 'disconnected' %}alert-danger
+                            {% else %}alert-warning{% endif %} mb-0">
+                            {% if ollama_status == 'connected' %}
+                            <i class="fas fa-check-circle me-2"></i>
+                            Connected to Ollama — {{ ollama_models|length }} model(s) available
+                            {% elif ollama_status == 'disconnected' %}
+                            <i class="fas fa-times-circle me-2"></i>
+                            Cannot connect to Ollama server
+                            {% else %}
+                            <i class="fas fa-question-circle me-2"></i>
+                            Ollama status unknown
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OpenAI Configuration -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-brain me-2"></i>
+                            OpenAI Configuration
+                            {% if settings.openai_api_key %}
+                            <span class="badge bg-light text-success ms-2">Configured</span>
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-0">
+                            <label for="openai_api_key" class="form-label fw-semibold">API Key</label>
+                            <input type="password" class="form-control" id="openai_api_key" name="openai_api_key"
+                                value="{{ settings.openai_api_key }}" placeholder="sk-...">
+                            <div class="form-text">Required for GPT-4, GPT-4o models. Get key from <a
+                                    href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anthropic Configuration -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="fas fa-robot me-2"></i>
+                            Anthropic Configuration
+                            {% if settings.anthropic_api_key %}
+                            <span class="badge bg-dark text-warning ms-2">Configured</span>
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-0">
+                            <label for="anthropic_api_key" class="form-label fw-semibold">API Key</label>
+                            <input type="password" class="form-control" id="anthropic_api_key" name="anthropic_api_key"
+                                value="{{ settings.anthropic_api_key }}" placeholder="sk-ant-...">
+                            <div class="form-text">Required for Claude models. Get key from <a
+                                    href="https://console.anthropic.com/" target="_blank">Anthropic Console</a></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Azure OpenAI Configuration -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cloud me-2"></i>
+                            Azure OpenAI Configuration
+                            {% if settings.azure_openai_endpoint and settings.azure_openai_key %}
+                            <span class="badge bg-light text-info ms-2">Configured</span>
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="azure_openai_endpoint" class="form-label fw-semibold">Endpoint URL</label>
+                            <input type="text" class="form-control" id="azure_openai_endpoint"
+                                name="azure_openai_endpoint" value="{{ settings.azure_openai_endpoint }}"
+                                placeholder="https://your-resource.openai.azure.com/">
+                        </div>
+                        <div class="mb-0">
+                            <label for="azure_openai_key" class="form-label fw-semibold">API Key</label>
+                            <input type="password" class="form-control" id="azure_openai_key" name="azure_openai_key"
+                                value="{{ settings.azure_openai_key }}" placeholder="Azure API Key">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save me-2"></i>
+                        Save Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sidebar - Quick Info -->
+        <div class="col-lg-4">
+            <!-- Available Models -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Available Ollama Models
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    {% if ollama_models %}
+                    <ul class="list-group list-group-flush">
+                        {% for model in ollama_models %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-cube text-muted me-2"></i>{{ model }}</span>
+                            <span class="badge bg-success">Ready</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="p-3 text-center text-muted">
+                        <i class="fas fa-exclamation-triangle mb-2"></i>
+                        <p class="mb-0">No models found. Pull models with:</p>
+                        <code class="small">ollama pull llama3.1</code>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- API Documentation -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-book me-2"></i>
+                        API Documentation
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        LinguaEval provides a full REST API with OpenAPI documentation.
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="/docs" class="btn btn-outline-primary btn-sm" target="_blank">
+                            <i class="fas fa-external-link-alt me-1"></i>
+                            Swagger UI
+                        </a>
+                        <a href="/redoc" class="btn btn-outline-secondary btn-sm" target="_blank">
+                            <i class="fas fa-external-link-alt me-1"></i>
+                            ReDoc
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        System Info
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        <tr>
+                            <td class="text-muted">Version</td>
+                            <td class="fw-semibold">1.0.0</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Framework</td>
+                            <td class="fw-semibold">FastAPI</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Prompt Packs</td>
+                            <td class="fw-semibold">5</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Total Prompts</td>
+                            <td class="fw-semibold">136</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Test Ollama connection
+    document.getElementById('testOllama').addEventListener('click', async function () {
+        const host = document.getElementById('ollama_host').value;
+        const statusDiv = document.getElementById('ollamaStatus');
+        const btn = this;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Testing...';
+
+        try {
+            const resp = await fetch(`/settings/test-ollama?host=${encodeURIComponent(host)}`);
+            const data = await resp.json();
+
+            if (data.status === 'success') {
+                statusDiv.className = 'alert alert-success mb-0';
+                statusDiv.innerHTML = `<i class="fas fa-check-circle me-2"></i>Connected! ${data.model_count} model(s) available: ${data.models.join(', ')}`;
+
+                // Update model dropdowns
+                const defaultModel = document.getElementById('default_model');
+                const judgeModel = document.getElementById('judge_model');
+                const currentDefault = defaultModel.value;
+                const currentJudge = judgeModel.value;
+
+                defaultModel.innerHTML = '';
+                judgeModel.innerHTML = '';
+
+                data.models.forEach(model => {
+                    defaultModel.add(new Option(model, model, false, model === currentDefault));
+                    judgeModel.add(new Option(model, model, false, model === currentJudge));
+                });
+            } else {
+                statusDiv.className = 'alert alert-danger mb-0';
+                statusDiv.innerHTML = `<i class="fas fa-times-circle me-2"></i>Connection failed: ${data.message}`;
+            }
+        } catch (e) {
+            statusDiv.className = 'alert alert-danger mb-0';
+            statusDiv.innerHTML = `<i class="fas fa-times-circle me-2"></i>Error: ${e.message}`;
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-plug me-1"></i> Test';
+    });
+
+    // Toggle password visibility
+    document.querySelectorAll('input[type="password"]').forEach(input => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'input-group';
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-outline-secondary';
+        btn.innerHTML = '<i class="fas fa-eye"></i>';
+        btn.addEventListener('click', function () {
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                input.type = 'password';
+                btn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        });
+        wrapper.appendChild(btn);
+    });
+</script>
+{% endblock %}

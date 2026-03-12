@@ -27,14 +27,14 @@ from fastapi import (
     HTTPException,
     BackgroundTasks,
 )
-from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from web.routers import evaluations, reports, knowledge_agent, chat
+from web.routers import evaluations, reports, knowledge_agent, chat, auth
 
 # ═══════════════════════════════════════════════════════════════
 # APP CONFIGURATION
@@ -42,20 +42,262 @@ from web.routers import evaluations, reports, knowledge_agent, chat
 
 app = FastAPI(
     title="LinguaEval",
-    description="Multilingual AI Evaluation & Deployment Studio",
+    description="""
+## Multilingual AI Evaluation Platform
+
+LinguaEval is a comprehensive platform for evaluating multilingual AI systems, 
+with a focus on Arabic-English bilingual performance.
+
+### Features
+
+- **Evaluation Pipeline** — Automated testing across 6 quality dimensions
+- **Web Dashboard** — 10-screen UI for managing evaluations
+- **Knowledge Agent** — RAG-based bilingual assistant
+- **Real-time Chat** — Side-by-side model comparison
+
+### Scoring Dimensions
+
+| Dimension | Description |
+|-----------|-------------|
+| Factual Accuracy | Ground-truth comparison |
+| Gender Bias | Lexicon matching + pattern detection |
+| Hallucination | Claim extraction + verification |
+| Cross-Lingual Consistency | Embedding similarity |
+| Cultural Sensitivity | Pattern matching |
+| Fluency & Coherence | Perplexity + judge model |
+
+### Prompt Packs
+
+- Government (36 prompts)
+- University (20 prompts)  
+- Healthcare (25 prompts)
+- Legal (25 prompts)
+- Customer Support (30 prompts)
+    """,
     version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_tags=[
+        {"name": "health", "description": "Health check endpoints"},
+        {"name": "auth", "description": "Authentication endpoints"},
+        {"name": "evaluations", "description": "Evaluation management"},
+        {"name": "reports", "description": "Report generation (DOCX, PDF, PPTX)"},
+        {"name": "knowledge_agent", "description": "RAG-based bilingual assistant"},
+        {"name": "chat", "description": "Real-time model comparison"},
+        {"name": "settings", "description": "Platform configuration"},
+    ],
 )
 
 # Static files and templates
 BASE_DIR = Path(__file__).parent
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
-templates = Jinja2Templates(directory=BASE_DIR / "templates")
+_templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
-# Include routers
+
+class TemplatesWithUser:
+    """Wrapper to add current_user to all template responses."""
+
+    def __init__(self, templates):
+        self._templates = templates
+
+    def TemplateResponse(self, name: str, context: dict, **kwargs):
+        """Add current_user to context if request is present."""
+        from web.routers.auth import get_current_user
+
+        request = context.get("request")
+        if request and "current_user" not in context:
+            context["current_user"] = get_current_user(request)
+        return self._templates.TemplateResponse(name, context, **kwargs)
+
+
+templates = TemplatesWithUser(_templates)
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(evaluations.router, prefix="/evaluations", tags=["evaluations"])
 app.include_router(reports.router, prefix="/reports", tags=["reports"])
 app.include_router(knowledge_agent.router, prefix="/agent", tags=["knowledge_agent"])
 app.include_router(chat.router, prefix="/chat", tags=["chat"])
+
+
+# ═══════════════════════════════════════════════════════════════
+# HEALTH & SETTINGS ENDPOINTS
+# ═══════════════════════════════════════════════════════════════
+
+# Settings storage (in production, use database or config file)
+_settings = {
+    "ollama_host": os.environ.get("OLLAMA_HOST", "http://localhost:11434"),
+    "openai_api_key": os.environ.get("OPENAI_API_KEY", ""),
+    "anthropic_api_key": os.environ.get("ANTHROPIC_API_KEY", ""),
+    "azure_openai_endpoint": os.environ.get("AZURE_OPENAI_ENDPOINT", ""),
+    "azure_openai_key": os.environ.get("AZURE_OPENAI_KEY", ""),
+    "default_model": "llama3.1:latest",
+    "judge_model": "llama3.1:latest",
+}
+
+
+@app.get("/health", tags=["health"], summary="Health check")
+async def health_check():
+    """
+    Check the health status of the LinguaEval platform.
+
+    Returns:
+        Health status including Ollama connectivity.
+    """
+    import httpx
+
+    ollama_status = "unknown"
+    ollama_models = []
+
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(f"{_settings['ollama_host']}/api/tags")
+            if resp.status_code == 200:
+                ollama_status = "healthy"
+                data = resp.json()
+                ollama_models = [m["name"] for m in data.get("models", [])]
+            else:
+                ollama_status = "unhealthy"
+    except Exception:
+        ollama_status = "unreachable"
+
+    return {
+        "status": "healthy",
+        "version": "1.0.0",
+        "timestamp": datetime.now().isoformat(),
+        "services": {
+            "ollama": {
+                "status": ollama_status,
+                "host": _settings["ollama_host"],
+                "models": ollama_models,
+            },
+            "openai": {
+                "configured": bool(_settings["openai_api_key"]),
+            },
+            "anthropic": {
+                "configured": bool(_settings["anthropic_api_key"]),
+            },
+        },
+    }
+
+
+@app.get("/settings", response_class=HTMLResponse, tags=["settings"])
+async def settings_page(request: Request):
+    """Settings configuration page."""
+    import httpx
+
+    # Check Ollama status
+    ollama_status = "unknown"
+    ollama_models = []
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(f"{_settings['ollama_host']}/api/tags")
+            if resp.status_code == 200:
+                ollama_status = "connected"
+                data = resp.json()
+                ollama_models = [m["name"] for m in data.get("models", [])]
+            else:
+                ollama_status = "error"
+    except Exception:
+        ollama_status = "disconnected"
+
+    return templates.TemplateResponse(
+        "settings.html",
+        {
+            "request": request,
+            "page_title": "Settings",
+            "settings": _settings,
+            "ollama_status": ollama_status,
+            "ollama_models": ollama_models,
+        },
+    )
+
+
+@app.post("/settings/save", tags=["settings"], summary="Save settings")
+async def save_settings(
+    request: Request,
+    ollama_host: str = Form(...),
+    openai_api_key: str = Form(""),
+    anthropic_api_key: str = Form(""),
+    azure_openai_endpoint: str = Form(""),
+    azure_openai_key: str = Form(""),
+    default_model: str = Form("llama3.1:latest"),
+    judge_model: str = Form("llama3.1:latest"),
+):
+    """
+    Save platform settings.
+
+    Updates configuration for Ollama host and API keys.
+    """
+    global _settings
+
+    _settings["ollama_host"] = ollama_host.rstrip("/")
+    _settings["openai_api_key"] = openai_api_key
+    _settings["anthropic_api_key"] = anthropic_api_key
+    _settings["azure_openai_endpoint"] = azure_openai_endpoint
+    _settings["azure_openai_key"] = azure_openai_key
+    _settings["default_model"] = default_model
+    _settings["judge_model"] = judge_model
+
+    # Update environment variables for other modules
+    os.environ["OLLAMA_HOST"] = _settings["ollama_host"]
+    if openai_api_key:
+        os.environ["OPENAI_API_KEY"] = openai_api_key
+    if anthropic_api_key:
+        os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
+
+    return RedirectResponse(url="/settings?saved=1", status_code=303)
+
+
+@app.get("/settings/test-ollama", tags=["settings"], summary="Test Ollama connection")
+async def test_ollama_connection(host: str = None):
+    """
+    Test connection to Ollama server.
+
+    Args:
+        host: Optional host URL to test. Uses saved settings if not provided.
+    """
+    import httpx
+
+    test_host = host or _settings["ollama_host"]
+
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(f"{test_host}/api/tags")
+            if resp.status_code == 200:
+                data = resp.json()
+                models = [m["name"] for m in data.get("models", [])]
+                return {
+                    "status": "success",
+                    "host": test_host,
+                    "models": models,
+                    "model_count": len(models),
+                }
+            else:
+                return {
+                    "status": "error",
+                    "host": test_host,
+                    "message": f"HTTP {resp.status_code}",
+                }
+    except httpx.TimeoutException:
+        return {"status": "error", "host": test_host, "message": "Connection timeout"}
+    except Exception as e:
+        return {"status": "error", "host": test_host, "message": str(e)}
+
+
+@app.get("/api/settings", tags=["settings"], summary="Get current settings")
+async def get_settings():
+    """
+    Get current platform settings (API keys are masked).
+    """
+    return {
+        "ollama_host": _settings["ollama_host"],
+        "default_model": _settings["default_model"],
+        "judge_model": _settings["judge_model"],
+        "openai_configured": bool(_settings["openai_api_key"]),
+        "anthropic_configured": bool(_settings["anthropic_api_key"]),
+        "azure_configured": bool(
+            _settings["azure_openai_endpoint"] and _settings["azure_openai_key"]
+        ),
+    }
 
 
 # ═══════════════════════════════════════════════════════════════
