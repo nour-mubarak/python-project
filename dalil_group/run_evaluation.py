@@ -372,6 +372,16 @@ def main():
         "--client", type=str, default="Test Client", help="Client name (with --preset)"
     )
     parser.add_argument(
+        "--prompt-pack", type=str, help="Prompt pack to use (e.g., university, government)"
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        action="append",
+        dest="models",
+        help="Model to evaluate (can be used multiple times)",
+    )
+    parser.add_argument(
         "--use-judge", action="store_true", help="Use judge model for enhanced scoring"
     )
     parser.add_argument(
@@ -395,7 +405,18 @@ def main():
         print(
             "       python run_evaluation.py --preset government --client 'SDAIA' --dry-run"
         )
+        print(
+            "       python run_evaluation.py --preset university --prompt-pack university --model llama3.1:latest --model gemma3:27b"
+        )
         sys.exit(1)
+
+    # Override prompt pack if specified
+    if args.prompt_pack:
+        config.prompt_pack = args.prompt_pack
+
+    # Override models if specified
+    if args.models:
+        config.models = args.models
 
     run_evaluation(config, use_judge=args.use_judge, dry_run=args.dry_run)
 
