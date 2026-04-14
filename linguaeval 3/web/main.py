@@ -90,6 +90,7 @@ with a focus on Arabic-English bilingual performance.
 
 # Static files and templates
 BASE_DIR = Path(__file__).parent
+DATA_DIR = BASE_DIR.parent / "data"
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 _templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
@@ -131,6 +132,17 @@ _settings = {
     "azure_openai_key": os.environ.get("AZURE_OPENAI_KEY", ""),
     "default_model": "llama3.1:latest",
     "judge_model": "llama3.1:latest",
+    # Email notification settings
+    "email_enabled": os.environ.get("EMAIL_ENABLED", "").lower() == "true",
+    "smtp_host": os.environ.get("SMTP_HOST", ""),
+    "smtp_port": int(os.environ.get("SMTP_PORT", "587")),
+    "smtp_user": os.environ.get("SMTP_USER", ""),
+    "smtp_password": os.environ.get("SMTP_PASSWORD", ""),
+    "notification_email": os.environ.get("NOTIFICATION_EMAIL", ""),
+    "notify_evaluation_complete": True,
+    "notify_evaluation_failed": True,
+    "notify_new_user": False,
+    "notify_daily_summary": False,
 }
 
 
@@ -221,11 +233,22 @@ async def save_settings(
     azure_openai_key: str = Form(""),
     default_model: str = Form("llama3.1:latest"),
     judge_model: str = Form("llama3.1:latest"),
+    # Email notification settings
+    email_enabled: bool = Form(False),
+    smtp_host: str = Form(""),
+    smtp_port: int = Form(587),
+    smtp_user: str = Form(""),
+    smtp_password: str = Form(""),
+    notification_email: str = Form(""),
+    notify_evaluation_complete: bool = Form(False),
+    notify_evaluation_failed: bool = Form(False),
+    notify_new_user: bool = Form(False),
+    notify_daily_summary: bool = Form(False),
 ):
     """
     Save platform settings.
 
-    Updates configuration for Ollama host and API keys.
+    Updates configuration for Ollama host, API keys, and email notifications.
     """
     global _settings
 
@@ -237,12 +260,31 @@ async def save_settings(
     _settings["default_model"] = default_model
     _settings["judge_model"] = judge_model
 
+    # Email settings
+    _settings["email_enabled"] = email_enabled
+    _settings["smtp_host"] = smtp_host
+    _settings["smtp_port"] = smtp_port
+    _settings["smtp_user"] = smtp_user
+    _settings["smtp_password"] = smtp_password
+    _settings["notification_email"] = notification_email
+    _settings["notify_evaluation_complete"] = notify_evaluation_complete
+    _settings["notify_evaluation_failed"] = notify_evaluation_failed
+    _settings["notify_new_user"] = notify_new_user
+    _settings["notify_daily_summary"] = notify_daily_summary
+
     # Update environment variables for other modules
     os.environ["OLLAMA_HOST"] = _settings["ollama_host"]
     if openai_api_key:
         os.environ["OPENAI_API_KEY"] = openai_api_key
     if anthropic_api_key:
         os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
+
+    # Email environment variables
+    if smtp_host:
+        os.environ["SMTP_HOST"] = smtp_host
+        os.environ["SMTP_PORT"] = str(smtp_port)
+        os.environ["SMTP_USER"] = smtp_user
+        os.environ["SMTP_PASSWORD"] = smtp_password
 
     return RedirectResponse(url="/settings?saved=1", status_code=303)
 
@@ -283,6 +325,63 @@ async def test_ollama_connection(host: str = None):
         return {"status": "error", "host": test_host, "message": str(e)}
 
 
+@app.post("/settings/test-email", tags=["settings"], summary="Test email configuration")
+async def test_email_configuration(
+    smtp_host: str = Form(""),
+    smtp_port: int = Form(587),
+    smtp_user: str = Form(""),
+    smtp_password: str = Form(""),
+    notification_email: str = Form(""),
+):
+    """
+    Send a test email to verify SMTP configuration.
+    """
+    if not smtp_host or not smtp_user or not smtp_password:
+        return {"status": "error", "message": "SMTP settings incomplete"}
+
+    if not notification_email:
+        return {"status": "error", "message": "No recipient email specified"}
+
+    try:
+        from notifications import EmailNotifier
+
+        notifier = EmailNotifier(
+            smtp_host=smtp_host,
+            smtp_port=smtp_port,
+            smtp_user=smtp_user,
+            smtp_password=smtp_password,
+        )
+
+        # Send test email to first recipient
+        recipient = notification_email.split(",")[0].strip()
+
+        result = notifier.send_email(
+            to=recipient,
+            subject="LinguaEval - Test Email",
+            body_html="""
+            <div style="font-family: Arial, sans-serif; padding: 20px;">
+                <h2 style="color: #2563eb;">Test Email Successful!</h2>
+                <p>Your email configuration is working correctly.</p>
+                <p style="color: #6b7280; font-size: 12px;">
+                    This is a test email from LinguaEval.
+                </p>
+            </div>
+            """,
+            body_text="Test Email Successful! Your email configuration is working correctly.",
+        )
+
+        if result:
+            return {"status": "success", "message": f"Test email sent to {recipient}"}
+        else:
+            return {
+                "status": "error",
+                "message": "Failed to send email - check SMTP settings",
+            }
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
 @app.get("/api/settings", tags=["settings"], summary="Get current settings")
 async def get_settings():
     """
@@ -297,7 +396,757 @@ async def get_settings():
         "azure_configured": bool(
             _settings["azure_openai_endpoint"] and _settings["azure_openai_key"]
         ),
+        "email_enabled": _settings.get("email_enabled", False),
+        "email_configured": bool(
+            _settings.get("smtp_host") and _settings.get("smtp_user")
+        ),
     }
+
+
+# ═══════════════════════════════════════════════════════════════
+# BATCH EVALUATION ENDPOINTS
+# ═══════════════════════════════════════════════════════════════
+
+from batch_queue import batch_queue, BatchJob, JobStatus, process_batch_queue
+
+
+@app.get("/batch", response_class=HTMLResponse, tags=["batch"])
+async def batch_page(request: Request):
+    """Batch evaluations management page."""
+    import httpx
+
+    # Get available models from Ollama
+    models = []
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(f"{_settings['ollama_host']}/api/tags")
+            if resp.status_code == 200:
+                data = resp.json()
+                models = [m["name"] for m in data.get("models", [])]
+    except Exception:
+        models = ["llama3.1:latest"]
+
+    # Get available prompt packs
+    prompts_dir = BASE_DIR.parent / "prompts"
+    prompt_packs = (
+        [f.stem for f in prompts_dir.glob("*.json")] if prompts_dir.exists() else []
+    )
+
+    return templates.TemplateResponse(
+        "batch.html",
+        {
+            "request": request,
+            "page_title": "Batch Evaluations",
+            "jobs": batch_queue.get_all_jobs(),
+            "status": batch_queue.get_queue_status(),
+            "models": models,
+            "prompt_packs": prompt_packs,
+        },
+    )
+
+
+@app.post("/batch/add", tags=["batch"], summary="Add job to batch queue")
+async def add_batch_job(
+    request: Request,
+    name: str = Form(...),
+    model: str = Form(...),
+    prompt_pack: str = Form(...),
+    languages: List[str] = Form(...),
+):
+    """Add a new evaluation job to the batch queue."""
+    job = batch_queue.add_job(
+        name=name,
+        config_id=str(uuid.uuid4())[:8],
+        model=model,
+        prompt_pack=prompt_pack,
+        languages=languages,
+    )
+    return RedirectResponse(url="/batch", status_code=303)
+
+
+@app.get("/batch/status", tags=["batch"], summary="Get batch queue status")
+async def get_batch_status():
+    """Get current batch queue status."""
+    return {
+        "status": batch_queue.get_queue_status(),
+        "jobs": [j.to_dict() for j in batch_queue.get_all_jobs()[:10]],
+    }
+
+
+@app.post("/batch/start", tags=["batch"], summary="Start processing batch queue")
+async def start_batch_processing(background_tasks: BackgroundTasks):
+    """Start processing the batch queue in the background."""
+    if batch_queue._running:
+        return {"status": "already_running"}
+
+    async def run_evaluation(model, prompt_pack, languages, progress_callback):
+        """Run a single evaluation (simplified for demo)."""
+        import asyncio
+
+        # Simulate evaluation progress
+        total = 20
+        for i in range(total):
+            await asyncio.sleep(0.5)  # Simulated work
+            progress_callback(int((i + 1) / total * 100), i + 1, total)
+
+        # In production, actually run the evaluation
+        result_file = f"batch_{datetime.now().strftime('%Y%m%d_%H%M%S')}_results.json"
+        return result_file
+
+    # Start processing in background
+    background_tasks.add_task(process_batch_queue, run_evaluation)
+    return {"status": "started"}
+
+
+@app.post("/batch/{job_id}/cancel", tags=["batch"], summary="Cancel a batch job")
+async def cancel_batch_job(job_id: str):
+    """Cancel a queued batch job."""
+    if batch_queue.cancel_job(job_id):
+        return {"status": "cancelled"}
+    raise HTTPException(status_code=400, detail="Cannot cancel job")
+
+
+@app.delete("/batch/{job_id}", tags=["batch"], summary="Delete a batch job")
+async def delete_batch_job(job_id: str):
+    """Delete a batch job from the queue."""
+    if batch_queue.delete_job(job_id):
+        return {"status": "deleted"}
+    raise HTTPException(status_code=400, detail="Cannot delete job")
+
+
+@app.post("/batch/clear", tags=["batch"], summary="Clear completed jobs")
+async def clear_completed_jobs():
+    """Clear all completed and failed jobs from the queue."""
+    batch_queue.clear_completed()
+    return {"status": "cleared"}
+
+
+# ═══════════════════════════════════════════════════════════════
+# CONFIGURATION PRESETS ENDPOINTS
+# ═══════════════════════════════════════════════════════════════
+
+PRESETS_FILE = DATA_DIR / "presets.json"
+
+
+def load_presets() -> List[dict]:
+    """Load saved presets from disk."""
+    try:
+        if PRESETS_FILE.exists():
+            with open(PRESETS_FILE) as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return []
+
+
+def save_presets(presets: List[dict]):
+    """Save presets to disk."""
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    with open(PRESETS_FILE, "w") as f:
+        json.dump(presets, f, indent=2)
+
+
+@app.get("/presets", response_class=HTMLResponse, tags=["presets"])
+async def presets_page(request: Request):
+    """Configuration presets management page."""
+    presets = load_presets()
+
+    # Get current config
+    current_config = {
+        "model": _settings.get("default_model", "llama3.1:latest"),
+        "judge_model": _settings.get("judge_model", "llama3.1:latest"),
+        "ollama_host": _settings.get("ollama_host", "http://localhost:11434"),
+        "languages": ["EN", "AR"],
+        "prompt_packs": (
+            list((BASE_DIR.parent / "prompts").glob("*.json"))
+            if (BASE_DIR.parent / "prompts").exists()
+            else []
+        ),
+    }
+
+    return templates.TemplateResponse(
+        "presets.html",
+        {
+            "request": request,
+            "page_title": "Configuration Presets",
+            "presets": presets,
+            "current_config": current_config,
+        },
+    )
+
+
+@app.post("/presets/save", tags=["presets"], summary="Save configuration preset")
+async def save_preset(
+    name: str = Form(...),
+    description: str = Form(""),
+    include_model: bool = Form(False),
+    include_api_keys: bool = Form(False),
+    include_email: bool = Form(False),
+):
+    """Save current configuration as a preset."""
+    presets = load_presets()
+
+    config = {}
+
+    if include_model:
+        config["model"] = _settings.get("default_model")
+        config["judge_model"] = _settings.get("judge_model")
+        config["ollama_host"] = _settings.get("ollama_host")
+
+    if include_api_keys:
+        config["openai_api_key"] = _settings.get("openai_api_key")
+        config["anthropic_api_key"] = _settings.get("anthropic_api_key")
+        config["azure_openai_endpoint"] = _settings.get("azure_openai_endpoint")
+        config["azure_openai_key"] = _settings.get("azure_openai_key")
+
+    if include_email:
+        config["smtp_host"] = _settings.get("smtp_host")
+        config["smtp_port"] = _settings.get("smtp_port")
+        config["smtp_user"] = _settings.get("smtp_user")
+        config["notification_email"] = _settings.get("notification_email")
+
+    preset = {
+        "id": str(uuid.uuid4())[:8],
+        "name": name,
+        "description": description,
+        "config": config,
+        "created_at": datetime.now().isoformat(),
+    }
+
+    presets.append(preset)
+    save_presets(presets)
+
+    return RedirectResponse(url="/presets", status_code=303)
+
+
+@app.get("/presets/{preset_id}/load", tags=["presets"], summary="Load a preset")
+async def load_preset(preset_id: str):
+    """Load a saved preset into current settings."""
+    global _settings
+
+    presets = load_presets()
+    preset = next((p for p in presets if p["id"] == preset_id), None)
+
+    if not preset:
+        raise HTTPException(status_code=404, detail="Preset not found")
+
+    config = preset.get("config", {})
+
+    for key, value in config.items():
+        if key in _settings and value is not None:
+            _settings[key] = value
+
+    return RedirectResponse(url="/settings?saved=1", status_code=303)
+
+
+@app.get(
+    "/presets/{preset_id}/export", tags=["presets"], summary="Export preset as file"
+)
+async def export_preset(preset_id: str):
+    """Export a preset as a downloadable JSON file."""
+    presets = load_presets()
+    preset = next((p for p in presets if p["id"] == preset_id), None)
+
+    if not preset:
+        raise HTTPException(status_code=404, detail="Preset not found")
+
+    return JSONResponse(
+        content=preset,
+        headers={
+            "Content-Disposition": f'attachment; filename="preset_{preset["name"].replace(" ", "_")}.json"'
+        },
+    )
+
+
+@app.delete("/presets/{preset_id}", tags=["presets"], summary="Delete a preset")
+async def delete_preset(preset_id: str):
+    """Delete a saved preset."""
+    presets = load_presets()
+    presets = [p for p in presets if p["id"] != preset_id]
+    save_presets(presets)
+    return {"status": "deleted"}
+
+
+@app.post("/presets/import", tags=["presets"], summary="Import preset from file")
+async def import_preset(file: UploadFile = File(...)):
+    """Import a preset from uploaded file."""
+    try:
+        content = await file.read()
+        data = json.loads(content.decode())
+
+        # Validate structure
+        if "name" not in data:
+            data["name"] = file.filename.replace(".json", "")
+        if "config" not in data:
+            data["config"] = data  # Assume whole file is config
+
+        data["id"] = str(uuid.uuid4())[:8]
+        data["created_at"] = datetime.now().isoformat()
+
+        presets = load_presets()
+        presets.append(data)
+        save_presets(presets)
+
+        return RedirectResponse(url="/presets", status_code=303)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid preset file: {str(e)}")
+
+
+@app.get("/presets/export-current", tags=["presets"], summary="Export current config")
+async def export_current_config():
+    """Export current configuration as a JSON file."""
+    export_config = {
+        "name": "Current Configuration",
+        "config": {
+            "model": _settings.get("default_model"),
+            "judge_model": _settings.get("judge_model"),
+            "ollama_host": _settings.get("ollama_host"),
+        },
+        "exported_at": datetime.now().isoformat(),
+    }
+
+    return JSONResponse(
+        content=export_config,
+        headers={
+            "Content-Disposition": 'attachment; filename="linguaeval_config.json"'
+        },
+    )
+
+
+@app.get("/presets/export-all", tags=["presets"], summary="Export all presets")
+async def export_all_presets():
+    """Export all presets as a JSON file."""
+    presets = load_presets()
+    return JSONResponse(
+        content={"presets": presets, "exported_at": datetime.now().isoformat()},
+        headers={
+            "Content-Disposition": 'attachment; filename="linguaeval_all_presets.json"'
+        },
+    )
+
+
+@app.post("/presets/reset", tags=["presets"], summary="Reset to defaults")
+async def reset_to_defaults():
+    """Reset all settings to default values."""
+    global _settings
+
+    _settings.update(
+        {
+            "ollama_host": "http://localhost:11434",
+            "default_model": "llama3.1:latest",
+            "judge_model": "llama3.1:latest",
+            "openai_api_key": "",
+            "anthropic_api_key": "",
+            "azure_openai_endpoint": "",
+            "azure_openai_key": "",
+        }
+    )
+
+    return {"status": "reset"}
+
+
+# ═══════════════════════════════════════════════════════════════
+# PROMPT EDITOR ENDPOINTS
+# ═══════════════════════════════════════════════════════════════
+
+PROMPTS_DIR = BASE_DIR.parent / "prompts"
+
+
+def get_prompt_packs():
+    """Get list of available prompt packs."""
+    packs = []
+    if PROMPTS_DIR.exists():
+        for f in PROMPTS_DIR.glob("*.json"):
+            try:
+                with open(f) as fp:
+                    data = json.load(fp)
+                    packs.append(
+                        {
+                            "name": f.stem,
+                            "file": f.name,
+                            "prompt_count": len(data.get("prompts", [])),
+                            "domain": data.get("domain", "General"),
+                        }
+                    )
+            except Exception:
+                packs.append({"name": f.stem, "file": f.name, "prompt_count": 0})
+    return packs
+
+
+@app.get("/prompts/editor", response_class=HTMLResponse, tags=["prompts"])
+async def prompt_editor_page(request: Request, pack: str = None):
+    """Prompt editor page."""
+    packs = get_prompt_packs()
+    prompts = []
+
+    if pack:
+        pack_file = PROMPTS_DIR / f"{pack}.json"
+        if pack_file.exists():
+            with open(pack_file) as f:
+                data = json.load(f)
+                prompts = data.get("prompts", [])
+
+    return templates.TemplateResponse(
+        "prompt_editor.html",
+        {
+            "request": request,
+            "page_title": "Prompt Editor",
+            "packs": packs,
+            "selected_pack": pack,
+            "prompts": prompts,
+        },
+    )
+
+
+@app.post("/prompts/create-pack", tags=["prompts"], summary="Create new prompt pack")
+async def create_prompt_pack(
+    name: str = Form(...),
+    description: str = Form(""),
+    domain: str = Form(""),
+):
+    """Create a new empty prompt pack."""
+    # Sanitize name
+    name = name.lower().replace(" ", "_")
+
+    pack_file = PROMPTS_DIR / f"{name}.json"
+    if pack_file.exists():
+        raise HTTPException(status_code=400, detail="Pack already exists")
+
+    PROMPTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    pack_data = {
+        "name": name,
+        "description": description,
+        "domain": domain,
+        "version": "1.0",
+        "prompts": [],
+    }
+
+    with open(pack_file, "w") as f:
+        json.dump(pack_data, f, indent=2, ensure_ascii=False)
+
+    return RedirectResponse(url=f"/prompts/editor?pack={name}", status_code=303)
+
+
+@app.post("/prompts/save/{pack_name}", tags=["prompts"], summary="Save prompts")
+async def save_prompts(pack_name: str, request: Request):
+    """Save prompts to a pack."""
+    data = await request.json()
+    prompts = data.get("prompts", [])
+
+    pack_file = PROMPTS_DIR / f"{pack_name}.json"
+
+    # Load existing pack data or create new
+    if pack_file.exists():
+        with open(pack_file) as f:
+            pack_data = json.load(f)
+    else:
+        pack_data = {"name": pack_name, "version": "1.0"}
+
+    pack_data["prompts"] = prompts
+
+    with open(pack_file, "w") as f:
+        json.dump(pack_data, f, indent=2, ensure_ascii=False)
+
+    return {"status": "saved", "count": len(prompts)}
+
+
+@app.delete("/prompts/{pack_name}", tags=["prompts"], summary="Delete prompt pack")
+async def delete_prompt_pack(pack_name: str):
+    """Delete a prompt pack."""
+    pack_file = PROMPTS_DIR / f"{pack_name}.json"
+
+    if not pack_file.exists():
+        raise HTTPException(status_code=404, detail="Pack not found")
+
+    pack_file.unlink()
+    return {"status": "deleted"}
+
+
+@app.get("/prompts/{pack_name}/export", tags=["prompts"], summary="Export prompt pack")
+async def export_prompt_pack(pack_name: str):
+    """Export a prompt pack as JSON file."""
+    pack_file = PROMPTS_DIR / f"{pack_name}.json"
+
+    if not pack_file.exists():
+        raise HTTPException(status_code=404, detail="Pack not found")
+
+    return FileResponse(
+        pack_file,
+        media_type="application/json",
+        filename=f"{pack_name}_prompts.json",
+    )
+
+
+# ═══════════════════════════════════════════════════════════════
+# FINE-TUNING ENDPOINTS
+# ═══════════════════════════════════════════════════════════════
+
+FINETUNE_DIR = DATA_DIR / "finetune"
+DATASETS_DIR = FINETUNE_DIR / "datasets"
+FINETUNE_JOBS_FILE = FINETUNE_DIR / "jobs.json"
+
+
+def load_finetune_jobs() -> List[dict]:
+    """Load fine-tuning jobs from disk."""
+    try:
+        if FINETUNE_JOBS_FILE.exists():
+            with open(FINETUNE_JOBS_FILE) as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return []
+
+
+def save_finetune_jobs(jobs: List[dict]):
+    """Save fine-tuning jobs to disk."""
+    FINETUNE_DIR.mkdir(parents=True, exist_ok=True)
+    with open(FINETUNE_JOBS_FILE, "w") as f:
+        json.dump(jobs, f, indent=2)
+
+
+def get_datasets():
+    """Get available training datasets."""
+    datasets = []
+    if DATASETS_DIR.exists():
+        for f in DATASETS_DIR.glob("*.jsonl"):
+            try:
+                with open(f) as fp:
+                    lines = fp.readlines()
+                    datasets.append(
+                        {
+                            "name": f.stem,
+                            "file": f.name,
+                            "samples": len(lines),
+                            "format": "jsonl",
+                            "size_mb": round(f.stat().st_size / 1024 / 1024, 2),
+                        }
+                    )
+            except Exception:
+                pass
+    return datasets
+
+
+@app.get("/finetune", response_class=HTMLResponse, tags=["finetune"])
+async def finetune_page(request: Request):
+    """Fine-tuning management page."""
+    import httpx
+
+    # Get available Ollama models
+    available_models = []
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(f"{_settings['ollama_host']}/api/tags")
+            if resp.status_code == 200:
+                data = resp.json()
+                available_models = [m["name"] for m in data.get("models", [])]
+    except Exception:
+        available_models = ["llama3.1:latest"]
+
+    jobs = load_finetune_jobs()
+    datasets = get_datasets()
+
+    # Get fine-tuned models (those ending with -ft or custom suffix)
+    fine_tuned_models = [
+        m for m in available_models if "-ft" in m or "fine" in m.lower()
+    ]
+
+    return templates.TemplateResponse(
+        "finetune.html",
+        {
+            "request": request,
+            "page_title": "Fine-tuning",
+            "jobs": jobs,
+            "datasets": datasets,
+            "available_models": available_models,
+            "fine_tuned_models": fine_tuned_models,
+        },
+    )
+
+
+@app.post("/finetune/create", tags=["finetune"], summary="Create fine-tuning job")
+async def create_finetune_job(
+    base_model: str = Form(...),
+    dataset: str = Form(...),
+    output_name: str = Form(""),
+    epochs: int = Form(3),
+    learning_rate: float = Form(0.0001),
+    batch_size: int = Form(4),
+    max_seq_len: int = Form(2048),
+    use_lora: bool = Form(True),
+):
+    """Create a new fine-tuning job."""
+    jobs = load_finetune_jobs()
+
+    job_id = str(uuid.uuid4())[:8]
+    output_model = output_name or f"{base_model.split(':')[0]}-ft-{job_id}"
+
+    job = {
+        "id": job_id,
+        "base_model": base_model,
+        "dataset": dataset,
+        "output_model": output_model,
+        "status": "queued",
+        "progress": 0,
+        "epochs": epochs,
+        "learning_rate": learning_rate,
+        "batch_size": batch_size,
+        "max_seq_len": max_seq_len,
+        "use_lora": use_lora,
+        "created_at": datetime.now().isoformat(),
+        "started_at": None,
+        "completed_at": None,
+        "error": None,
+    }
+
+    jobs.append(job)
+    save_finetune_jobs(jobs)
+
+    # In production, this would start an actual fine-tuning process
+    # For demo, we simulate the job
+
+    return RedirectResponse(url="/finetune", status_code=303)
+
+
+@app.post(
+    "/finetune/{job_id}/cancel", tags=["finetune"], summary="Cancel fine-tuning job"
+)
+async def cancel_finetune_job(job_id: str):
+    """Cancel a fine-tuning job."""
+    jobs = load_finetune_jobs()
+
+    for job in jobs:
+        if job["id"] == job_id and job["status"] in ["queued", "running"]:
+            job["status"] = "cancelled"
+            save_finetune_jobs(jobs)
+            return {"status": "cancelled"}
+
+    raise HTTPException(status_code=400, detail="Cannot cancel job")
+
+
+@app.delete("/finetune/{job_id}", tags=["finetune"], summary="Delete fine-tuning job")
+async def delete_finetune_job(job_id: str):
+    """Delete a fine-tuning job."""
+    jobs = load_finetune_jobs()
+    jobs = [j for j in jobs if j["id"] != job_id]
+    save_finetune_jobs(jobs)
+    return {"status": "deleted"}
+
+
+@app.post(
+    "/finetune/{job_id}/deploy", tags=["finetune"], summary="Deploy fine-tuned model"
+)
+async def deploy_finetune_model(job_id: str):
+    """Deploy a fine-tuned model for use."""
+    jobs = load_finetune_jobs()
+
+    job = next((j for j in jobs if j["id"] == job_id), None)
+    if not job or job["status"] != "completed":
+        raise HTTPException(status_code=400, detail="Job not completed")
+
+    # In production, this would register the model with Ollama
+    # For demo, we return success
+
+    return {
+        "status": "deployed",
+        "message": f"Model {job['output_model']} is now available",
+    }
+
+
+@app.post(
+    "/finetune/upload-dataset", tags=["finetune"], summary="Upload training dataset"
+)
+async def upload_dataset(
+    name: str = Form(...),
+    description: str = Form(""),
+    file: UploadFile = File(...),
+):
+    """Upload a training dataset."""
+    DATASETS_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Validate and save
+    content = await file.read()
+
+    # Check if valid JSONL
+    try:
+        lines = content.decode().strip().split("\n")
+        for line in lines[:5]:  # Validate first 5 lines
+            json.loads(line)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid JSONL format: {str(e)}")
+
+    # Save file
+    dataset_path = DATASETS_DIR / f"{name}.jsonl"
+    with open(dataset_path, "wb") as f:
+        f.write(content)
+
+    return RedirectResponse(url="/finetune", status_code=303)
+
+
+@app.delete("/finetune/dataset/{name}", tags=["finetune"], summary="Delete dataset")
+async def delete_dataset(name: str):
+    """Delete a training dataset."""
+    dataset_path = DATASETS_DIR / f"{name}.jsonl"
+
+    if dataset_path.exists():
+        dataset_path.unlink()
+        return {"status": "deleted"}
+
+    raise HTTPException(status_code=404, detail="Dataset not found")
+
+
+@app.get(
+    "/finetune/dataset/{name}/preview", response_class=HTMLResponse, tags=["finetune"]
+)
+async def preview_dataset(request: Request, name: str):
+    """Preview a training dataset."""
+    dataset_path = DATASETS_DIR / f"{name}.jsonl"
+
+    if not dataset_path.exists():
+        raise HTTPException(status_code=404, detail="Dataset not found")
+
+    samples = []
+    with open(dataset_path) as f:
+        for i, line in enumerate(f):
+            if i >= 10:  # Show first 10 samples
+                break
+            samples.append(json.loads(line))
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Dataset Preview: {name}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container py-4">
+            <h2>Dataset: {name}</h2>
+            <p class="text-muted">Showing first 10 samples</p>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Content</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    """
+
+    for i, sample in enumerate(samples, 1):
+        html += f"<tr><td>{i}</td><td><pre class='mb-0'>{json.dumps(sample, indent=2, ensure_ascii=False)[:500]}</pre></td></tr>"
+
+    html += """
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    return HTMLResponse(content=html)
 
 
 # ═══════════════════════════════════════════════════════════════

@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">Configuration Presets</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-save text-primary me-2"></i>
+            Configuration Presets
+        </h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#savePresetModal">
+            <i class="fas fa-plus me-1"></i> Save Current Config
+        </button>
+    </div>
+
+    <div class="row">
+        <!-- Saved Presets -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header">
+                    <i class="fas fa-folder me-2"></i>
+                    Saved Presets
+                </div>
+                <div class="card-body p-0">
+                    {% if presets %}
+                    <div class="list-group list-group-flush">
+                        {% for preset in presets %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ preset.name }}</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-cube me-1"></i>{{ preset.config.model or 'Default model' }}
+                                    <span class="mx-2">|</span>
+                                    <i class="fas fa-file-alt me-1"></i>{{ preset.config.prompt_pack or 'All packs' }}
+                                    <span class="mx-2">|</span>
+                                    <i class="fas fa-globe me-1"></i>{{ preset.config.languages|join(', ') if
+                                    preset.config.languages else 'EN, AR' }}
+                                </small>
+                                <br>
+                                <small class="text-muted">
+                                    Created: {{ preset.created_at[:16].replace('T', ' ') if preset.created_at else
+                                    'Unknown' }}
+                                </small>
+                            </div>
+                            <div class="btn-group">
+                                <a href="/presets/{{ preset.id }}/load" class="btn btn-sm btn-outline-success"
+                                    title="Load">
+                                    <i class="fas fa-upload"></i>
+                                </a>
+                                <a href="/presets/{{ preset.id }}/export" class="btn btn-sm btn-outline-primary"
+                                    title="Export">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deletePreset('{{ preset.id }}')"
+                                    title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-folder-open fa-3x mb-3"></i>
+                        <p class="mb-0">No saved presets yet.</p>
+                        <p class="small">Save your first configuration preset to get started.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Import Preset -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <i class="fas fa-file-import me-2"></i>
+                    Import Preset
+                </div>
+                <div class="card-body">
+                    <form action="/presets/import" method="POST" enctype="multipart/form-data">
+                        <div class="input-group">
+                            <input type="file" class="form-control" name="file" accept=".json,.yaml,.yml" required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload me-1"></i> Import
+                            </button>
+                        </div>
+                        <small class="text-muted">Upload a JSON or YAML preset file</small>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Configuration -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-cog me-2"></i>
+                    Current Configuration
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        <tr>
+                            <td class="text-muted">Model</td>
+                            <td class="fw-semibold">{{ current_config.model }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Judge Model</td>
+                            <td class="fw-semibold">{{ current_config.judge_model }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Ollama Host</td>
+                            <td class="fw-semibold">{{ current_config.ollama_host }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Languages</td>
+                            <td class="fw-semibold">{{ current_config.languages|join(', ') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Prompt Packs</td>
+                            <td class="fw-semibold">{{ current_config.prompt_packs|length }} available</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <i class="fas fa-bolt me-2"></i>
+                    Quick Actions
+                </div>
+                <div class="card-body d-grid gap-2">
+                    <a href="/presets/export-all" class="btn btn-outline-primary">
+                        <i class="fas fa-file-archive me-1"></i> Export All Presets
+                    </a>
+                    <button class="btn btn-outline-secondary" onclick="exportCurrentConfig()">
+                        <i class="fas fa-download me-1"></i> Export Current Config
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="resetToDefaults()">
+                        <i class="fas fa-undo me-1"></i> Reset to Defaults
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Save Preset Modal -->
+<div class="modal fade" id="savePresetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-save me-2"></i>Save Configuration Preset
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/presets/save" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Preset Name</label>
+                        <input type="text" class="form-control" name="name" required
+                            placeholder="e.g., Production Config, Arabic Testing">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Description (optional)</label>
+                        <textarea class="form-control" name="description" rows="2"
+                            placeholder="Brief description of this preset"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Include Settings</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="include_model" id="includeModel"
+                                checked>
+                            <label class="form-check-label" for="includeModel">Model settings</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="include_api_keys" id="includeApiKeys">
+                            <label class="form-check-label" for="includeApiKeys">API keys (sensitive)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="include_email" id="includeEmail">
+                            <label class="form-check-label" for="includeEmail">Email settings</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Save Preset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function deletePreset(presetId) {
+        if (!confirm('Delete this preset?')) return;
+        try {
+            await fetch(`/presets/${presetId}`, { method: 'DELETE' });
+            location.reload();
+        } catch (e) {
+            alert('Failed to delete preset: ' + e.message);
+        }
+    }
+
+    function exportCurrentConfig() {
+        window.location.href = '/presets/export-current';
+    }
+
+    async function resetToDefaults() {
+        if (!confirm('Reset all settings to defaults?')) return;
+        try {
+            await fetch('/presets/reset', { method: 'POST' });
+            alert('Settings reset to defaults');
+            location.reload();
+        } catch (e) {
+            alert('Failed to reset: ' + e.message);
+        }
+    }
+</script>
+{% endblock %}

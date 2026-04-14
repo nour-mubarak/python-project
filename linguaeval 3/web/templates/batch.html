@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">Batch Evaluations</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-layer-group text-primary me-2"></i>
+            Batch Evaluations
+        </h2>
+        <div>
+            <button class="btn btn-outline-secondary me-2" onclick="refreshJobs()">
+                <i class="fas fa-sync-alt me-1"></i> Refresh
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addJobModal">
+                <i class="fas fa-plus me-1"></i> Add Job
+            </button>
+        </div>
+    </div>
+
+    <!-- Queue Status -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-primary mb-0" id="statusQueued">{{ status.queued }}</h3>
+                    <small class="text-muted">Queued</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-warning mb-0" id="statusRunning">{{ status.running }}</h3>
+                    <small class="text-muted">Running</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-success mb-0" id="statusCompleted">{{ status.completed }}</h3>
+                    <small class="text-muted">Completed</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-danger mb-0" id="statusFailed">{{ status.failed }}</h3>
+                    <small class="text-muted">Failed</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Queue Controls -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-cogs me-2"></i>Queue Controls</span>
+            <div>
+                {% if not status.is_processing and status.queued > 0 %}
+                <button class="btn btn-success btn-sm" onclick="startQueue()">
+                    <i class="fas fa-play me-1"></i> Start Processing
+                </button>
+                {% elif status.is_processing %}
+                <span class="badge bg-warning">
+                    <i class="fas fa-spinner fa-spin me-1"></i> Processing...
+                </span>
+                {% endif %}
+                <button class="btn btn-outline-danger btn-sm ms-2" onclick="clearCompleted()">
+                    <i class="fas fa-trash me-1"></i> Clear Completed
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jobs Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header">
+            <i class="fas fa-list me-2"></i>
+            Evaluation Jobs
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="jobsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Model</th>
+                        <th>Prompt Pack</th>
+                        <th>Languages</th>
+                        <th>Status</th>
+                        <th>Progress</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                    <tr id="job-{{ job.id }}">
+                        <td><code>{{ job.id }}</code></td>
+                        <td>{{ job.name }}</td>
+                        <td><span class="badge bg-secondary">{{ job.model }}</span></td>
+                        <td>{{ job.prompt_pack }}</td>
+                        <td>{{ job.languages|join(', ') }}</td>
+                        <td>
+                            {% if job.status == 'queued' %}
+                            <span class="badge bg-info">Queued</span>
+                            {% elif job.status == 'running' %}
+                            <span class="badge bg-warning">
+                                <i class="fas fa-spinner fa-spin me-1"></i>Running
+                            </span>
+                            {% elif job.status == 'completed' %}
+                            <span class="badge bg-success">Completed</span>
+                            {% elif job.status == 'failed' %}
+                            <span class="badge bg-danger">Failed</span>
+                            {% elif job.status == 'cancelled' %}
+                            <span class="badge bg-secondary">Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="progress" style="width: 100px; height: 8px;">
+                                <div class="progress-bar {% if job.status == 'completed' %}bg-success{% elif job.status == 'failed' %}bg-danger{% endif %}"
+                                    style="width: {{ job.progress }}%"></div>
+                            </div>
+                            <small class="text-muted">{{ job.progress }}%</small>
+                        </td>
+                        <td><small>{{ job.created_at[:16].replace('T', ' ') }}</small></td>
+                        <td>
+                            {% if job.status == 'queued' %}
+                            <button class="btn btn-sm btn-outline-danger" onclick="cancelJob('{{ job.id }}')"
+                                title="Cancel">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            {% elif job.status == 'completed' and job.result_file %}
+                            <a href="/results/{{ job.result_file }}" class="btn btn-sm btn-outline-success"
+                                title="View Results">
+                                <i class="fas fa-chart-bar"></i>
+                            </a>
+                            {% elif job.status == 'failed' %}
+                            <button class="btn btn-sm btn-outline-warning" onclick="showError('{{ job.id }}')"
+                                title="View Error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </button>
+                            {% endif %}
+                            {% if job.status in ['completed', 'failed', 'cancelled'] %}
+                            <button class="btn btn-sm btn-outline-secondary" onclick="deleteJob('{{ job.id }}')"
+                                title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                            <p class="mb-0">No jobs in queue. Click "Add Job" to create one.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Job Modal -->
+<div class="modal fade" id="addJobModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus me-2"></i>Add Batch Job
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/batch/add" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Job Name</label>
+                        <input type="text" class="form-control" name="name" required
+                            placeholder="e.g., Weekly Evaluation - GPT-4">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Model</label>
+                        <select class="form-select" name="model" required>
+                            {% for model in models %}
+                            <option value="{{ model }}">{{ model }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Prompt Pack</label>
+                        <select class="form-select" name="prompt_pack" required>
+                            {% for pack in prompt_packs %}
+                            <option value="{{ pack }}">{{ pack|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Languages</label>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="languages" value="EN"
+                                        id="langEN" checked>
+                                    <label class="form-check-label" for="langEN">English</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="languages" value="AR"
+                                        id="langAR" checked>
+                                    <label class="form-check-label" for="langAR">Arabic</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="languages" value="ZH"
+                                        id="langZH">
+                                    <label class="form-check-label" for="langZH">Chinese</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="languages" value="ES"
+                                        id="langES">
+                                    <label class="form-check-label" for="langES">Spanish</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="languages" value="FR"
+                                        id="langFR">
+                                    <label class="form-check-label" for="langFR">French</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="languages" value="DE"
+                                        id="langDE">
+                                    <label class="form-check-label" for="langDE">German</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add to Queue
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Job Error
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <pre id="errorContent" class="bg-light p-3 rounded" style="white-space: pre-wrap;"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Job errors cache
+    const jobErrors = {
+        {% for job in jobs %}
+    {% if job.error %}
+    '{{ job.id }}': { { job.error | tojson } },
+    {% endif %}
+    {% endfor %}
+    };
+
+    // Refresh jobs periodically if there's a running job
+    let refreshInterval;
+
+    function startAutoRefresh() {
+        if (!refreshInterval) {
+            refreshInterval = setInterval(refreshJobs, 5000);
+        }
+    }
+
+    function stopAutoRefresh() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+            refreshInterval = null;
+        }
+    }
+
+    // Check if any job is running
+    {% if status.is_processing %}
+    startAutoRefresh();
+    {% endif %}
+
+    async function refreshJobs() {
+        try {
+            const resp = await fetch('/batch/status');
+            const data = await resp.json();
+
+            // Update counters
+            document.getElementById('statusQueued').textContent = data.status.queued;
+            document.getElementById('statusRunning').textContent = data.status.running;
+            document.getElementById('statusCompleted').textContent = data.status.completed;
+            document.getElementById('statusFailed').textContent = data.status.failed;
+
+            // Reload page if status changed significantly
+            if (data.status.running > 0) {
+                startAutoRefresh();
+            } else {
+                stopAutoRefresh();
+            }
+
+            // Could update table dynamically here
+            location.reload();
+        } catch (e) {
+            console.error('Failed to refresh jobs:', e);
+        }
+    }
+
+    async function startQueue() {
+        try {
+            const resp = await fetch('/batch/start', { method: 'POST' });
+            const data = await resp.json();
+            if (data.status === 'started') {
+                startAutoRefresh();
+                location.reload();
+            }
+        } catch (e) {
+            alert('Failed to start queue: ' + e.message);
+        }
+    }
+
+    async function cancelJob(jobId) {
+        if (!confirm('Cancel this job?')) return;
+        try {
+            const resp = await fetch(`/batch/${jobId}/cancel`, { method: 'POST' });
+            location.reload();
+        } catch (e) {
+            alert('Failed to cancel job: ' + e.message);
+        }
+    }
+
+    async function deleteJob(jobId) {
+        if (!confirm('Delete this job?')) return;
+        try {
+            const resp = await fetch(`/batch/${jobId}`, { method: 'DELETE' });
+            location.reload();
+        } catch (e) {
+            alert('Failed to delete job: ' + e.message);
+        }
+    }
+
+    async function clearCompleted() {
+        if (!confirm('Clear all completed/failed jobs?')) return;
+        try {
+            const resp = await fetch('/batch/clear', { method: 'POST' });
+            location.reload();
+        } catch (e) {
+            alert('Failed to clear jobs: ' + e.message);
+        }
+    }
+
+    function showError(jobId) {
+        const error = jobErrors[jobId] || 'Unknown error';
+        document.getElementById('errorContent').textContent = error;
+        new bootstrap.Modal(document.getElementById('errorModal')).show();
+    }
+</script>
+{% endblock %}

@@ -168,6 +168,112 @@
                     </div>
                 </div>
 
+                <!-- Email Notifications -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-purple text-white" style="background: #7c3aed;">
+                        <h5 class="mb-0">
+                            <i class="fas fa-envelope me-2"></i>
+                            Email Notifications
+                            {% if settings.smtp_host and settings.smtp_user %}
+                            <span class="badge bg-light text-dark ms-2">Configured</span>
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="email_enabled" name="email_enabled" {%
+                                if settings.email_enabled %}checked{% endif %}>
+                            <label class="form-check-label fw-semibold" for="email_enabled">
+                                Enable Email Notifications
+                            </label>
+                        </div>
+
+                        <div id="emailSettings">
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="smtp_host" class="form-label fw-semibold">SMTP Server</label>
+                                    <input type="text" class="form-control" id="smtp_host" name="smtp_host"
+                                        value="{{ settings.smtp_host }}" placeholder="smtp.gmail.com">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="smtp_port" class="form-label fw-semibold">Port</label>
+                                    <input type="number" class="form-control" id="smtp_port" name="smtp_port"
+                                        value="{{ settings.smtp_port or 587 }}" placeholder="587">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="smtp_user" class="form-label fw-semibold">Username / Email</label>
+                                    <input type="text" class="form-control" id="smtp_user" name="smtp_user"
+                                        value="{{ settings.smtp_user }}" placeholder="your-email@gmail.com">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="smtp_password" class="form-label fw-semibold">Password / App
+                                        Password</label>
+                                    <input type="password" class="form-control" id="smtp_password" name="smtp_password"
+                                        value="{{ settings.smtp_password }}" placeholder="App Password">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="notification_email" class="form-label fw-semibold">Notification
+                                    Recipients</label>
+                                <input type="text" class="form-control" id="notification_email"
+                                    name="notification_email" value="{{ settings.notification_email }}"
+                                    placeholder="admin@example.com, team@example.com">
+                                <div class="form-text">Comma-separated email addresses to receive notifications</div>
+                            </div>
+
+                            <h6 class="mt-4 mb-3">Notification Events</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="notify_evaluation_complete"
+                                            name="notify_evaluation_complete" {% if settings.notify_evaluation_complete
+                                            !=false %}checked{% endif %}>
+                                        <label class="form-check-label" for="notify_evaluation_complete">
+                                            Evaluation Completed
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="notify_evaluation_failed"
+                                            name="notify_evaluation_failed" {% if settings.notify_evaluation_failed
+                                            !=false %}checked{% endif %}>
+                                        <label class="form-check-label" for="notify_evaluation_failed">
+                                            Evaluation Failed
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="notify_new_user"
+                                            name="notify_new_user" {% if settings.notify_new_user %}checked{% endif %}>
+                                        <label class="form-check-label" for="notify_new_user">
+                                            New User Registration
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="notify_daily_summary"
+                                            name="notify_daily_summary" {% if settings.notify_daily_summary %}checked{%
+                                            endif %}>
+                                        <label class="form-check-label" for="notify_daily_summary">
+                                            Daily Summary Report
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="testEmail">
+                                    <i class="fas fa-paper-plane me-1"></i> Send Test Email
+                                </button>
+                                <span id="emailTestResult" class="ms-2"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Save Button -->
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary btn-lg">
@@ -228,6 +334,27 @@
                         <a href="/redoc" class="btn btn-outline-secondary btn-sm" target="_blank">
                             <i class="fas fa-external-link-alt me-1"></i>
                             ReDoc
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Presets -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-save me-2"></i>
+                        Configuration Presets
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        Save and load configuration presets for different environments.
+                    </p>
+                    <div class="d-grid">
+                        <a href="/presets" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-cog me-1"></i>
+                            Manage Presets
                         </a>
                     </div>
                 </div>
@@ -333,6 +460,57 @@
             }
         });
         wrapper.appendChild(btn);
+    });
+
+    // Toggle email settings visibility
+    const emailEnabled = document.getElementById('email_enabled');
+    const emailSettings = document.getElementById('emailSettings');
+
+    function toggleEmailSettings() {
+        if (emailEnabled.checked) {
+            emailSettings.style.display = 'block';
+        } else {
+            emailSettings.style.display = 'none';
+        }
+    }
+
+    emailEnabled.addEventListener('change', toggleEmailSettings);
+    toggleEmailSettings();  // Initial state
+
+    // Test email
+    document.getElementById('testEmail').addEventListener('click', async function () {
+        const btn = this;
+        const result = document.getElementById('emailTestResult');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Sending...';
+        result.innerHTML = '';
+
+        try {
+            const formData = new FormData();
+            formData.append('smtp_host', document.getElementById('smtp_host').value);
+            formData.append('smtp_port', document.getElementById('smtp_port').value);
+            formData.append('smtp_user', document.getElementById('smtp_user').value);
+            formData.append('smtp_password', document.getElementById('smtp_password').value);
+            formData.append('notification_email', document.getElementById('notification_email').value);
+
+            const resp = await fetch('/settings/test-email', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await resp.json();
+
+            if (data.status === 'success') {
+                result.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Test email sent!</span>';
+            } else {
+                result.innerHTML = `<span class="text-danger"><i class="fas fa-times-circle me-1"></i>${data.message}</span>`;
+            }
+        } catch (e) {
+            result.innerHTML = `<span class="text-danger"><i class="fas fa-times-circle me-1"></i>Error: ${e.message}</span>`;
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i> Send Test Email';
     });
 </script>
 {% endblock %}

@@ -1,0 +1,433 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">Prompt Editor</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-edit text-primary me-2"></i>
+            Prompt Editor
+        </h2>
+        <div>
+            <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#newPackModal">
+                <i class="fas fa-folder-plus me-1"></i> New Pack
+            </button>
+            <button class="btn btn-primary" onclick="saveAllChanges()">
+                <i class="fas fa-save me-1"></i> Save All
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Prompt Packs List -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <i class="fas fa-folder me-2"></i>
+                    Prompt Packs
+                </div>
+                <div class="list-group list-group-flush" id="packList">
+                    {% for pack in packs %}
+                    <a href="#"
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {% if pack.name == selected_pack %}active{% endif %}"
+                        onclick="selectPack('{{ pack.name }}')">
+                        <span>
+                            <i class="fas fa-file-alt me-2"></i>{{ pack.name|title }}
+                        </span>
+                        <span class="badge bg-secondary">{{ pack.prompt_count }}</span>
+                    </a>
+                    {% else %}
+                    <div class="list-group-item text-muted text-center py-4">
+                        <i class="fas fa-folder-open fa-2x mb-2"></i>
+                        <p class="mb-0">No prompt packs found</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Prompt Editor -->
+        <div class="col-md-9">
+            {% if selected_pack %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-edit me-2"></i>
+                        {{ selected_pack|title }} Prompts
+                    </span>
+                    <button class="btn btn-success btn-sm" onclick="addNewPrompt()">
+                        <i class="fas fa-plus me-1"></i> Add Prompt
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="accordion" id="promptAccordion">
+                        {% for prompt in prompts %}
+                        <div class="accordion-item" id="prompt-{{ loop.index0 }}">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button {% if not loop.first %}collapsed{% endif %}"
+                                    type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-{{ loop.index0 }}">
+                                    <span
+                                        class="badge bg-{{ prompt.category|lower if prompt.category in ['accuracy', 'fluency', 'cultural', 'bias', 'hallucination'] else 'secondary' }} me-2">
+                                        {{ prompt.category }}
+                                    </span>
+                                    {{ prompt.id }}
+                                </button>
+                            </h2>
+                            <div id="collapse-{{ loop.index0 }}"
+                                class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
+                                data-bs-parent="#promptAccordion">
+                                <div class="accordion-body">
+                                    <form class="prompt-form" data-index="{{ loop.index0 }}">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Prompt ID</label>
+                                                <input type="text" class="form-control" name="id"
+                                                    value="{{ prompt.id }}" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Category</label>
+                                                <select class="form-select" name="category">
+                                                    <option value="accuracy" {% if prompt.category=='accuracy'
+                                                        %}selected{% endif %}>Accuracy</option>
+                                                    <option value="fluency" {% if prompt.category=='fluency'
+                                                        %}selected{% endif %}>Fluency</option>
+                                                    <option value="cultural" {% if prompt.category=='cultural'
+                                                        %}selected{% endif %}>Cultural</option>
+                                                    <option value="bias" {% if prompt.category=='bias' %}selected{%
+                                                        endif %}>Bias</option>
+                                                    <option value="hallucination" {% if prompt.category=='hallucination'
+                                                        %}selected{% endif %}>Hallucination</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Expected Answer</label>
+                                                <input type="text" class="form-control" name="expected_answer"
+                                                    value="{{ prompt.expected_answer }}" placeholder="Optional">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">English Prompt</label>
+                                            <textarea class="form-control" name="prompt_en" rows="3"
+                                                required>{{ prompt.prompt_en }}</textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Arabic Prompt</label>
+                                            <textarea class="form-control" name="prompt_ar" rows="3" dir="rtl"
+                                                required>{{ prompt.prompt_ar }}</textarea>
+                                        </div>
+
+                                        {% if prompt.context %}
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Context (optional)</label>
+                                            <textarea class="form-control" name="context"
+                                                rows="2">{{ prompt.context }}</textarea>
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="d-flex justify-content-between">
+                                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                                onclick="deletePrompt({{ loop.index0 }})">
+                                                <i class="fas fa-trash me-1"></i> Delete
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                                onclick="testPrompt({{ loop.index0 }})">
+                                                <i class="fas fa-flask me-1"></i> Test
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-file-alt fa-3x mb-3"></i>
+                            <p class="mb-0">No prompts in this pack.</p>
+                            <button class="btn btn-success mt-3" onclick="addNewPrompt()">
+                                <i class="fas fa-plus me-1"></i> Add First Prompt
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-hand-point-left fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Select a prompt pack to edit</h5>
+                    <p class="text-muted">Or create a new pack to get started</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- New Pack Modal -->
+<div class="modal fade" id="newPackModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-folder-plus me-2"></i>Create New Prompt Pack
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/prompts/create-pack" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Pack Name</label>
+                        <input type="text" class="form-control" name="name" required
+                            placeholder="e.g., finance, retail, education" pattern="[a-z_]+"
+                            title="Lowercase letters and underscores only">
+                        <div class="form-text">Use lowercase letters and underscores only</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Description</label>
+                        <textarea class="form-control" name="description" rows="2"
+                            placeholder="Brief description of this prompt pack"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Domain</label>
+                        <input type="text" class="form-control" name="domain"
+                            placeholder="e.g., Financial Services, Retail, Education">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Create Pack
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Test Prompt Modal -->
+<div class="modal fade" id="testModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-flask me-2"></i>Test Prompt
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>English</h6>
+                        <div class="bg-light p-3 rounded mb-3" id="testPromptEN"></div>
+                        <div class="border rounded p-3" id="testResponseEN">
+                            <span class="text-muted">Response will appear here...</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Arabic</h6>
+                        <div class="bg-light p-3 rounded mb-3" id="testPromptAR" dir="rtl"></div>
+                        <div class="border rounded p-3" id="testResponseAR" dir="rtl">
+                            <span class="text-muted">Response will appear here...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="runTest()">
+                    <i class="fas fa-play me-1"></i> Run Test
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Prompt Template (hidden) -->
+<template id="newPromptTemplate">
+    <div class="accordion-item" id="prompt-NEW_INDEX">
+        <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapse-NEW_INDEX">
+                <span class="badge bg-secondary me-2">new</span>
+                New Prompt
+            </button>
+        </h2>
+        <div id="collapse-NEW_INDEX" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+                <form class="prompt-form" data-index="NEW_INDEX">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Prompt ID</label>
+                            <input type="text" class="form-control" name="id" required placeholder="unique_id">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Category</label>
+                            <select class="form-select" name="category">
+                                <option value="accuracy">Accuracy</option>
+                                <option value="fluency">Fluency</option>
+                                <option value="cultural">Cultural</option>
+                                <option value="bias">Bias</option>
+                                <option value="hallucination">Hallucination</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Expected Answer</label>
+                            <input type="text" class="form-control" name="expected_answer" placeholder="Optional">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">English Prompt</label>
+                        <textarea class="form-control" name="prompt_en" rows="3" required
+                            placeholder="Enter English prompt..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Arabic Prompt</label>
+                        <textarea class="form-control" name="prompt_ar" rows="3" dir="rtl" required
+                            placeholder="أدخل السؤال بالعربية..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deletePrompt('NEW_INDEX')">
+                            <i class="fas fa-trash me-1"></i> Delete
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="testPrompt('NEW_INDEX')">
+                            <i class="fas fa-flask me-1"></i> Test
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentPack = '{{ selected_pack }}';
+    let promptCount = {{ prompts| length if prompts else 0 }};
+    let currentTestIndex = null;
+
+    function selectPack(packName) {
+        window.location.href = `/prompts/editor?pack=${packName}`;
+    }
+
+    function addNewPrompt() {
+        const template = document.getElementById('newPromptTemplate');
+        const accordion = document.getElementById('promptAccordion');
+
+        if (!accordion) {
+            // If no accordion exists, reload with pack selected
+            if (currentPack) {
+                location.reload();
+            }
+            return;
+        }
+
+        const newIndex = promptCount++;
+        let html = template.innerHTML.replace(/NEW_INDEX/g, newIndex);
+
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        accordion.appendChild(div.firstElementChild);
+
+        // Scroll to new prompt
+        document.getElementById(`prompt-${newIndex}`).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function deletePrompt(index) {
+        if (!confirm('Delete this prompt?')) return;
+        const el = document.getElementById(`prompt-${index}`);
+        if (el) el.remove();
+    }
+
+    function testPrompt(index) {
+        const form = document.querySelector(`form[data-index="${index}"]`);
+        const promptEN = form.querySelector('[name="prompt_en"]').value;
+        const promptAR = form.querySelector('[name="prompt_ar"]').value;
+
+        document.getElementById('testPromptEN').textContent = promptEN;
+        document.getElementById('testPromptAR').textContent = promptAR;
+        document.getElementById('testResponseEN').innerHTML = '<span class="text-muted">Click "Run Test" to get response...</span>';
+        document.getElementById('testResponseAR').innerHTML = '<span class="text-muted">Click "Run Test" to get response...</span>';
+
+        currentTestIndex = index;
+        new bootstrap.Modal(document.getElementById('testModal')).show();
+    }
+
+    async function runTest() {
+        const form = document.querySelector(`form[data-index="${currentTestIndex}"]`);
+        const promptEN = form.querySelector('[name="prompt_en"]').value;
+        const promptAR = form.querySelector('[name="prompt_ar"]').value;
+
+        document.getElementById('testResponseEN').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+        document.getElementById('testResponseAR').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+        try {
+            // Test English
+            const respEN = await fetch('/chat/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: promptEN })
+            });
+            const dataEN = await respEN.json();
+            document.getElementById('testResponseEN').textContent = dataEN.response || dataEN.error;
+
+            // Test Arabic
+            const respAR = await fetch('/chat/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: promptAR })
+            });
+            const dataAR = await respAR.json();
+            document.getElementById('testResponseAR').textContent = dataAR.response || dataAR.error;
+        } catch (e) {
+            document.getElementById('testResponseEN').textContent = 'Error: ' + e.message;
+            document.getElementById('testResponseAR').textContent = 'Error: ' + e.message;
+        }
+    }
+
+    async function saveAllChanges() {
+        const forms = document.querySelectorAll('.prompt-form');
+        const prompts = [];
+
+        forms.forEach(form => {
+            prompts.push({
+                id: form.querySelector('[name="id"]').value,
+                category: form.querySelector('[name="category"]').value,
+                prompt_en: form.querySelector('[name="prompt_en"]').value,
+                prompt_ar: form.querySelector('[name="prompt_ar"]').value,
+                expected_answer: form.querySelector('[name="expected_answer"]')?.value || '',
+            });
+        });
+
+        try {
+            const resp = await fetch(`/prompts/save/${currentPack}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompts })
+            });
+
+            const data = await resp.json();
+            if (data.status === 'saved') {
+                alert('Prompts saved successfully!');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (e) {
+            alert('Failed to save: ' + e.message);
+        }
+    }
+</script>
+{% endblock %}
