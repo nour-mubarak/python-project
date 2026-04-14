@@ -372,7 +372,9 @@ def main():
         "--client", type=str, default="Test Client", help="Client name (with --preset)"
     )
     parser.add_argument(
-        "--prompt-pack", type=str, help="Prompt pack to use (e.g., university, government)"
+        "--prompt-pack",
+        type=str,
+        help="Prompt pack to use (e.g., university, government)",
     )
     parser.add_argument(
         "--model",

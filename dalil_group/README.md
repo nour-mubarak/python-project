@@ -108,7 +108,8 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 
 ### 4. Start the web server
 ```bash
-cd "linguaeval 3"
+cd dalil_group
+source .venv/bin/activate
 uvicorn web.main:app --host 0.0.0.0 --port 8000
 ```
 
@@ -120,9 +121,9 @@ http://localhost:8000
 ## Directory Structure
 
 ```
-linguaeval 3/
+dalil_group/
 ├── README.md                  # This file
-├── run_evaluation.py          # CLI evaluation runner
+├── run_evaluation.py          # CLI evaluation runner (with --prompt-pack & --model args)
 ├── generate_report.py         # Report generator (DOCX/PDF/PPTX)
 │
 ├── web/                       # Web application
@@ -150,6 +151,33 @@ linguaeval 3/
 ├── scoring/                   # Scoring engine
 └── utils/                     # Helpers and model runner
 ```
+
+## Core Features (Enhanced)
+
+### ✅ Batch Queue Management
+- Run multiple evaluations asynchronously
+- Queue monitoring and job history
+- Real-time progress tracking
+
+### ✅ Configuration Presets
+- Save and export custom evaluation configs
+- Reuse presets across projects
+- Support for all sectors (government, university, healthcare, legal, finance)
+
+### ✅ Prompt Editor (WYSIWYG)
+- Bilingual prompt editor with side-by-side English/Arabic
+- Live category and dimension assignment
+- Full prompt pack management
+
+### ✅ Model Fine-tuning
+- Submit fine-tuning jobs
+- Track training progress
+- Compare base vs. fine-tuned performance
+
+### ✅ Advanced Settings
+- Ollama model management
+- Email notifications configuration
+- API key management for cloud providers
 
 ## API Endpoints
 
@@ -191,6 +219,41 @@ linguaeval 3/
 |--------|----------|-------------|
 | GET | `/reports/` | Report generation page |
 | POST | `/reports/generate` | Generate DOCX/PDF/PPTX |
+
+### Batch Queue
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/batch` | Batch job queue UI |
+| POST | `/batch/add` | Submit batch evaluation |
+| GET | `/batch/status` | Get job status |
+
+### Configuration & Presets
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/presets` | Manage presets |
+| POST | `/presets/save` | Save new preset |
+| GET | `/presets/export` | Export preset as YAML |
+
+### Prompt Editor
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/prompts/editor` | Bilingual prompt editor |
+| POST | `/prompts/save` | Save edited prompts |
+| GET | `/prompts/packs` | List all prompt packs |
+
+### Fine-tuning
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/finetune` | Fine-tune job management |
+| POST | `/finetune/submit` | Submit fine-tuning job |
+| GET | `/finetune/history` | View past jobs |
+
+### Settings
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/settings` | Platform settings |
+| POST | `/settings/save` | Update configuration |
+| POST | `/settings/test-email` | Test email notifications |
 
 ## Scoring Dimensions
 
@@ -247,12 +310,42 @@ linguaeval 3/
 | `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint | - |
 | `AZURE_OPENAI_KEY` | Azure OpenAI key | - |
 
+## Running Evaluations (CLI)
+
+### With preset
+```bash
+python run_evaluation.py --preset university --client "Durham University"
+```
+
+### With custom prompt pack and models
+```bash
+python run_evaluation.py --preset university \n  --prompt-pack university \n  --model llama3.1:latest \n  --model gemma3:27b
+```
+
+### With config file
+```bash
+python run_evaluation.py --config config/demo_test.yaml
+```
+
+### With judge model and dry-run
+```bash
+python run_evaluation.py --preset government --use-judge --dry-run
+```
+
 ## Deployment Modes
 
 - **Mode A (default)**: Full local deployment, you run everything
 - **Mode B**: Client accesses dashboard, pipeline runs on your infrastructure  
 - **Mode C**: Evaluation toolkit runs inside client's environment
 
+## Project Info
+
+**Project Name**: Dalil Group  
+**Platform**: LinguaEval v2.0  
+**Current State**: ✅ All 8 core features implemented and running  
+**Server**: Running on `http://localhost:8000`  
+**Project Path**: `/home/nour/python-project/dalil_group`
+
 ## License
 
-Proprietary — LinguaEval Platform
+Proprietary — LinguaEval Platform (Dalil Group)
