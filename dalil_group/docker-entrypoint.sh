@@ -48,7 +48,7 @@ fi
 # Initialize database
 echo ""
 echo "[*] Initializing database..."
-python -c "from database import init_db; init_db()" 2>/dev/null || true
+python3 -c "from database import init_db; init_db()" 2>/dev/null || true
 echo "[✓] Database initialized!"
 
 # Run migrations (if using Alembic)
@@ -63,14 +63,14 @@ fi
 if [ "$ENVIRONMENT" = "development" ]; then
     echo ""
     echo "[*] Seeding database with sample data (development mode)..."
-    python migrate.py seed 2>/dev/null || true
+    python3 migrate.py seed 2>/dev/null || true
 fi
 
 # Warm up cache
 if [ ! -z "$REDIS_HOST" ]; then
     echo ""
     echo "[*] Warming up cache..."
-    python -c "from cache import warm_cache; warm_cache()" 2>/dev/null || true
+    python3 -c "from cache import warm_cache; warm_cache()" 2>/dev/null || true
     echo "[✓] Cache warmed!"
 fi
 

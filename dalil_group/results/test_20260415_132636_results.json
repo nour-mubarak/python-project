@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "client_name": "Test",
+    "sector": "university",
+    "use_case": "Policy Q&A and student services",
+    "models": [
+      "ollama-phi"
+    ],
+    "dimensions": [
+      "accuracy",
+      "bias",
+      "hallucination",
+      "consistency",
+      "cultural",
+      "fluency"
+    ],
+    "prompt_pack": "university",
+    "total_prompts": 19,
+    "judge_model": null,
+    "timestamp": "2026-04-15T13:26:36.001636",
+    "version": "1.0"
+  },
+  "aggregates": {
+    "phi": {
+      "en": {},
+      "ar": {},
+      "cross_lingual_gap": {}
+    }
+  },
+  "detailed_results": []
+}

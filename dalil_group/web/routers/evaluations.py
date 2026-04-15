@@ -156,7 +156,7 @@ async def run_evaluation_task(
     try:
         # Build command
         cmd = [
-            "python",
+            "python3",
             str(BASE_DIR.parent / "run_evaluation.py"),
             "--client",
             client_name,
@@ -193,8 +193,6 @@ async def run_evaluation_task(
 @router.get("/run/{eval_id}", response_class=HTMLResponse)
 async def evaluation_run(request: Request, eval_id: str):
     """Evaluation Run Screen (Screen 3)"""
-    templates = get_templates()
-
     eval_data = running_evaluations.get(eval_id)
     if not eval_data:
         raise HTTPException(status_code=404, detail="Evaluation not found")
@@ -227,8 +225,6 @@ async def evaluation_status(eval_id: str):
 @router.get("/list", response_class=HTMLResponse)
 async def list_evaluations(request: Request):
     """List all evaluations"""
-    templates = get_templates()
-
     # Get completed evaluations from results
     results_dir = BASE_DIR.parent / "results"
     completed = []
