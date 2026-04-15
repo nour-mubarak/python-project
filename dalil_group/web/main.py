@@ -1286,6 +1286,111 @@ async def services(request: Request):
     )
 
 
+@app.get("/sectors/government", response_class=HTMLResponse)
+async def sector_government(request: Request):
+    """Government & Public Sector Page"""
+    return templates.TemplateResponse(
+        "sector_government.html",
+        {
+            "request": request,
+            "page_title": "Government & Public Sector",
+        },
+    )
+
+
+@app.get("/sectors/university", response_class=HTMLResponse)
+async def sector_university(request: Request):
+    """Higher Education Sector Page"""
+    return templates.TemplateResponse(
+        "sector_university.html",
+        {
+            "request": request,
+            "page_title": "Higher Education",
+        },
+    )
+
+
+@app.get("/sectors/healthcare", response_class=HTMLResponse)
+async def sector_healthcare(request: Request):
+    """Healthcare & Life Sciences Sector Page"""
+    return templates.TemplateResponse(
+        "sector_healthcare.html",
+        {
+            "request": request,
+            "page_title": "Healthcare & Life Sciences",
+        },
+    )
+
+
+@app.get("/sectors/finance", response_class=HTMLResponse)
+async def sector_finance(request: Request):
+    """Financial Services Sector Page"""
+    return templates.TemplateResponse(
+        "sector_finance.html",
+        {
+            "request": request,
+            "page_title": "Financial Services",
+        },
+    )
+
+
+@app.get("/sectors/legal", response_class=HTMLResponse)
+async def sector_legal(request: Request):
+    """Legal & Regulatory Sector Page"""
+    return templates.TemplateResponse(
+        "sector_legal.html",
+        {
+            "request": request,
+            "page_title": "Legal & Regulatory Services",
+        },
+    )
+
+
+@app.get("/sectors", response_class=HTMLResponse)
+async def sectors(request: Request):
+    """All Sectors Overview"""
+    sectors_list = [
+        {
+            "name": "Government & Public Sector",
+            "icon": "🏛️",
+            "url": "/sectors/government",
+            "description": "Trustworthy AI for citizen services",
+        },
+        {
+            "name": "Higher Education",
+            "icon": "🎓",
+            "url": "/sectors/university",
+            "description": "Fair AI for student services and research",
+        },
+        {
+            "name": "Healthcare & Life Sciences",
+            "icon": "⚕️",
+            "url": "/sectors/healthcare",
+            "description": "Safe, culturally competent medical AI",
+        },
+        {
+            "name": "Financial Services",
+            "icon": "💰",
+            "url": "/sectors/finance",
+            "description": "Fair, compliant AI for banking and fintech",
+        },
+        {
+            "name": "Legal & Regulatory",
+            "icon": "⚖️",
+            "url": "/sectors/legal",
+            "description": "Accurate AI for legal research and compliance",
+        },
+    ]
+    return templates.TemplateResponse(
+        "sectors.html",
+        {
+            "request": request,
+            "page_title": "Industries We Serve",
+            "sectors": sectors_list,
+        },
+    )
+
+
 @app.get("/dashboard/{project_id}", response_class=HTMLResponse)
 async def dashboard(request: Request, project_id: str):
     """Overview Dashboard (Screen 4)"""

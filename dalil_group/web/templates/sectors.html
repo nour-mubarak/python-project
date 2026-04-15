@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h1 class="display-4 fw-bold mb-3">Industries We Serve</h1>
+            <p class="lead text-muted">
+                Dalīl Group partners with organizations across key sectors to deploy fair, accurate, and culturally
+                aligned AI systems.
+            </p>
+        </div>
+    </div>
+
+    <!-- Sectors Grid -->
+    <div class="row">
+        {% for sector in sectors %}
+        <div class="col-lg-6 col-md-12 mb-4">
+            <div class="card border-0 shadow-lg h-100 transition">
+                <div class="card-body p-5">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="display-3 me-4">{{ sector.icon }}</div>
+                        <div>
+                            <h3 class="h4 fw-bold mb-1">{{ sector.name }}</h3>
+                            <p class="text-muted mb-0">{{ sector.description }}</p>
+                        </div>
+                    </div>
+                    <hr class="my-4">
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-3">Key Challenges:</h5>
+                        {% if "Government" in sector.name %}
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Citizen trust &
+                                fairness</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Regulatory compliance
+                                (SDAIA)</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Multilingual equity
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Cultural sensitivity
+                            </li>
+                        </ul>
+                        {% elif "Education" in sector.name %}
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Student equity across
+                                languages</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Academic integrity
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Hidden bias in tools
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Research credibility
+                            </li>
+                        </ul>
+                        {% elif "Healthcare" in sector.name %}
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Patient safety</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Clinical accuracy
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Cultural competence
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Regulatory compliance
+                            </li>
+                        </ul>
+                        {% elif "Financial" in sector.name %}
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Fair lending</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Regulatory fairness
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Multilingual
+                                customers</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Explainability</li>
+                        </ul>
+                        {% elif "Legal" in sector.name %}
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Legal accuracy &
+                                liability</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Fair justice</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Multilingual law</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Audit & transparency
+                            </li>
+                        </ul>
+                        {% endif %}
+                    </div>
+
+                    <a href="{{ sector.url }}" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-arrow-right me-2"></i>
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Why Sectors Matter -->
+    <div class="row mt-5 pt-5">
+        <div class="col-12">
+            <h2 class="h3 fw-bold mb-4">Why Sector-Specific Evaluation Matters</h2>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-target text-primary me-2"></i>
+                                Tailored Focus
+                            </h5>
+                            <p class="card-text text-muted">
+                                Each sector has unique challenges. Evaluation should be designed for your specific
+                                context.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-bar-chart text-success me-2"></i>
+                                Relevant Metrics
+                            </h5>
+                            <p class="card-text text-muted">
+                                We test what matters for you: fairness, safety, accuracy, or compliance.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-scroll text-info me-2"></i>
+                                Regulatory Ready
+                            </h5>
+                            <p class="card-text text-muted">
+                                Evidence suitable for auditors, regulators, and boards in your industry.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="bg-primary text-white rounded-3 p-5 text-center">
+                <h3 class="fw-bold mb-3">Don't See Your Sector?</h3>
+                <p class="lead mb-4">
+                    We adapt our evaluation methodology to any industry. Let's talk about your specific needs.
+                </p>
+                <a href="/evaluations/new" class="btn btn-light btn-lg">
+                    <i class="fas fa-flask me-2"></i>
+                    Start an Assessment
+                </a>
+                <p class="mt-3 mb-0 small opacity-75">
+                    <i class="fas fa-envelope me-1"></i> Or email hello@dalilgroup.com
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .transition {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .transition:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+    }
+</style>
+
+{% endblock %}
