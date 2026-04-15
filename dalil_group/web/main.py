@@ -92,28 +92,11 @@ with a focus on Arabic-English bilingual performance and cultural integrity.
 
 # Static files and templates
 BASE_DIR = Path(__file__).parent
+# Static files and templates
+BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR.parent / "data"
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
-_templates = Jinja2Templates(directory=BASE_DIR / "templates")
-
-
-class TemplatesWithUser:
-    """Wrapper to add current_user to all template responses."""
-
-    def __init__(self, templates):
-        self._templates = templates
-
-    def TemplateResponse(self, name: str, context: dict, **kwargs):
-        """Add current_user to context if request is present."""
-        from web.routers.auth import get_current_user
-
-        request = context.get("request")
-        if request and "current_user" not in context:
-            context["current_user"] = get_current_user(request)
-        return self._templates.TemplateResponse(name, context, **kwargs)
-
-
-templates = TemplatesWithUser(_templates)
+templates = Jinja2Templates(directory=BASE_DIR / "templates")
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(evaluations.router, prefix="/evaluations", tags=["evaluations"])
 app.include_router(reports.router, prefix="/reports", tags=["reports"])
@@ -122,10 +105,17 @@ app.include_router(chat.router, prefix="/chat", tags=["chat"])
 
 
 # ═══════════════════════════════════════════════════════════════
-# HEALTH & SETTINGS ENDPOINTS
+# TEMPLATE RENDERING HELPER
 # ═══════════════════════════════════════════════════════════════
 
-# Settings storage (in production, use database or config file)
+
+def render_template(name: str, context: dict) -> str:
+    """Render a template with the given context."""
+    template = templates.get_template(name)
+    return template.render(context)
+
+
+# ═══════════════════════════════════════════════════════════════
 _settings = {
     "ollama_host": os.environ.get("OLLAMA_HOST", "http://localhost:11434"),
     "openai_api_key": os.environ.get("OPENAI_API_KEY", ""),
@@ -1249,101 +1239,88 @@ async def home(request: Request):
     projects = get_recent_projects()
     stats = get_summary_stats()
 
-    return templates.TemplateResponse(
-        "home.html",
-        {
-            "request": request,
-            "page_title": "LinguaEval Dashboard",
-            "projects": projects,
-            "stats": stats,
-            "templates": [
-                {
-                    "name": "Government Service Delivery",
-                    "sector": "government",
-                    "icon": "🏛️",
-                },
-                {
-                    "name": "University Administration",
-                    "sector": "university",
-                    "icon": "🎓",
-                },
-                {"name": "Customer Support", "sector": "support", "icon": "💬"},
-                {"name": "Policy & Legal", "sector": "legal", "icon": "⚖️"},
-            ],
-        },
-    )
+    template = templates.get_template("home.html")
+    context = {
+        "request": request,
+        "page_title": "LinguaEval Dashboard",
+        "projects": projects,
+        "stats": stats,
+        "templates": [
+            {
+                "name": "Government Service Delivery",
+                "sector": "government",
+                "icon": "🏛️",
+            },
+            {
+                "name": "University Administration",
+                "sector": "university",
+                "icon": "🎓",
+            },
+            {"name": "Customer Support", "sector": "support", "icon": "💬"},
+            {"name": "Policy & Legal", "sector": "legal", "icon": "⚖️"},
+        ],
+    }
+    return template.render(context)
 
 
 @app.get("/services", response_class=HTMLResponse)
 async def services(request: Request):
     """Dalīl Group Services Overview"""
-    return templates.TemplateResponse(
-        "services.html",
-        {
-            "request": request,
-            "page_title": "Our Services",
-        },
-    )
+    context = {
+        "request": request,
+        "page_title": "Our Services",
+    }
+    return render_template("services.html", context)
 
 
 @app.get("/sectors/government", response_class=HTMLResponse)
 async def sector_government(request: Request):
     """Government & Public Sector Page"""
-    return templates.TemplateResponse(
-        "sector_government.html",
-        {
-            "request": request,
-            "page_title": "Government & Public Sector",
-        },
-    )
+    context = {
+        "request": request,
+        "page_title": "Government & Public Sector",
+    }
+    return render_template("sector_government.html", context)
 
 
 @app.get("/sectors/university", response_class=HTMLResponse)
 async def sector_university(request: Request):
     """Higher Education Sector Page"""
-    return templates.TemplateResponse(
-        "sector_university.html",
-        {
-            "request": request,
-            "page_title": "Higher Education",
-        },
-    )
+    context = {
+        "request": request,
+        "page_title": "Higher Education",
+    }
+    return render_template("sector_university.html", context)
 
 
 @app.get("/sectors/healthcare", response_class=HTMLResponse)
 async def sector_healthcare(request: Request):
     """Healthcare & Life Sciences Sector Page"""
-    return templates.TemplateResponse(
-        "sector_healthcare.html",
-        {
-            "request": request,
-            "page_title": "Healthcare & Life Sciences",
-        },
-    )
+    context = {
+        "request": request,
+        "page_title": "Healthcare & Life Sciences",
+    }
+    return render_template("sector_healthcare.html", context)
 
 
 @app.get("/sectors/finance", response_class=HTMLResponse)
 async def sector_finance(request: Request):
     """Financial Services Sector Page"""
-    return templates.TemplateResponse(
-        "sector_finance.html",
-        {
-            "request": request,
-            "page_title": "Financial Services",
-        },
-    )
+    context = {
+        "request": request,
+        "page_title": "Financial Services",
+    }
+    return render_template("sector_finance.html", context)
 
 
 @app.get("/sectors/legal", response_class=HTMLResponse)
 async def sector_legal(request: Request):
     """Legal & Regulatory Sector Page"""
-    return templates.TemplateResponse(
-        "sector_legal.html",
-        {
-            "request": request,
-            "page_title": "Legal & Regulatory Services",
-        },
-    )
+    context = {
+        "request": request,
+        "page_title": "Legal & Regulatory Services",
+    }
+    return render_template("sector_legal.html", context)
 
 
 @app.get("/sectors", response_class=HTMLResponse)
@@ -1381,14 +1358,12 @@ async def sectors(request: Request):
             "description": "Accurate AI for legal research and compliance",
         },
     ]
-    return templates.TemplateResponse(
-        "sectors.html",
-        {
-            "request": request,
-            "page_title": "Industries We Serve",
-            "sectors": sectors_list,
-        },
-    )
+    context = {
+        "request": request,
+        "page_title": "Industries We Serve",
+        "sectors": sectors_list,
+    }
+    return render_template("sectors.html", context)
 
 
 @app.get("/dashboard/{project_id}", response_class=HTMLResponse)

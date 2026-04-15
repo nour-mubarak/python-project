@@ -23,9 +23,12 @@ from sqlalchemy import (
     Boolean,
     Float,
     ForeignKey,
+    Index,
+    JSON,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, Session
+from sqlalchemy.dialects.sqlite import JSON as SQLITE_JSON
 
 # Database path
 BASE_DIR = Path(__file__).parent
@@ -154,6 +157,154 @@ class AuditLog(Base):
     resource_id = Column(String(100))
     details = Column(Text)  # JSON
     ip_address = Column(String(50))
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class BatchJob(Base):
+    """Batch evaluation job."""
+
+    __tablename__ = "batch_jobs"
+
+    id = Column(String(36), primary_key=True, index=True)  # UUID
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    evaluation_id = Column(Integer, ForeignKey("evaluations.id"))
+    
+    name = Column(String(200), nullable=False)
+    description = Column(Text)
+    
+    status = Column(String(20), default="queued", index=True)  # queued, running, completed, failed, cancelled
+    
+    # Job configuration
+    config_json = Column(Text)  # JSON: models, prompt_pack, languages, dimensions
+    
+    # Progress tracking
+    progress = Column(Integer, default=0)  # 0-100
+    total_items = Column(Integer, default=0)
+    completed_items = Column(Integer, default=0)
+    failed_items = Column(Integer, default=0)
+    
+    # Results
+    result_json = Column(Text)  # JSON: summary results
+    error_message = Column(Text)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    started_at = Column(DateTime)
+    completed_at = Column(DateTime)
+    
+    # Relationships
+    user = relationship("User")
+    evaluation = relationship("Evaluation")
+
+
+class ModelResponse(Base):
+    """Individual model response to a prompt."""
+
+    __tablename__ = "model_responses"
+
+    id = Column(Integer, primary_key=True, index=True)
+    batch_job_id = Column(String(36), ForeignKey("batch_jobs.id"), index=True)
+    evaluation_id = Column(Integer, ForeignKey("evaluations.id"), index=True)
+    
+    # Prompt info
+    prompt_id = Column(String(100), nullable=False, index=True)
+    prompt_text = Column(Text, nullable=False)
+    
+    # Model info
+    model_id = Column(String(100), nullable=False, index=True)
+    provider = Column(String(50))  # openai, anthropic, azure, ollama
+    language = Column(String(10))  # en, ar
+    
+    # Response
+    response_text = Column(Text, nullable=False)
+    tokens_input = Column(Integer)
+    tokens_output = Column(Integer)
+    latency_ms = Column(Float)
+    temperature = Column(Float)
+    
+    # Error tracking
+    error = Column(Text)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+
+class PromptResult(Base):
+    """Aggregated evaluation result for a prompt across models."""
+
+    __tablename__ = "prompt_results"
+
+    id = Column(Integer, primary_key=True, index=True)
+    evaluation_id = Column(Integer, ForeignKey("evaluations.id"), index=True, nullable=False)
+    prompt_id = Column(String(100), nullable=False, index=True)
+    category = Column(String(50))
+    
+    # Scores JSON: {model_id: {language: [DimensionScore, ...]}}
+    scores_json = Column(Text)
+    
+    # Cross-lingual gap JSON: {model_id: gap_percentage}
+    cross_lingual_gap_json = Column(Text)
+    
+    # Summary scores
+    avg_accuracy = Column(Float)
+    avg_bias = Column(Float)
+    avg_hallucination = Column(Float)
+    avg_consistency = Column(Float)
+    avg_cultural = Column(Float)
+    avg_fluency = Column(Float)
+    overall_score = Column(Float)
+    
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+
+class ConfigPreset(Base):
+    """Saved evaluation configuration presets."""
+
+    __tablename__ = "config_presets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    
+    name = Column(String(200), nullable=False)
+    description = Column(Text)
+    sector = Column(String(50))
+    
+    # Configuration JSON
+    models = Column(Text)  # JSON list
+    languages = Column(Text)  # JSON list
+    dimensions = Column(Text)  # JSON list
+    prompt_pack = Column(String(50))
+    
+    # Metadata
+    is_public = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    user = relationship("User")
+
+
+class RecommendationResult(Base):
+    """AI recommendations from evaluation results."""
+
+    __tablename__ = "recommendations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    evaluation_id = Column(Integer, ForeignKey("evaluations.id"), index=True, nullable=False)
+    
+    # Recommendation categories
+    recommendation_type = Column(String(50))  # accuracy, bias, hallucination, cultural, etc.
+    severity = Column(String(20))  # low, medium, high, critical
+    
+    title = Column(String(200), nullable=False)
+    description = Column(Text)
+    
+    # Action items
+    action_items_json = Column(Text)  # JSON list
+    estimated_effort = Column(String(20))  # low, medium, high
+    
+    # References
+    related_prompts_json = Column(Text)  # JSON list of prompt IDs
+    
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
@@ -377,6 +528,351 @@ def log_action(
 def get_recent_audit_logs(db: Session, limit: int = 50) -> List[AuditLog]:
     """Get recent audit logs."""
     return db.query(AuditLog).order_by(AuditLog.created_at.desc()).limit(limit).all()
+
+
+# ═══════════════════════════════════════════════════════════════
+# BATCH JOB OPERATIONS
+# ═══════════════════════════════════════════════════════════════
+
+
+def create_batch_job(
+    db: Session,
+    job_id: str,
+    user_id: int,
+    name: str,
+    config: dict,
+    description: str = None,
+    evaluation_id: int = None,
+) -> "BatchJob":
+    """Create a new batch job."""
+    job = BatchJob(
+        id=job_id,
+        user_id=user_id,
+        evaluation_id=evaluation_id,
+        name=name,
+        description=description,
+        config_json=json.dumps(config),
+        total_items=config.get("total_items", 0),
+    )
+    db.add(job)
+    db.commit()
+    db.refresh(job)
+    return job
+
+
+def get_batch_job(db: Session, job_id: str) -> Optional["BatchJob"]:
+    """Get a batch job by ID."""
+    return db.query(BatchJob).filter(BatchJob.id == job_id).first()
+
+
+def get_batch_jobs_for_user(db: Session, user_id: int, limit: int = 50) -> List["BatchJob"]:
+    """Get batch jobs for a user."""
+    return (
+        db.query(BatchJob)
+        .filter(BatchJob.user_id == user_id)
+        .order_by(BatchJob.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+
+def get_running_batch_jobs(db: Session) -> List["BatchJob"]:
+    """Get all currently running batch jobs."""
+    return db.query(BatchJob).filter(BatchJob.status == "running").all()
+
+
+def update_batch_job_progress(
+    db: Session,
+    job_id: str,
+    progress: int = None,
+    completed_items: int = None,
+    failed_items: int = None,
+    status: str = None,
+    error_message: str = None,
+    result_json: dict = None,
+):
+    """Update batch job progress."""
+    job = get_batch_job(db, job_id)
+    if job:
+        if progress is not None:
+            job.progress = min(100, max(0, progress))
+        if completed_items is not None:
+            job.completed_items = completed_items
+        if failed_items is not None:
+            job.failed_items = failed_items
+        if status:
+            job.status = status
+            if status == "running" and not job.started_at:
+                job.started_at = datetime.utcnow()
+            elif status in ("completed", "failed", "cancelled"):
+                job.completed_at = datetime.utcnow()
+        if error_message:
+            job.error_message = error_message
+        if result_json:
+            job.result_json = json.dumps(result_json)
+        
+        db.commit()
+
+
+# ═══════════════════════════════════════════════════════════════
+# MODEL RESPONSE OPERATIONS
+# ═══════════════════════════════════════════════════════════════
+
+
+def create_model_response(
+    db: Session,
+    batch_job_id: str,
+    evaluation_id: int,
+    prompt_id: str,
+    prompt_text: str,
+    model_id: str,
+    provider: str,
+    language: str,
+    response_text: str,
+    tokens_input: int = None,
+    tokens_output: int = None,
+    latency_ms: float = None,
+    temperature: float = None,
+    error: str = None,
+) -> "ModelResponse":
+    """Create a model response record."""
+    response = ModelResponse(
+        batch_job_id=batch_job_id,
+        evaluation_id=evaluation_id,
+        prompt_id=prompt_id,
+        prompt_text=prompt_text,
+        model_id=model_id,
+        provider=provider,
+        language=language,
+        response_text=response_text,
+        tokens_input=tokens_input,
+        tokens_output=tokens_output,
+        latency_ms=latency_ms,
+        temperature=temperature,
+        error=error,
+    )
+    db.add(response)
+    db.commit()
+    db.refresh(response)
+    return response
+
+
+def get_model_responses_for_evaluation(
+    db: Session, evaluation_id: int
+) -> List["ModelResponse"]:
+    """Get all model responses for an evaluation."""
+    return (
+        db.query(ModelResponse)
+        .filter(ModelResponse.evaluation_id == evaluation_id)
+        .order_by(ModelResponse.created_at.asc())
+        .all()
+    )
+
+
+def get_model_responses_for_prompt(
+    db: Session, evaluation_id: int, prompt_id: str
+) -> List["ModelResponse"]:
+    """Get all model responses for a specific prompt in an evaluation."""
+    return (
+        db.query(ModelResponse)
+        .filter(
+            ModelResponse.evaluation_id == evaluation_id,
+            ModelResponse.prompt_id == prompt_id,
+        )
+        .all()
+    )
+
+
+# ═══════════════════════════════════════════════════════════════
+# PROMPT RESULT OPERATIONS
+# ═══════════════════════════════════════════════════════════════
+
+
+def create_prompt_result(
+    db: Session,
+    evaluation_id: int,
+    prompt_id: str,
+    category: str,
+    scores_json: dict,
+    cross_lingual_gap_json: dict = None,
+) -> "PromptResult":
+    """Create a prompt result record."""
+    result = PromptResult(
+        evaluation_id=evaluation_id,
+        prompt_id=prompt_id,
+        category=category,
+        scores_json=json.dumps(scores_json),
+        cross_lingual_gap_json=json.dumps(cross_lingual_gap_json or {}),
+    )
+    db.add(result)
+    db.commit()
+    db.refresh(result)
+    return result
+
+
+def get_prompt_results_for_evaluation(
+    db: Session, evaluation_id: int
+) -> List["PromptResult"]:
+    """Get all prompt results for an evaluation."""
+    return (
+        db.query(PromptResult)
+        .filter(PromptResult.evaluation_id == evaluation_id)
+        .order_by(PromptResult.created_at.asc())
+        .all()
+    )
+
+
+def update_prompt_result_scores(
+    db: Session,
+    result_id: int,
+    avg_accuracy: float = None,
+    avg_bias: float = None,
+    avg_hallucination: float = None,
+    avg_consistency: float = None,
+    avg_cultural: float = None,
+    avg_fluency: float = None,
+    overall_score: float = None,
+):
+    """Update aggregated scores for a prompt result."""
+    result = db.query(PromptResult).filter(PromptResult.id == result_id).first()
+    if result:
+        if avg_accuracy is not None:
+            result.avg_accuracy = avg_accuracy
+        if avg_bias is not None:
+            result.avg_bias = avg_bias
+        if avg_hallucination is not None:
+            result.avg_hallucination = avg_hallucination
+        if avg_consistency is not None:
+            result.avg_consistency = avg_consistency
+        if avg_cultural is not None:
+            result.avg_cultural = avg_cultural
+        if avg_fluency is not None:
+            result.avg_fluency = avg_fluency
+        if overall_score is not None:
+            result.overall_score = overall_score
+        
+        db.commit()
+
+
+# ═══════════════════════════════════════════════════════════════
+# CONFIG PRESET OPERATIONS
+# ═══════════════════════════════════════════════════════════════
+
+
+def create_config_preset(
+    db: Session,
+    user_id: int,
+    name: str,
+    sector: str,
+    models: List[str],
+    languages: List[str],
+    dimensions: List[str],
+    prompt_pack: str,
+    description: str = None,
+    is_public: bool = False,
+) -> "ConfigPreset":
+    """Create a new configuration preset."""
+    preset = ConfigPreset(
+        user_id=user_id,
+        name=name,
+        description=description,
+        sector=sector,
+        models=json.dumps(models),
+        languages=json.dumps(languages),
+        dimensions=json.dumps(dimensions),
+        prompt_pack=prompt_pack,
+        is_public=is_public,
+    )
+    db.add(preset)
+    db.commit()
+    db.refresh(preset)
+    return preset
+
+
+def get_config_preset(db: Session, preset_id: int) -> Optional["ConfigPreset"]:
+    """Get a config preset by ID."""
+    return db.query(ConfigPreset).filter(ConfigPreset.id == preset_id).first()
+
+
+def get_config_presets_for_user(
+    db: Session, user_id: int
+) -> List["ConfigPreset"]:
+    """Get all config presets for a user."""
+    return (
+        db.query(ConfigPreset)
+        .filter(ConfigPreset.user_id == user_id)
+        .order_by(ConfigPreset.created_at.desc())
+        .all()
+    )
+
+
+def get_public_config_presets(db: Session) -> List["ConfigPreset"]:
+    """Get all public config presets."""
+    return (
+        db.query(ConfigPreset)
+        .filter(ConfigPreset.is_public == True)
+        .order_by(ConfigPreset.created_at.desc())
+        .all()
+    )
+
+
+# ═══════════════════════════════════════════════════════════════
+# RECOMMENDATION OPERATIONS
+# ═══════════════════════════════════════════════════════════════
+
+
+def create_recommendation(
+    db: Session,
+    evaluation_id: int,
+    recommendation_type: str,
+    severity: str,
+    title: str,
+    description: str,
+    action_items: List[str] = None,
+    estimated_effort: str = None,
+    related_prompts: List[str] = None,
+) -> "RecommendationResult":
+    """Create a recommendation."""
+    rec = RecommendationResult(
+        evaluation_id=evaluation_id,
+        recommendation_type=recommendation_type,
+        severity=severity,
+        title=title,
+        description=description,
+        action_items_json=json.dumps(action_items or []),
+        estimated_effort=estimated_effort,
+        related_prompts_json=json.dumps(related_prompts or []),
+    )
+    db.add(rec)
+    db.commit()
+    db.refresh(rec)
+    return rec
+
+
+def get_recommendations_for_evaluation(
+    db: Session, evaluation_id: int
+) -> List["RecommendationResult"]:
+    """Get all recommendations for an evaluation."""
+    return (
+        db.query(RecommendationResult)
+        .filter(RecommendationResult.evaluation_id == evaluation_id)
+        .order_by(RecommendationResult.severity.desc(), RecommendationResult.created_at.desc())
+        .all()
+    )
+
+
+def get_recommendations_by_type(
+    db: Session, evaluation_id: int, rec_type: str
+) -> List["RecommendationResult"]:
+    """Get recommendations of a specific type for an evaluation."""
+    return (
+        db.query(RecommendationResult)
+        .filter(
+            RecommendationResult.evaluation_id == evaluation_id,
+            RecommendationResult.recommendation_type == rec_type,
+        )
+        .all()
+    )
 
 
 # Initialize database on import

@@ -1,23 +1,96 @@
-# LinguaEval Platform - Docker Compose
+# LinguaEval Platform - Docker Compose (Production)
 # Run: docker-compose up -d
 
 version: '3.8'
 
 services:
+  # PostgreSQL Database (Production-grade)
+  postgres:
+    image: postgres:16-alpine
+    container_name: linguaeval-postgres
+    environment:
+      POSTGRES_DB: linguaeval
+      POSTGRES_USER: ${DB_USER:-linguaeval}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_password_change_me}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-linguaeval}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - linguaeval-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis Cache & Queue
+  redis:
+    image: redis:7-alpine
+    container_name: linguaeval-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - linguaeval-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   # LinguaEval Web Application
-  linguaeval:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - PYTHON_VERSION=3.11
     container_name: linguaeval-app
     ports:
       - "8000:8000"
     environment:
+      # Database
+      - DATABASE_URL=postgresql://${DB_USER:-linguaeval}:${DB_PASSWORD:-secure_password_change_me}@postgres:5432/linguaeval
+      
+      # Redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redis_password}
+      
+      # LLM Providers
       - OLLAMA_HOST=http://ollama:11434
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
       - AZURE_OPENAI_KEY=${AZURE_OPENAI_KEY:-}
+      
+      # Email Notifications
+      - EMAIL_ENABLED=${EMAIL_ENABLED:-false}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - NOTIFICATION_EMAIL=${NOTIFICATION_EMAIL:-}
+      
+      # Application
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    
     volumes:
       # Persist evaluation results
       - ./results:/app/results
@@ -25,12 +98,32 @@ services:
       - ./knowledge_agent/documents:/app/knowledge_agent/documents
       # Persist ChromaDB data
       - linguaeval-chromadb:/app/data/chromadb
+    
     depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
       ollama:
         condition: service_healthy
+    
     restart: unless-stopped
     networks:
       - linguaeval-network
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # Ollama LLM Server
   ollama:
@@ -40,6 +133,8 @@ services:
       - "11434:11434"
     volumes:
       - ollama-models:/root/.ollama
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
       interval: 30s
@@ -70,6 +165,10 @@ services:
     restart: "no"
 
 volumes:
+  postgres-data:
+    name: linguaeval-postgres-data
+  redis-data:
+    name: linguaeval-redis-data
   ollama-models:
     name: linguaeval-ollama-models
   linguaeval-chromadb:

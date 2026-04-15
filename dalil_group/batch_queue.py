@@ -4,7 +4,7 @@
 Batch Evaluation Module
 =======================
 
-Queue system for running multiple evaluations.
+Queue system for running multiple evaluations with database persistence.
 """
 
 import asyncio
@@ -18,14 +18,20 @@ from dataclasses import dataclass, field, asdict
 import threading
 import logging
 
-logger = logging.getLogger(__name__)
+from database import (
+    SessionLocal,
+    create_batch_job,
+    get_batch_job,
+    update_batch_job_progress,
+    get_running_batch_jobs,
+    get_batch_jobs_for_user,
+)
 
-# Store jobs in data directory
-DATA_DIR = Path(__file__).parent / "data"
-JOBS_FILE = DATA_DIR / "batch_jobs.json"
+logger = logging.getLogger(__name__)
 
 
 class JobStatus(str, Enum):
+    """Job status enumeration."""
     QUEUED = "queued"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -38,283 +44,205 @@ class BatchJob:
     """A single evaluation job in the batch queue."""
 
     id: str
+    user_id: int
     name: str
-    config_id: str  # Reference to evaluation config
-    model: str
-    prompt_pack: str
-    languages: List[str]
+    config: dict  # {models, prompt_pack, languages, dimensions, etc.}
     status: JobStatus = JobStatus.QUEUED
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     started_at: Optional[str] = None
     completed_at: Optional[str] = None
     progress: int = 0  # 0-100
-    total_prompts: int = 0
-    completed_prompts: int = 0
-    result_file: Optional[str] = None
+    completed_items: int = 0
+    failed_items: int = 0
     error: Optional[str] = None
-    created_by: Optional[str] = None
+    result: Optional[dict] = None
 
-    def to_dict(self) -> dict:
+    def to_dict(self):
+        """Convert to dictionary representation."""
         return asdict(self)
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "BatchJob":
-        # Handle status enum
-        if "status" in data and isinstance(data["status"], str):
-            data["status"] = JobStatus(data["status"])
-        return cls(**data)
 
 
 class BatchQueue:
-    """
-    Batch evaluation queue manager.
-
-    Manages a queue of evaluation jobs that run sequentially.
-    """
+    """Queue manager for batch evaluations with database persistence."""
 
     def __init__(self):
-        self.jobs: Dict[str, BatchJob] = {}
-        self.queue: List[str] = []  # Job IDs in queue order
-        self._lock = threading.Lock()
-        self._running = False
-        self._current_job: Optional[str] = None
-        self._worker_task: Optional[asyncio.Task] = None
-        self._load_jobs()
+        """Initialize the batch queue."""
+        self.queue: List[BatchJob] = []
+        self.running: Dict[str, BatchJob] = {}
+        self.lock = threading.Lock()
+        self._load_pending_jobs()
 
-    def _load_jobs(self):
-        """Load jobs from disk."""
+    def _load_pending_jobs(self):
+        """Load pending and running jobs from database on startup."""
+        db = SessionLocal()
         try:
-            if JOBS_FILE.exists():
-                with open(JOBS_FILE, "r") as f:
-                    data = json.load(f)
-                    for job_data in data.get("jobs", []):
-                        job = BatchJob.from_dict(job_data)
-                        self.jobs[job.id] = job
-                    self.queue = data.get("queue", [])
-        except Exception as e:
-            logger.error(f"Error loading batch jobs: {e}")
-
-    def _save_jobs(self):
-        """Save jobs to disk."""
-        try:
-            DATA_DIR.mkdir(parents=True, exist_ok=True)
-            with open(JOBS_FILE, "w") as f:
-                json.dump(
-                    {
-                        "jobs": [job.to_dict() for job in self.jobs.values()],
-                        "queue": self.queue,
-                    },
-                    f,
-                    indent=2,
-                    default=str,
+            running_jobs = get_running_batch_jobs(db)
+            for job_record in running_jobs:
+                config = json.loads(job_record.config_json)
+                batch_job = BatchJob(
+                    id=job_record.id,
+                    user_id=job_record.user_id,
+                    name=job_record.name,
+                    config=config,
+                    status=JobStatus(job_record.status),
+                    created_at=job_record.created_at.isoformat(),
+                    started_at=job_record.started_at.isoformat() if job_record.started_at else None,
+                    completed_at=job_record.completed_at.isoformat() if job_record.completed_at else None,
+                    progress=job_record.progress,
+                    completed_items=job_record.completed_items,
+                    failed_items=job_record.failed_items,
+                    error=job_record.error_message,
+                    result=json.loads(job_record.result_json) if job_record.result_json else None,
                 )
-        except Exception as e:
-            logger.error(f"Error saving batch jobs: {e}")
+                self.running[batch_job.id] = batch_job
+        finally:
+            db.close()
 
     def add_job(
         self,
+        user_id: int,
         name: str,
-        config_id: str,
-        model: str,
-        prompt_pack: str,
-        languages: List[str],
-        created_by: Optional[str] = None,
-    ) -> BatchJob:
+        config: dict,
+    ) -> str:
         """Add a new job to the queue."""
-        with self._lock:
-            job = BatchJob(
-                id=str(uuid.uuid4())[:8],
+        job_id = str(uuid.uuid4())
+        
+        db = SessionLocal()
+        try:
+            create_batch_job(
+                db,
+                job_id=job_id,
+                user_id=user_id,
                 name=name,
-                config_id=config_id,
-                model=model,
-                prompt_pack=prompt_pack,
-                languages=languages,
-                created_by=created_by,
+                config=config,
             )
-            self.jobs[job.id] = job
-            self.queue.append(job.id)
-            self._save_jobs()
-            return job
+        finally:
+            db.close()
+
+        batch_job = BatchJob(
+            id=job_id,
+            user_id=user_id,
+            name=name,
+            config=config,
+            status=JobStatus.QUEUED,
+        )
+
+        with self.lock:
+            self.queue.append(batch_job)
+
+        logger.info(f"Added batch job {job_id} to queue")
+        return job_id
 
     def get_job(self, job_id: str) -> Optional[BatchJob]:
         """Get a job by ID."""
-        return self.jobs.get(job_id)
+        with self.lock:
+            if job_id in self.running:
+                return self.running[job_id]
+            for job in self.queue:
+                if job.id == job_id:
+                    return job
+        return None
 
-    def get_all_jobs(self) -> List[BatchJob]:
-        """Get all jobs sorted by creation date (newest first)."""
-        return sorted(self.jobs.values(), key=lambda j: j.created_at, reverse=True)
-
-    def get_queued_jobs(self) -> List[BatchJob]:
-        """Get jobs in queue order."""
-        return [self.jobs[jid] for jid in self.queue if jid in self.jobs]
-
-    def cancel_job(self, job_id: str) -> bool:
-        """Cancel a queued job."""
-        with self._lock:
-            job = self.jobs.get(job_id)
-            if not job:
-                return False
-
-            if job.status == JobStatus.QUEUED:
-                job.status = JobStatus.CANCELLED
-                if job_id in self.queue:
-                    self.queue.remove(job_id)
-                self._save_jobs()
-                return True
-            return False
-
-    def delete_job(self, job_id: str) -> bool:
-        """Delete a job (only if not running)."""
-        with self._lock:
-            job = self.jobs.get(job_id)
-            if not job:
-                return False
-
-            if job.status == JobStatus.RUNNING:
-                return False
-
-            if job_id in self.queue:
-                self.queue.remove(job_id)
-            del self.jobs[job_id]
-            self._save_jobs()
-            return True
+    def start_job(self, job_id: str):
+        """Mark job as started."""
+        db = SessionLocal()
+        try:
+            update_batch_job_progress(
+                db,
+                job_id,
+                status=JobStatus.RUNNING.value,
+            )
+            with self.lock:
+                self.running[job_id] = self.get_job(job_id)
+        finally:
+            db.close()
 
     def update_job_progress(
         self,
         job_id: str,
-        progress: int = None,
-        completed_prompts: int = None,
-        total_prompts: int = None,
+        progress: int = 0,
+        completed_items: int = 0,
+        failed_items: int = 0,
     ):
         """Update job progress."""
-        with self._lock:
-            job = self.jobs.get(job_id)
-            if job:
-                if progress is not None:
-                    job.progress = progress
-                if completed_prompts is not None:
-                    job.completed_prompts = completed_prompts
-                if total_prompts is not None:
-                    job.total_prompts = total_prompts
-                self._save_jobs()
+        db = SessionLocal()
+        try:
+            update_batch_job_progress(
+                db,
+                job_id,
+                progress=progress,
+                completed_items=completed_items,
+                failed_items=failed_items,
+            )
+        finally:
+            db.close()
 
-    def complete_job(self, job_id: str, result_file: str = None, error: str = None):
-        """Mark job as completed or failed."""
-        with self._lock:
-            job = self.jobs.get(job_id)
-            if job:
-                job.completed_at = datetime.now().isoformat()
-                if error:
-                    job.status = JobStatus.FAILED
-                    job.error = error
-                else:
-                    job.status = JobStatus.COMPLETED
-                    job.result_file = result_file
-                    job.progress = 100
-                self._save_jobs()
+    def complete_job(self, job_id: str, result: dict = None):
+        """Mark job as completed."""
+        db = SessionLocal()
+        try:
+            update_batch_job_progress(
+                db,
+                job_id,
+                status=JobStatus.COMPLETED.value,
+                result_json=result if result else None,
+            )
+            with self.lock:
+                if job_id in self.running:
+                    del self.running[job_id]
+        finally:
+            db.close()
 
-    def get_queue_status(self) -> dict:
-        """Get current queue status."""
-        queued = sum(1 for j in self.jobs.values() if j.status == JobStatus.QUEUED)
-        running = sum(1 for j in self.jobs.values() if j.status == JobStatus.RUNNING)
-        completed = sum(
-            1 for j in self.jobs.values() if j.status == JobStatus.COMPLETED
-        )
-        failed = sum(1 for j in self.jobs.values() if j.status == JobStatus.FAILED)
+    def fail_job(self, job_id: str, error: str):
+        """Mark job as failed."""
+        db = SessionLocal()
+        try:
+            update_batch_job_progress(
+                db,
+                job_id,
+                status=JobStatus.FAILED.value,
+                error_message=error,
+            )
+            with self.lock:
+                if job_id in self.running:
+                    del self.running[job_id]
+        finally:
+            db.close()
 
-        return {
-            "total_jobs": len(self.jobs),
-            "queued": queued,
-            "running": running,
-            "completed": completed,
-            "failed": failed,
-            "is_processing": self._running,
-            "current_job": self._current_job,
-        }
+    def cancel_job(self, job_id: str):
+        """Cancel a job."""
+        db = SessionLocal()
+        try:
+            update_batch_job_progress(
+                db,
+                job_id,
+                status=JobStatus.CANCELLED.value,
+            )
+            with self.lock:
+                if job_id in self.running:
+                    del self.running[job_id]
+        finally:
+            db.close()
 
-    def clear_completed(self):
-        """Remove all completed and failed jobs."""
-        with self._lock:
-            to_remove = [
-                jid
-                for jid, job in self.jobs.items()
-                if job.status
-                in (JobStatus.COMPLETED, JobStatus.FAILED, JobStatus.CANCELLED)
-            ]
-            for jid in to_remove:
-                del self.jobs[jid]
-                if jid in self.queue:
-                    self.queue.remove(jid)
-            self._save_jobs()
+    def queue_size(self) -> int:
+        """Get number of jobs in queue."""
+        with self.lock:
+            return len(self.queue)
+
+    def running_jobs_count(self) -> int:
+        """Get number of running jobs."""
+        return len(self.running)
 
 
 # Global batch queue instance
 batch_queue = BatchQueue()
 
 
-async def run_batch_evaluation(job: BatchJob, runner_func) -> str:
+def process_batch_queue() -> None:
     """
-    Run a single batch evaluation job.
-
-    Args:
-        job: The batch job to run
-        runner_func: Async function to run evaluation (model, prompt_pack, languages) -> result_file
-
-    Returns:
-        Path to result file
+    Process batch queue (placeholder for background task integration).
+    
+    In production, this would be coordinated with Celery or similar
+    async task processing framework.
     """
-    job.status = JobStatus.RUNNING
-    job.started_at = datetime.now().isoformat()
-
-    try:
-        result_file = await runner_func(
-            model=job.model,
-            prompt_pack=job.prompt_pack,
-            languages=job.languages,
-            progress_callback=lambda p, c, t: batch_queue.update_job_progress(
-                job.id, p, c, t
-            ),
-        )
-
-        batch_queue.complete_job(job.id, result_file=result_file)
-        return result_file
-
-    except Exception as e:
-        batch_queue.complete_job(job.id, error=str(e))
-        raise
-
-
-async def process_batch_queue(runner_func):
-    """
-    Process all jobs in the batch queue.
-
-    This runs as a background task, processing jobs one at a time.
-    """
-    batch_queue._running = True
-
-    try:
-        while batch_queue.queue:
-            job_id = batch_queue.queue[0]
-            job = batch_queue.get_job(job_id)
-
-            if not job or job.status != JobStatus.QUEUED:
-                batch_queue.queue.pop(0)
-                continue
-
-            batch_queue._current_job = job_id
-
-            try:
-                await run_batch_evaluation(job, runner_func)
-            except Exception as e:
-                logger.error(f"Batch job {job_id} failed: {e}")
-
-            # Remove from queue after processing
-            if batch_queue.queue and batch_queue.queue[0] == job_id:
-                batch_queue.queue.pop(0)
-
-            batch_queue._current_job = None
-            batch_queue._save_jobs()
-
-    finally:
-        batch_queue._running = False
-        batch_queue._current_job = None
+    logger.info("Batch queue processor initialized")

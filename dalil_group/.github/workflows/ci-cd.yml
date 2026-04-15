@@ -1,0 +1,168 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  tests:
+    name: Tests & Quality Checks
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: linguaeval_test
+          POSTGRES_USER: linguaeval
+          POSTGRES_PASSWORD: testpass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Lint with pylint
+      run: |
+        pip install pylint
+        pylint scoring/ utils/ config/ web/ --exit-zero --max-line-length=120
+    
+    - name: Format check with black
+      run: |
+        pip install black
+        black --check scoring/ utils/ config/ web/ tests/ || true
+    
+    - name: Type checking with mypy
+      run: |
+        pip install mypy
+        mypy scoring/ utils/ config/ --ignore-missing-imports || true
+    
+    - name: Security check with bandit
+      run: |
+        pip install bandit
+        bandit -r scoring/ utils/ config/ -ll || true
+    
+    - name: Run unit tests
+      env:
+        DATABASE_URL: postgresql://linguaeval:testpass@localhost:5432/linguaeval_test
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+      run: |
+        pytest tests/test_scorer.py -v --cov=scoring --cov-report=xml
+    
+    - name: Run integration tests
+      env:
+        DATABASE_URL: postgresql://linguaeval:testpass@localhost:5432/linguaeval_test
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+      run: |
+        pytest tests/test_workflows.py -v -m integration --cov=database --cov-report=xml
+    
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+      if: secrets.DOCKER_USERNAME != ''
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: ${{ secrets.DOCKER_USERNAME != '' }}
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/linguaeval:latest
+          ${{ secrets.DOCKER_USERNAME }}/linguaeval:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+      if: secrets.DOCKER_USERNAME != ''
+
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          cd /app/linguaeval
+          docker-compose pull
+          docker-compose up -d
+          docker-compose exec -T app python migrate.py init
+      if: secrets.DEPLOY_HOST != ''
+    
+    - name: Health Check
+      run: |
+        sleep 10
+        curl -f http://${{ secrets.DEPLOY_HOST }}:8000/health || exit 1
+      if: secrets.DEPLOY_HOST != ''
+
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [tests, build, deploy]
+    if: always()
+    
+    steps:
+    - name: Send Slack notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: 'Pipeline ${{ job.status }}'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      if: secrets.SLACK_WEBHOOK != '' && always()
