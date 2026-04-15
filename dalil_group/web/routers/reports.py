@@ -21,10 +21,11 @@ router = APIRouter()
 BASE_DIR = Path(__file__).parent.parent
 
 
-def get_templates():
-    from fastapi.templating import Jinja2Templates
-
-    return Jinja2Templates(directory=BASE_DIR / "templates")
+# Import shared render_template helper from main.py
+def render_template(name: str, context: dict):
+    """Lazy import to avoid circular imports."""
+    from web.main import render_template as shared_render
+    return shared_render(name, context)
 
 
 # In-memory storage for report generation status
@@ -34,8 +35,7 @@ report_jobs = {}
 @router.get("/", response_class=HTMLResponse)
 async def reports_list(request: Request):
     """Reports Screen (Screen 10)"""
-    templates = get_templates()
-
+    
     # Find all generated reports
     results_dir = BASE_DIR.parent / "results"
     reports = []
@@ -107,7 +107,7 @@ async def reports_list(request: Request):
             except:
                 pass
 
-    return templates.TemplateResponse(
+    return render_template(
         "reports.html",
         {
             "request": request,

@@ -26,10 +26,11 @@ BASE_DIR = Path(__file__).parent.parent
 _ollama_client = None
 
 
-def get_templates():
-    from fastapi.templating import Jinja2Templates
-
-    return Jinja2Templates(directory=BASE_DIR / "templates")
+# Import shared render_template helper from main.py
+def render_template(name: str, context: dict):
+    """Lazy import to avoid circular imports."""
+    from web.main import render_template as shared_render
+    return shared_render(name, context)
 
 
 def get_ollama_client():
@@ -65,9 +66,8 @@ chat_sessions: Dict[str, List[Dict]] = {}
 @router.get("/", response_class=HTMLResponse)
 async def chat_home(request: Request):
     """Real-time Chat Comparison Interface."""
-    templates = get_templates()
-
-    return templates.TemplateResponse(
+    
+    return render_template(
         "chat.html",
         {
             "request": request,

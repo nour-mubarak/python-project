@@ -24,10 +24,12 @@ router = APIRouter()
 BASE_DIR = Path(__file__).parent.parent
 
 
-def get_templates():
-    from fastapi.templating import Jinja2Templates
+# Import shared render_template helper from main.py
+def render_template(name: str, context: dict):
+    """Lazy import to avoid circular imports."""
+    from web.main import render_template as shared_render
 
-    return Jinja2Templates(directory=BASE_DIR / "templates")
+    return shared_render(name, context)
 
 
 # In-memory storage for running evaluations
@@ -37,7 +39,6 @@ running_evaluations = {}
 @router.get("/new", response_class=HTMLResponse)
 async def new_evaluation(request: Request):
     """Create Evaluation Wizard (Screen 2)"""
-    templates = get_templates()
 
     # Available prompt packs
     prompts_dir = BASE_DIR.parent / "prompts"
@@ -71,7 +72,7 @@ async def new_evaluation(request: Request):
             except:
                 pass
 
-    return templates.TemplateResponse(
+    return render_template(
         "wizard.html",
         {
             "request": request,
@@ -198,7 +199,7 @@ async def evaluation_run(request: Request, eval_id: str):
     if not eval_data:
         raise HTTPException(status_code=404, detail="Evaluation not found")
 
-    return templates.TemplateResponse(
+    return render_template(
         "run.html",
         {
             "request": request,
@@ -250,7 +251,7 @@ async def list_evaluations(request: Request):
             except:
                 pass
 
-    return templates.TemplateResponse(
+    return render_template(
         "evaluations_list.html",
         {
             "request": request,

@@ -32,10 +32,11 @@ _collection = None
 _ollama_client = None
 
 
-def get_templates():
-    from fastapi.templating import Jinja2Templates
-
-    return Jinja2Templates(directory=BASE_DIR / "templates")
+# Import shared render_template helper from main.py
+def render_template(name: str, context: dict):
+    """Lazy import to avoid circular imports."""
+    from web.main import render_template as shared_render
+    return shared_render(name, context)
 
 
 def get_embedding_model():
@@ -117,8 +118,7 @@ def detect_language(text: str) -> str:
 @router.get("/", response_class=HTMLResponse)
 async def knowledge_agent_home(request: Request):
     """Knowledge Agent main screen."""
-    templates = get_templates()
-
+    
     # Get indexed documents
     documents = []
     if DOCUMENTS_DIR.exists():
@@ -141,7 +141,7 @@ async def knowledge_agent_home(request: Request):
     except:
         doc_count = 0
 
-    return templates.TemplateResponse(
+    return render_template(
         "knowledge_agent.html",
         {
             "request": request,

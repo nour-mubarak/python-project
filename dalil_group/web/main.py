@@ -109,10 +109,11 @@ app.include_router(chat.router, prefix="/chat", tags=["chat"])
 # ═══════════════════════════════════════════════════════════════
 
 
-def render_template(name: str, context: dict) -> str:
-    """Render a template with the given context."""
+def render_template(name: str, context: dict) -> HTMLResponse:
+    """Render a template with the given context, returning HTMLResponse."""
     template = templates.get_template(name)
-    return template.render(context)
+    html = template.render(context)
+    return HTMLResponse(content=html)
 
 
 # ═══════════════════════════════════════════════════════════════

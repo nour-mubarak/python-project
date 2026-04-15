@@ -33,10 +33,12 @@ SESSION_COOKIE_NAME = "linguaeval_session"
 SESSION_DURATION_HOURS = 24
 
 
-def get_templates():
-    from fastapi.templating import Jinja2Templates
+# Import shared render_template helper from main.py
+def render_template(name: str, context: dict):
+    """Lazy import to avoid circular imports."""
+    from web.main import render_template as shared_render
 
-    return Jinja2Templates(directory=BASE_DIR / "templates")
+    return shared_render(name, context)
 
 
 def hash_password(password: str) -> str:
@@ -141,14 +143,13 @@ def require_auth(request: Request) -> dict:
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request, error: str = None, next: str = "/"):
     """Login page."""
-    templates = get_templates()
 
     # If already logged in, redirect
     user = get_current_user(request)
     if user:
         return RedirectResponse(url=next, status_code=303)
 
-    return templates.TemplateResponse(
+    return render_template(
         "login.html",
         {
             "request": request,
@@ -210,8 +211,7 @@ async def logout(request: Request):
 @router.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request, error: str = None, success: str = None):
     """Registration page."""
-    templates = get_templates()
-    return templates.TemplateResponse(
+    return render_template(
         "register.html",
         {
             "request": request,
@@ -281,15 +281,14 @@ async def profile_page(request: Request):
     if not user:
         return RedirectResponse(url="/auth/login?next=/auth/profile", status_code=303)
 
-    templates = get_templates()
-    return templates.TemplateResponse(
-        "profile.html",
-        {
-            "request": request,
-            "page_title": "Profile",
-            "user": user,
-        },
-    )
+        return render_template(
+            "profile.html",
+            {
+                "request": request,
+                "page_title": "Profile",
+                "user": user,
+            },
+        )
 
 
 @router.post("/profile/password")
