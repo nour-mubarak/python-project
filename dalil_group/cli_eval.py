@@ -18,12 +18,12 @@ from config.builder import (
     EvaluationConfig,
     preset_government,
     preset_university,
-    preset_healthcare,
     preset_finance,
 )
 from utils.model_runner import ModelRunner
 from scoring.scorer import ScoringEngine
-from generate_report import generate_report
+
+# from generate_report import generate_report  # Optional report generation
 
 
 def run_evaluation_cli(args):
@@ -34,8 +34,6 @@ def run_evaluation_cli(args):
             config = preset_government(client_name=args.client)
         elif args.preset == "university":
             config = preset_university(client_name=args.client)
-        elif args.preset == "healthcare":
-            config = preset_healthcare(client_name=args.client)
         elif args.preset == "finance":
             config = preset_finance(client_name=args.client)
         else:
@@ -73,14 +71,6 @@ def run_evaluation_cli(args):
         config.output_dir,
         f"{config.client_name.lower().replace(' ', '_')}_{timestamp}.json",
     )
-
-    # Generate report if requested
-    if args.report:
-        print(f"\nGenerating report...")
-        report_file = generate_report(
-            results_file=results_file, output_dir=config.output_dir, format=args.report
-        )
-        print(f"✅ Report saved: {report_file}")
 
     print(f"\n✅ Evaluation complete!")
     print(f"   Results: {results_file}")
@@ -227,16 +217,13 @@ def main():
     run_parser.add_argument("--config", help="Config file (YAML/JSON)")
     run_parser.add_argument(
         "--preset",
-        choices=["government", "university", "healthcare", "finance"],
+        choices=["government", "university", "finance"],
         help="Preset configuration",
     )
     run_parser.add_argument("--client", default="Test Client", help="Client name")
     run_parser.add_argument("--use-judge", action="store_true", help="Use judge model")
     run_parser.add_argument(
         "--dry-run", action="store_true", help="Dry run (no API calls)"
-    )
-    run_parser.add_argument(
-        "--report", choices=["pdf", "html", "json"], help="Generate report"
     )
     run_parser.set_defaults(func=run_evaluation_cli)
 
