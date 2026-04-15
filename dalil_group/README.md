@@ -1,14 +1,17 @@
-# LinguaEval — Multilingual AI Evaluation Platform
+# Dalīl Group — Multilingual AI Assurance Platform
+
+**Evidence-Led AI. Guided by Rigour.**
 
 ## Overview
 
-LinguaEval is a comprehensive platform for evaluating multilingual AI systems, with a focus on Arabic-English bilingual performance. It includes:
+Dalīl Group is a comprehensive platform for evaluating and assuring multilingual AI systems across enterprise sectors. We deliver fairness audits, bias detection, and cultural alignment assessments for Arabic-English and multilingual deployments. Our platform includes:
 
-- **Evaluation Pipeline** — Automated testing across 6 quality dimensions
+- **Sector-Specific Solutions** — Industry-tailored evaluation packages (Government, University, Healthcare, Finance, Legal)
+- **AI Evaluation Pipeline** — Automated testing across 6 quality dimensions
 - **Web Dashboard** — 10-screen UI for managing evaluations and viewing results  
-- **Knowledge Agent** — RAG-based bilingual assistant (Demo 2)
-- **Real-time Chat** — Side-by-side model comparison interface (Demo 3)
-- **Multi-format Reports** — DOCX, PDF, and PPTX export
+- **Knowledge Agent** — RAG-based bilingual assistant with document uploads
+- **Real-time Chat** — Side-by-side model comparison interface
+- **Multi-format Reports** — DOCX, PDF, and PPTX professional exports
 
 ## Features
 
@@ -20,15 +23,15 @@ LinguaEval is a comprehensive platform for evaluating multilingual AI systems, w
 ### 🖥️ Web Dashboard (10 Screens)
 | Screen | Description |
 |--------|-------------|
-| Home | Project list with quick stats |
+| Home | Project list with quick stats & value proposition |
+| Services | Evaluation packages with pricing (£3.5K–£25K) |
+| Sectors | Industry overview with 5 key sectors |
+| Sector Details | Government, University, Healthcare, Finance, Legal |
 | Wizard | Create new evaluations with prompt pack selection |
 | Run | Real-time evaluation progress monitor |
 | Dashboard | Executive summary with key metrics |
 | Comparison | Side-by-side model performance comparison |
 | Consistency | Cross-lingual consistency analysis |
-| Bias | Detailed bias detection findings |
-| Reliability | Hallucination and factual accuracy review |
-| Recommendation | Deployment readiness assessment |
 | Reports | Multi-format report generation |
 
 ### 🤖 Knowledge Agent (Demo 2)
@@ -52,14 +55,32 @@ LinguaEval is a comprehensive platform for evaluating multilingual AI systems, w
 | Legal | 25 | Contracts, family law, immigration |
 | Customer Support | 30 | Complaints, billing, technical support |
 
+## Public Website Routes
+
+| Route | Purpose | Description |
+|-------|---------|-------------|
+| `/` | Home | Landing page with company value proposition |
+| `/services` | Services | 5 evaluation packages with pricing & timelines |
+| `/sectors` | Industries | Overview of 5 key sectors |
+| `/sectors/government` | Sector Detail | Government & public sector challenges & solutions |
+| `/sectors/university` | Sector Detail | Higher education use cases & fairness focus |
+| `/sectors/healthcare` | Sector Detail | Healthcare with safety & cultural competence |
+| `/sectors/finance` | Sector Detail | Financial services with fair lending & compliance |
+| `/sectors/legal` | Sector Detail | Legal & regulatory with accuracy & audit trails |
+
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                      LINGUAEVAL PLATFORM                         │
+│              DALĪL GROUP ASSURANCE PLATFORM                     │
 ├─────────────────────────────────────────────────────────────────┤
-│  WEB UI (FastAPI + Jinja2)                                      │
-│  ├── /                    Home & project list                   │
+│  PUBLIC WEBSITE (FastAPI + Jinja2)                              │
+│  ├── /                    Home & company overview               │
+│  ├── /services            Evaluation packages & pricing          │
+│  ├── /sectors             Industries overview                    │
+│  └── /sectors/{sector}    Government, University, Healthcare... │
+├─────────────────────────────────────────────────────────────────┤
+│  INTERNAL DASHBOARD (Authentication Required)                   │
 │  ├── /evaluations/new     Evaluation wizard                     │
 │  ├── /dashboard/{id}      Results dashboard                     │
 │  ├── /knowledge/          RAG knowledge agent                   │
@@ -68,7 +89,7 @@ LinguaEval is a comprehensive platform for evaluating multilingual AI systems, w
 ├─────────────────────────────────────────────────────────────────┤
 │  EVALUATION ENGINE                                               │
 │  ├── Model Runner         Query Ollama/OpenAI/Anthropic         │
-│  ├── Scorer               6-dimension evaluation                │
+│  ├── Scorer (6D)          Accuracy, Bias, Hallucination...      │
 │  └── Report Builder       DOCX/PDF/PPTX generation              │
 ├─────────────────────────────────────────────────────────────────┤
 │  KNOWLEDGE AGENT (ChromaDB + sentence-transformers)             │
