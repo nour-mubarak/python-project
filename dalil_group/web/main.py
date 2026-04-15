@@ -41,12 +41,14 @@ from web.routers import evaluations, reports, knowledge_agent, chat, auth
 # ═══════════════════════════════════════════════════════════════
 
 app = FastAPI(
-    title="LinguaEval",
+    title="Dalīl Group",
     description="""
-## Multilingual AI Evaluation Platform
+## Multilingual AI Assurance Platform
 
-LinguaEval is a comprehensive platform for evaluating multilingual AI systems, 
-with a focus on Arabic-English bilingual performance.
+Dalīl Group — Evidence-Led AI. Guided by Rigour.
+
+A comprehensive platform for evaluating multilingual AI systems, 
+with a focus on Arabic-English bilingual performance and cultural integrity.
 
 ### Features
 
@@ -1268,6 +1270,18 @@ async def home(request: Request):
                 {"name": "Customer Support", "sector": "support", "icon": "💬"},
                 {"name": "Policy & Legal", "sector": "legal", "icon": "⚖️"},
             ],
+        },
+    )
+
+
+@app.get("/services", response_class=HTMLResponse)
+async def services(request: Request):
+    """Dalīl Group Services Overview"""
+    return templates.TemplateResponse(
+        "services.html",
+        {
+            "request": request,
+            "page_title": "Our Services",
         },
     )
 
