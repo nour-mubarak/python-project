@@ -49,6 +49,33 @@ passlib[bcrypt]>=1.7.4
 pydantic>=2.0.0
 pydantic-settings>=2.0.0
 
+# Production Database
+psycopg2-binary>=2.9.0  # PostgreSQL
+pg8000>=1.29.0  # Alternative PostgreSQL driver
+
+# Web Scraping for RAG
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+
+# Fine-tuning & ML
+torch>=2.0.0
+transformers>=4.30.0
+peft>=0.4.0  # LoRA/QLoRA
+bitsandbytes>=0.40.0  # Quantization
+accelerate>=0.20.0  # Distributed training
+datasets>=2.14.0  # Dataset handling
+
+# Production Server
+gunicorn>=21.0.0
+python-dotenv>=1.0.0
+
+# Monitoring & Logging
+prometheus-client>=0.17.0
+structlog>=23.1.0
+
+# CLI
+click>=8.1.0
+
 # Utilities
 python-dotenv>=1.0.0
 python-json-logger>=2.0.0
